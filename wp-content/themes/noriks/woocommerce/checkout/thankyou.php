@@ -3,7 +3,7 @@
  * Thankyou page — Post-purchase upsell with two-step flow
  *
  * Step 1: Single product offer (bokserice)
- * Step 2: 6-product grid (after "Ne želim" or after adding 1 item)
+ * Step 2: 6-product grid (after "Nechci" or after adding 1 item)
  *
  * Style: Red background, no border-radius, red buttons
  *
@@ -864,7 +864,7 @@ body.woocommerce-order-received .woocommerce {
         });
     }
 
-    // ─── Step 1: "Ne želim" → show grid ───
+    // ─── Step 1: "Nechci" → show grid ───
     var skipBtn = document.getElementById('ty-btn-skip');
     if (skipBtn) {
         skipBtn.addEventListener('click', function() {
@@ -939,7 +939,7 @@ body.woocommerce-order-received .woocommerce {
             });
         });
 
-        // "Ne želim" — close all, show summary without upsells
+        // "Nechci" — close all, show summary without upsells
         document.getElementById('ty-grid-close').addEventListener('click', closeAll);
 
         // "PŘIDAT K OBJEDNÁVCE" — add all selected items, then close
