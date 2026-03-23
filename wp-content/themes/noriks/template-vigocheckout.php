@@ -22,12 +22,12 @@ if (!defined('ABSPATH')) exit;
 <link rel='dns-prefetch' href='//static.klaviyo.com' />
 <link rel='dns-prefetch' href='//js.braintreegateway.com' />
 <meta name="title" content="Dokončete nákup" />
-<meta name="description" content="Sve što vam treba na jednom mjestu. Istražite veliki izbor proizvoda po najnižim cijenama. Kliknite sada i uživajte u najboljim ponudama i velikoj raznolikosti!" />
+<meta name="description" content="Vše, co potřebujete, na jednom místě. Prozkoumejte velký výběr produktů za nejnižší ceny. Klikněte nyní a užijte si nejlepší nabídky!" />
 <meta name="image" content="https://vigoshop.cz/app/themes/hsplus/images/favicon/vigoshop/mstile-310x310.png" />
 <meta property="og:locale" content="hr" />
 <meta property="og:type" content="website" />
 <meta property="og:title" content="Dokončete nákup" />
-<meta property="og:description" content="Sve što vam treba na jednom mjestu. Istražite veliki izbor proizvoda po najnižim cijenama. Kliknite sada i uživajte u najboljim ponudama i velikoj raznolikosti!" />
+<meta property="og:description" content="Vše, co potřebujete, na jednom místě. Prozkoumejte velký výběr produktů za nejnižší ceny. Klikněte nyní a užijte si nejlepší nabídky!" />
 <meta property="og:image" content="https://vigoshop.cz/app/themes/hsplus/images/favicon/vigoshop/mstile-310x310.png" />
 <meta property="og:image:alt" content="Vigoshop - Dokončete nákup" />
 <style id='classic-theme-styles-inline-css' type='text/css'>
@@ -395,7 +395,7 @@ wp.i18n.setLocaleData( { 'text direction\u0004ltr': [ 'ltr' ] } );
                 Dostava:
             </div>
             <div class="cell-grid column-option">
-                Besplatno            </div>
+                Zdarma            </div>
             <div class="cell-grid column-selected">
                 <span class="woocommerce-Price-amount amount"><bdi>2,99<span class="woocommerce-Price-currencySymbol">&euro;</span></bdi></span>            </div>
                         <div class="cell-grid">
@@ -535,8 +535,8 @@ wp.i18n.setLocaleData( { 'text direction\u0004ltr': [ 'ltr' ] } );
 <p class="ql-align-justify">U našoj internetskoj trgovini možete upotrebljavati sljedeće načine plaćanja:</p>
 <ul>
 <li class="ql-align-justify">Dobírka – kupac plaća račun gotovinom ili kreditnom karticom dostavnom kuriru koji robu isporučuje na adresu kupca;</li>
-<li class="ql-align-justify">Plaćanje kreditnom karticom;</li>
-<li class="ql-align-justify">Plaćanje preko PayPala.</li>
+<li class="ql-align-justify">Platba kreditní kartou;</li>
+<li class="ql-align-justify">Platba přes PayPal.</li>
 </ul>
 <p class="ql-align-justify">Tvrtka zadržava pravo provjere odabranog načina plaćanja s pomoću provjere autentičnosti. Nadalje, zadržavamo pravo daljnje provjere odabranog načina plaćanja tražeći da nam pošaljete dokaz o uplati.&nbsp;</p>
 <p class="ql-align-justify">Upoznati ste s činjenicom da morate platiti cjelokupan iznos narudžbe (uključujući sve troškove povezane s transakcijom i isporukom) u skladu s odabranim načinom plaćanja. Jamčite da imate sposobnost i pravo izvršavati transakcije s pomoću kreditne kartice ili bilo kojeg drugog odabranog načina plaćanja.</p>
@@ -796,8 +796,8 @@ wp.i18n.setLocaleData( { 'text direction\u0004ltr': [ 'ltr' ] } );
 <p class="ql-align-justify">U našoj internetskoj trgovini možete upotrebljavati sljedeće načine plaćanja:</p>
 <ul>
 <li class="ql-align-justify">Dobírka – kupac plaća račun gotovinom ili kreditnom karticom dostavnom kuriru koji robu isporučuje na adresu kupca;</li>
-<li class="ql-align-justify">Plaćanje kreditnom karticom;</li>
-<li class="ql-align-justify">Plaćanje preko PayPala.</li>
+<li class="ql-align-justify">Platba kreditní kartou;</li>
+<li class="ql-align-justify">Platba přes PayPal.</li>
 </ul>
 <p class="ql-align-justify">Tvrtka zadržava pravo provjere odabranog načina plaćanja s pomoću provjere autentičnosti. Nadalje, zadržavamo pravo daljnje provjere odabranog načina plaćanja tražeći da nam pošaljete dokaz o uplati.&nbsp;</p>
 <p class="ql-align-justify">Upoznati ste s činjenicom da morate platiti cjelokupan iznos narudžbe (uključujući sve troškove povezane s transakcijom i isporukom) u skladu s odabranim načinom plaćanja. Jamčite da imate sposobnost i pravo izvršavati transakcije s pomoću kreditne kartice ili bilo kojeg drugog odabranog načina plaćanja.</p>

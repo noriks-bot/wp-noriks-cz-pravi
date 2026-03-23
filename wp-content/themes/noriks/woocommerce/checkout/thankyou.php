@@ -1035,7 +1035,7 @@ function removeUpsellItem(btn) {
                 document.querySelectorAll('.g-add-btn.added').forEach(function(gb) {
                     gb.disabled = false;
                     gb.classList.remove('added');
-                    gb.textContent = 'DODAJ';
+                    gb.textContent = 'PŘIDAT';
                 });
                 // Refresh order items
                 var rfd = new FormData();

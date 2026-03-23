@@ -205,7 +205,7 @@ function noriks_remove_upsell() {
 
     // Only allow removing upsell items
     if ( $item->get_meta( '_noriks_upsell' ) !== 'thank you upsell' ) {
-        wp_send_json_error( 'Samo upsell proizvode je moguće ukloniti' );
+        wp_send_json_error( 'Lze odstranit pouze upsell produkty' );
     }
 
     // Only allow while in primary-hold
@@ -236,7 +236,7 @@ function noriks_handle_add_upsell() {
     $nonce        = $_POST['nonce'] ?? '';
 
     if ( ! wp_verify_nonce( $nonce, 'noriks_upsell_' . $order_id ) ) {
-        wp_send_json_error( 'Nevažeći zahtjev' );
+        wp_send_json_error( 'Neplatný požadavek' );
     }
 
     $order = wc_get_order( $order_id );
@@ -244,7 +244,7 @@ function noriks_handle_add_upsell() {
 
     // Only allow upsell on COD orders in primary-hold
     if ( $order->get_payment_method() !== 'cod' ) {
-        wp_send_json_error( 'Upsell dostupan samo za plaćanje pouzećem' );
+        wp_send_json_error( 'Upsell dostupný pouze při platbě na dobírku' );
     }
     if ( $order->get_status() !== 'primary-hold' ) {
         wp_send_json_error( 'Vrijeme za dodavanje je isteklo' );
