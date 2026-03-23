@@ -1,0 +1,28 @@
+# Translation of Plugins - Big File Uploads &#8211; Increase Maximum File Upload Size - Stable (latest release) in Czech
+# This file is distributed under the same license as the Plugins - Big File Uploads &#8211; Increase Maximum File Upload Size - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2018-12-03 12:59:24+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n >= 2 && n <= 4) ? 1 : 2);\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: cs_CZ\n"
+"Project-Id-Version: Plugins - Big File Uploads &#8211; Increase Maximum File Upload Size - Stable (latest release)\n"
+
+#. translators: %s: Name of the file that failed to upload.
+#: tuxedo_big_file_uploads.php:521 tuxedo_big_file_uploads.php:580
+#: tuxedo_big_file_uploads.php:617 tuxedo_big_file_uploads.php:677
+msgid "&#8220;%s&#8221; has failed to upload."
+msgstr "Soubor &#8220;%s&#8221; se nepodařilo nahrát."
+
+#: tuxedo_big_file_uploads.php:325 tuxedo_big_file_uploads.php:517
+#: tuxedo_big_file_uploads.php:576 tuxedo_big_file_uploads.php:613
+#: tuxedo_big_file_uploads.php:673
+msgid "Dismiss"
+msgstr "Skrýt"
+
+#: tuxedo_big_file_uploads.php:506 tuxedo_big_file_uploads.php:524
+msgid "The file size has exceeded the maximum file size setting."
+msgstr "Velikost souboru překročila maximální povolenou velikost."
