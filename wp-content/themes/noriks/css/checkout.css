@@ -218,7 +218,7 @@ body.woocommerce-checkout #payment .wc_payment_method > label::after {
   white-space: nowrap !important;
 }
 body.woocommerce-checkout #payment .payment_method_cod > label::after {
-  content: '1,99\00a0€' !important;
+  content: '49\00a0Kč' !important;
   background: #e3e6e8 !important;
   color: #5f6061 !important;
 }
