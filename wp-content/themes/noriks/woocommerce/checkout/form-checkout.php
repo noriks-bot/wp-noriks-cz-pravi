@@ -45,7 +45,7 @@ if ( WC()->cart->is_empty() ) return;
                   </div>
                   <div class="inner-wrapper-img">
                     <span class="shipping_method_delivery_price tag tag--red">
-                      <span class="woocommerce-Price-amount amount"><bdi>2,99<span class="woocommerce-Price-currencySymbol">&euro;</span></bdi></span>
+                      <span class="woocommerce-Price-amount amount"><bdi>79<span class="woocommerce-Price-currencySymbol"> Kč</span></bdi></span>
                     </span>
                     <span class="delivery_img"><img decoding="async" class="ceska_posta standard" src="https://images.vigo-shop.com/general/curriers/home_small_paket24@2x.png"/></span>
                   </div>
