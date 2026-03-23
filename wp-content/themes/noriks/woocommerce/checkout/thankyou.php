@@ -26,7 +26,7 @@ foreach ( $order->get_items() as $item ) {
     $cats = wp_get_post_terms( $item->get_product_id(), 'product_cat', array('fields' => 'slugs') );
     $cat_str = is_array($cats) ? strtolower(implode(' ', $cats)) : '';
     // Majica: category has "majic" OR name has "majic"
-    $is_majica = ( strpos($cat_str, 'majic') !== false || strpos($name, 'majic') !== false );
+    $is_majica = ( strpos($cat_str, 'tricka') !== false || strpos($name, 'trička') !== false || strpos($name, 'tričk') !== false || strpos($cat_str, 'majic') !== false || strpos($name, 'majic') !== false );
     // Bokserice: category has "boxer/bokser/orto" OR SKU has "box" OR name has "bokser/airflow"
     $is_boks = ( strpos($cat_str, 'boxer') !== false || strpos($cat_str, 'bokser') !== false || strpos($cat_str, 'orto') !== false || strpos($sku, 'box') !== false || strpos($name, 'bokser') !== false || strpos($name, 'airflow') !== false );
     // Komplet
@@ -478,7 +478,7 @@ body.woocommerce-order-received .woocommerce {
         </div>
 
         <!-- ═══ STEP 1: VIGOSHOP UPSELL (COD only) ═══ -->
-        <?php if ( $order->get_payment_method() === 'cod' && (float)$order->get_total() <= 120 ) : ?>
+        <?php if ( $order->get_payment_method() === 'cod' && (float)$order->get_total() <= 3000 ) : ?>
         <div class="ty_upsell_one_wrapper show" id="ty-upsell"
              style="position:static !important;display:block !important;width:100% !important;max-width:520px !important;height:auto !important;top:auto !important;left:auto !important;transform:none !important;opacity:1 !important;visibility:visible !important;z-index:auto !important;backdrop-filter:none !important;margin:0 !important;padding:0 !important;"
              data-order-id="<?php echo $order->get_id(); ?>"
