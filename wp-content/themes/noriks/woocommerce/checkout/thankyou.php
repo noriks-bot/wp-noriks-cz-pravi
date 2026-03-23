@@ -526,17 +526,17 @@ body.woocommerce-order-received .woocommerce {
                         </div>
                         <div class="right_section_wrapper">
                             <div class="product_name" id="ty-upsell-name"><?php echo esc_html($upsell_qty_names[3]); ?></div>
-                            <div class="product_regular_price" id="ty-upsell-regular"><?php echo number_format($upsell_qty_regular[3], 2, ',', '.'); ?>€</div>
-                            <div class="product_new_sale_price" id="ty-upsell-price"><?php echo number_format($upsell_qty_prices[3], 2, ',', '.'); ?>€</div>
+                            <div class="product_regular_price" id="ty-upsell-regular"><?php echo number_format($upsell_qty_regular[3], 0, ',', ' '); ?> Kč</div>
+                            <div class="product_new_sale_price" id="ty-upsell-price"><?php echo number_format($upsell_qty_prices[3], 0, ',', ' '); ?> Kč</div>
                         </div>
                     </div>
 
                     <script>
                     (function(){
-                        var prices = <?php echo json_encode(array_map(function($p){ return number_format($p,2,',','.') . '€'; }, $upsell_qty_prices)); ?>;
+                        var prices = <?php echo json_encode(array_map(function($p){ return number_format($p,0,',',' ') . ' Kč'; }, $upsell_qty_prices)); ?>;
                         var names = <?php echo json_encode($upsell_qty_names); ?>;
                         var images = <?php echo json_encode($upsell_qty_images); ?>;
-                        var regulars = <?php echo json_encode(array_map(function($p){ return number_format($p,2,',','.') . '€'; }, $upsell_qty_regular)); ?>;
+                        var regulars = <?php echo json_encode(array_map(function($p){ return number_format($p,0,',',' ') . ' Kč'; }, $upsell_qty_regular)); ?>;
                         document.querySelectorAll('.ty-qty-btn').forEach(function(btn){
                             btn.addEventListener('click', function(){
                                 document.querySelectorAll('.ty-qty-btn').forEach(function(b){
@@ -626,8 +626,8 @@ body.woocommerce-order-received .woocommerce {
                         <img src="<?php echo esc_url( $gp_img_url ); ?>" alt="<?php echo esc_attr( $gp->get_name() ); ?>">
                         <div class="g-category">BOKSERICE</div>
                         <div class="g-name"><?php echo esc_html( $gp->get_name() ); ?></div>
-                        <div class="g-price-old"><?php echo number_format( $gp_price, 2, ',', '.' ); ?>€</div>
-                        <div class="g-price-new"><?php echo number_format( $gp_sale, 2, ',', '.' ); ?>€</div>
+                        <div class="g-price-old"><?php echo number_format( $gp_price, 0, ',', ' ' ); ?> Kč</div>
+                        <div class="g-price-new"><?php echo number_format( $gp_sale, 0, ',', ' ' ); ?> Kč</div>
                         <?php if ( $gp_vars ) : ?>
                         <select class="g-variation" data-product-id="<?php echo $gp->get_id(); ?>">
                             <?php foreach ( $gp_vars as $gv ) : ?>
