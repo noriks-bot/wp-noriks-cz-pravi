@@ -203,9 +203,9 @@ body.woocommerce-checkout #payment .wc_payment_method > label img {
   width: auto !important;
   margin-left: 8px !important;
 }
-/* Fee badges — "Besplatno" for card & PayPal, price for COD */
+/* Fee badges — "Zdarma" for card & PayPal, price for COD */
 body.woocommerce-checkout #payment .wc_payment_method > label::after {
-  content: 'Besplatno' !important;
+  content: 'Zdarma' !important;
   display: inline-block !important;
   padding: 3px 10px !important;
   margin-left: auto !important;
@@ -239,7 +239,7 @@ body.woocommerce-checkout #payment .payment_box fieldset {
 
 /* ===== Field descriptions via CSS ::after ===== */
 #billing_email_field::after {
-  content: 'Za potvrdu narudžbe i praćenje pošiljke';
+  content: 'Pro potvrzení objednávky a sledování zásilky';
   display: block;
   font-size: 13px;
   color: #5f6061;
@@ -252,7 +252,7 @@ body.woocommerce-checkout #payment .payment_box fieldset {
   position: relative !important;
 }
 #billing_phone_field::after {
-  content: 'Primjer: 0912345678' !important;
+  content: 'Příklad: 601234567' !important;
   position: absolute !important;
   left: 0 !important;
   bottom: -20px !important;
@@ -261,7 +261,7 @@ body.woocommerce-checkout #payment .payment_box fieldset {
   line-height: 1.4 !important;
 }
 #billing_phone_field::before {
-  content: 'Za pomoć s dostavom' !important;
+  content: 'Pro pomoc s doručením' !important;
   position: absolute !important;
   right: 0 !important;
   bottom: -20px !important;
