@@ -73,7 +73,7 @@ global $product;
         
           <div class="feature">
           
-  <img src="/hr/wp-content/themes/noriks/img/cod_icon_.png" alt="Customer Support Icon" class="feature__icon info-icon">
+  <img src="<?php echo get_template_directory_uri(); ?>/img/cod_icon_.png" alt="Customer Support Icon" class="feature__icon info-icon">
           <p class="feature__text">Platba na dobírku</p>
         </div>
         
