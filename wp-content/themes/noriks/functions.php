@@ -120,6 +120,8 @@ if ($webshop_language == "EN") {
   include(get_template_directory() . '/functions/lang/en.php');
 } else if ($webshop_language == "HR") {
   include(get_template_directory() . '/functions/lang/hr.php');
+} else if ($webshop_language == "CZ") {
+  include(get_template_directory() . '/functions/lang/cz.php');
 }
 /*  include language specific files */
 
