@@ -38,7 +38,7 @@ get_header(); ?>
   <div class="hero__media" aria-hidden="true">
     <!-- Replace with your image -->
     <img
-      src="/hr/wp-content/themes/noriks/img/noriks-hero.jpeg"
+      src="<?php echo get_template_directory_uri(); ?>/img/noriks-hero.jpeg"
       alt=""
     />
   </div>
@@ -183,7 +183,7 @@ get_header(); ?>
     <a class="collection-card" href="/cz/product-category/tricka/">
       <div class="collection-card__media">
         <img
-          src="/cz/wp-content/themes/noriks/img/noriks-majice.jpeg"
+          src="<?php echo get_template_directory_uri(); ?>/img/noriks-majice.jpeg"
           alt="Crew neck t-shirt"
         />
       </div>
@@ -206,7 +206,7 @@ Pohodlí po celý den. Bez vytahování.
     <a class="collection-card" href="/cz/product-category/boxerky/">
       <div class="collection-card__media">
         <img
-          src="/cz/wp-content/themes/noriks/img/noriks-boksarice.jpeg"
+          src="<?php echo get_template_directory_uri(); ?>/img/noriks-boksarice.jpeg"
           alt="V-neck t-shirt"
         />
       </div>
@@ -230,7 +230,7 @@ Pohodlí po celý den. Bez vytahování.
     <a class="collection-card" href="/cz/product-category/sady/">
       <div class="collection-card__media">
         <img
-          src="/cz/wp-content/themes/noriks/img/noriks-kompleti.jpeg"
+          src="<?php echo get_template_directory_uri(); ?>/img/noriks-kompleti.jpeg"
           alt="Long sleeve shirt"
         />
       </div>
@@ -254,7 +254,7 @@ Nejlepší poměr ceny a kvality v setu.
     <a class="collection-card" href="/cz/product-category/startovaci-balicek/">
       <div class="collection-card__media">
         <img
-          src="/cz/wp-content/themes/noriks/img/starter-paket_.jpeg"
+          src="<?php echo get_template_directory_uri(); ?>/img/starter-paket_.jpeg"
           alt="Long sleeve shirt"
         />
       </div>
