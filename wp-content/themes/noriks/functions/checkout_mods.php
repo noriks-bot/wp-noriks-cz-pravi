@@ -466,14 +466,14 @@ add_filter( 'woocommerce_checkout_fields', function( $fields ) {
     $fields['billing']['billing_last_name']['placeholder'] = 'Příjmení';
     $fields['billing']['billing_address_1']['label'] = 'Ulice';
     $fields['billing']['billing_address_1']['placeholder'] = 'Ulice';
-    $fields['billing']['billing_address_2']['label'] = 'Číslo popisné';
-    $fields['billing']['billing_address_2']['placeholder'] = 'Číslo popisné';
+    $fields['billing']['billing_address_2']['label'] = 'Číslo popisné (Č. p. / Č. o.)';
+    $fields['billing']['billing_address_2']['placeholder'] = 'Číslo popisné (Č. p. / Č. o.)';
     $fields['billing']['billing_address_2']['required'] = true;
     $fields['billing']['billing_postcode']['label'] = 'PSČ';
     $fields['billing']['billing_postcode']['placeholder'] = 'PSČ';
     $fields['billing']['billing_city']['label'] = 'Město';
-    $fields['billing']['billing_city']['placeholder'] = 'Vyberte město';
-    $fields['billing']['billing_phone']['label'] = 'Telefon';
+    $fields['billing']['billing_city']['placeholder'] = 'Město';
+    $fields['billing']['billing_phone']['label'] = 'Číslo mobilního telefonu';
     $fields['billing']['billing_phone']['placeholder'] = 'Číslo mobilního telefonu';
     $fields['billing']['billing_phone']['required'] = true;
     /* Description injected via JS to survive update_checkout AJAX re-renders */
@@ -509,7 +509,7 @@ add_filter( 'woocommerce_checkout_fields', function( $fields ) {
  */
 add_filter( 'woocommerce_form_field_text', function( $field, $key ) {
     if ( $key === 'billing_last_name' ) {
-        $field .= '<div class="form-row form-row-wide col-xs-12">Zadejte adresu, kde budete <b>mezi 8:00 a 16:00</b>.</div>';
+        $field .= '<div class="form-row form-row-wide col-xs-12">Zadejte adresu, kde budete <b>mezi 8:00 a 15:00</b>.</div>';
     }
     return $field;
 }, 10, 2 );
@@ -520,11 +520,11 @@ add_filter( 'woocommerce_form_field_text', function( $field, $key ) {
  * Billing title
  */
 add_action( 'woocommerce_before_checkout_billing_form', function() {
-    echo '<h3 class="checkout-billing-title">Platba a Doručení</h3>';
+    echo '<h3 class="checkout-billing-title">Fakturace a doprava</h3>';
 });
 
 add_filter( 'default_checkout_billing_country', function() { return 'CZ'; });
-add_filter( 'woocommerce_order_button_text', function() { return 'Objednat'; });
+add_filter( 'woocommerce_order_button_text', function() { return 'Koupit nyní'; });
 
 /**
  * Payment gateway order: COD → Stripe → PayPal
@@ -622,7 +622,7 @@ add_action('woocommerce_review_order_before_submit', function(){
     </script>
     <?php
     endif;
-    echo '<h3 class="place-order-title" style="display:block;margin:15px 0 10px;">Shrnutí objednávky</h3>';
+    echo '<h3 class="place-order-title" style="display:block;margin:15px 0 10px;">Přehled objednávek</h3>';
     echo '<div class="vigo-checkout-total order-total shop_table" style="margin-bottom:20px;">';
     woocommerce_order_review();
     echo '</div>';

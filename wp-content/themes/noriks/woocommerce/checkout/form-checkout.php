@@ -32,7 +32,7 @@ if ( WC()->cart->is_empty() ) return;
 
         <!-- SHIPPING -->
         <div id="custom_shipping">
-          <h3>Doručení</h3>
+          <h3>Doprava</h3>
           <ul class="shipping_method_custom">
             <li class="standard-shipping shipping-tab">
               <input name="shipping_method[0]" data-index="0" id="shipping_method_0_standard_custom"
@@ -61,13 +61,13 @@ if ( WC()->cart->is_empty() ) return;
 
         <!-- COD prompt -->
         <div id="hs-cod-checkout-prompt" style="display:none;">
-          <div class="cod-prompt-text">Dokončete objednávku nyní, <strong>platba na dobírku 🙂</strong></div>
+          <div class="cod-prompt-text">Dokončete objednávku hned, <strong>zaplaťte při doručení 🙂</strong></div>
           <img decoding="async" class="cod-prompt-image" src="https://images.vigo-shop.com/general/checkout/cod/uni_cash_on_delivery.svg">
         </div>
 
         <!-- VAT -->
         <div id="hs-vat-tax-checkout-prompt">
-          <span class="tax-and-vat-checkout-claims">Žádné další celní poplatky</span>
+          <span class="tax-and-vat-checkout-claims">Žádné další náklady na celní řízení</span>
           <span class="tax-and-vat-checkout-claims">DPH je zahrnuta v ceně</span>
         </div>
 
@@ -92,18 +92,18 @@ if ( WC()->cart->is_empty() ) return;
     <img decoding="async" src="https://images.vigo-shop.com/general/guarantee_money_back/satisfaction_icon_cz.png">
   </div>
   <div class="flex__item--autosize f--m checkout-warranty__text">
-    <strong>Nakupujte bez obav </strong><br>Vrácení peněz do 90 dnů
+    <strong>Nakupujte bez obav </strong><br>Vrácení peněz je možné do 90 dnů
   </div>
 </div>
 
 <!-- Terms -->
 <div class="agreed_terms_txt">
-  <span class="policy-agreement-obligation">Kliknutím na tlačítko <strong>Objednat</strong> souhlasím s objednávkou s povinností platby.</span><br>
+  <span class="policy-agreement-obligation">Kliknutím na tlačítko <strong>Koupit nyní</strong> souhlasím s objednávkou s povinností platby.</span><br>
   <div class="terms-checkbox-and-links">
     <label class="checkbox">
       <input type="checkbox" class="input-checkbox" name="agree_to_checkout_terms" id="agree_to_terms_checkbox" value="1">
     </label>
-    Přečetl jsem a souhlasím <a href="#" id="terms_conditions_link">Všeobecné obchodní podmínky</a> a <a href="#" id="withdrawal_policy_link">právo na odstoupení</a>.
+    Přečetl jsem a souhlasím <a href="#" id="terms_conditions_link">Všeobecnými obchodními pravidly</a> a <a href="#" id="withdrawal_policy_link">Právo na odstoupení od nákupu</a>.
   </div>
 </div>
 
