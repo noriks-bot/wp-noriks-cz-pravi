@@ -45,9 +45,9 @@ if ( $upsell_is_majice ) {
     $upsell_qty_prices = array( 1 => 329, 3 => 749, 6 => 999 );
     $upsell_qty_names  = array( 1 => '1x Černé tričko', 3 => '3x Černá trička', 6 => '6x Černých triček' );
     $upsell_qty_images = array(
-        1 => 'https://noriks.com/cz/wp-content/uploads/2025/09/black-1.jpg',
-        3 => 'https://noriks.com/cz/wp-content/uploads/2025/09/black-3x.jpg',
-        6 => 'https://noriks.com/cz/wp-content/uploads/2026/01/15xcrnamajica.png',
+        1 => 'https://noriks.com/hr/wp-content/uploads/2025/09/black-1.jpg',
+        3 => 'https://noriks.com/hr/wp-content/uploads/2025/09/black-3x.jpg',
+        6 => 'https://noriks.com/hr/wp-content/uploads/2026/01/15xcrnamajica.png',
     );
     $upsell_title_text = 'Přidejte trička teď – 50% sleva';
 } else {
@@ -56,9 +56,9 @@ if ( $upsell_is_majice ) {
     $upsell_qty_prices = array( 1 => 199, 3 => 499, 5 => 749 );
     $upsell_qty_names  = array( 1 => '1x Černé boxerky', 3 => '3x Černé boxerky', 5 => '5x Crnih Bokseric' );
     $upsell_qty_images = array(
-        1 => 'https://noriks.com/cz/wp-content/uploads/2025/11/crne-boksarice-produktna.jpg',
-        3 => 'https://noriks.com/cz/wp-content/uploads/2025/11/boksarice_3x_crne.png',
-        5 => 'https://noriks.com/cz/wp-content/uploads/2026/01/boksarice_5x_crne.png',
+        1 => 'https://noriks.com/hr/wp-content/uploads/2025/11/crne-boksarice-produktna.jpg',
+        3 => 'https://noriks.com/hr/wp-content/uploads/2025/11/boksarice_3x_crne.png',
+        5 => 'https://noriks.com/hr/wp-content/uploads/2026/01/boksarice_5x_crne.png',
     );
     $upsell_title_text = 'Přidejte boxerky teď – 50% sleva';
 }
