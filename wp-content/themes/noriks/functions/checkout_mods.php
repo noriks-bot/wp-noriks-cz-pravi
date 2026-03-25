@@ -484,6 +484,7 @@ add_filter( 'woocommerce_checkout_fields', function( $fields ) {
     // $fields['billing']['billing_email']['description'] = 'Pro potvrzení objednávky a sledování zásilky';
     $fields['billing']['billing_email']['required'] = true;
     $fields['billing']['billing_country']['default'] = 'CZ';
+    $fields['billing']['billing_state']['required'] = false;
     unset( $fields['billing']['billing_company'] );
 
     // Vigoshop CSS classes
