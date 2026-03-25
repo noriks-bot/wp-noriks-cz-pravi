@@ -32,7 +32,7 @@ if ( WC()->cart->is_empty() ) return;
 
         <!-- SHIPPING -->
         <div id="custom_shipping">
-          <h3>Doprava</h3>
+          <h3>Doprava - Česká pošta</h3>
           <ul class="shipping_method_custom">
             <li class="standard-shipping shipping-tab">
               <input name="shipping_method[0]" data-index="0" id="shipping_method_0_standard_custom"
@@ -47,7 +47,7 @@ if ( WC()->cart->is_empty() ) return;
                     <span class="shipping_method_delivery_price tag tag--red">
                       <span class="woocommerce-Price-amount amount"><bdi>79<span class="woocommerce-Price-currencySymbol"> Kč</span></bdi></span>
                     </span>
-                    <span class="delivery_img"><img decoding="async" class="ceska_posta standard" src="https://images.vigo-shop.com/general/curriers/ceska_posta.png"/></span>
+                    <span class="delivery_img"><img decoding="async" class="ceska_posta standard" src="<?php echo get_template_directory_uri(); ?>/img/ceska-posta-logo.svg"/></span>
                   </div>
                 </div>
               </label>
