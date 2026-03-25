@@ -21,3 +21,26 @@ function translate_labels_cz( $translated_text, $text, $domain ) {
     if ( isset( $translations[$text] ) ) return $translations[$text];
     return $translated_text;
 }
+
+// CZ: Override WC default placeholders
+add_filter( 'gettext', 'noriks_cz_placeholders', 20, 3 );
+function noriks_cz_placeholders( $translated, $text, $domain ) {
+    $t = array(
+        'House number and street name' => 'Ulice',
+        'Apartment, suite, unit, etc.' => 'Číslo popisné',
+        'Apartment, suite, unit, etc. (optional)' => 'Číslo popisné',
+        'Street address' => 'Ulice',
+        'Town / City' => 'Město',
+        'Postcode / ZIP' => 'PSČ',
+        'Phone' => 'Telefon',
+        'Email address' => 'E-mailová adresa',
+        'First name' => 'Jméno',
+        'Last name' => 'Příjmení',
+        'Place order' => 'Koupit nyní',
+        'Country / Region' => 'Země',
+        '(optional)' => '(nepovinné)',
+        'Cash on delivery' => 'Dobírka',
+        'Pay with cash upon delivery.' => 'Zaplaťte při doručení.',
+    );
+    return isset( $t[$text] ) ? $t[$text] : $translated;
+}
