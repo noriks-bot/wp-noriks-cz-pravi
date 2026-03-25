@@ -130,7 +130,7 @@
     
     style="margin-top: 35px;margin-bottom: 0px;"
     
-      src="/cz/wp-content/uploads/2025/09/noriks_tablica_cz.jpg"
+      src="https://noriks.com/cz/wp-content/uploads/2025/09/noriks_tablica_cz.jpg"
       alt="Size Guide">
       
       
@@ -150,7 +150,7 @@
     
     style="margin-top: 70px;margin-bottom: 70px;"
     
-      src="/cz/wp-content/uploads/2025/09/noriks_tablica_cz.jpg"
+      src="https://noriks.com/cz/wp-content/uploads/2025/09/noriks_tablica_cz.jpg"
       alt="Size Guide">
       
       <?php endif; ?>
