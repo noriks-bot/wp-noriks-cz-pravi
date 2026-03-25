@@ -419,3 +419,10 @@ p#billing_city_field {
   margin-bottom: 12px !important;
 }
 
+
+/* CZ: force red border on invalid address_2 */
+#billing_address_2_field.noriks-invalid input,
+#billing_address_2_field.woocommerce-invalid input {
+  border: 2px solid #ca232c !important;
+  background-color: #fff !important;
+}
