@@ -319,13 +319,6 @@ add_action( 'wp_footer', function() {
         billing_address_2: '\u2715 Pokud nemáte číslo popisné, napište BČ',
       };
       var submitted = false; /* only validate after first submit attempt */
-      /* Force validate-required on address_2 */
-      $('#billing_address_2_field').addClass('validate-required');
-      $('#billing_address_2').attr('aria-required', 'true');
-      /* Also re-validate on updated_checkout */
-      $(document.body).on('updated_checkout', function(){
-        $('#billing_address_2_field').addClass('validate-required');
-      });
       /* Set submitted=true when WC native button is clicked */
       $('form.checkout').on('checkout_place_order', function(){ submitted = true; });
       $(document).on('click', '#place_order', function(){
