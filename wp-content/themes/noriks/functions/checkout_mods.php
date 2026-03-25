@@ -321,7 +321,7 @@ add_action( 'wp_footer', function() {
       var submitted = false; /* only validate after first submit attempt */
       /* Force validate-required on address_2 */
       $('#billing_address_2_field').addClass('validate-required');
-      $('#billing_address_2').attr('aria-required', 'true').prop('required', true);
+      $('#billing_address_2').attr('aria-required', 'true');
       /* Also re-validate on updated_checkout */
       $(document.body).on('updated_checkout', function(){
         $('#billing_address_2_field').addClass('validate-required');
