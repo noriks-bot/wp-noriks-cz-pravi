@@ -41,9 +41,9 @@ $upsell_is_majice = $has_only_bokserice;
 
 if ( $upsell_is_majice ) {
     $upsell_product_id = 250; // Crna majica (variable)
-    $upsell_name       = 'Crne Majice';
+    $upsell_name       = 'Černá trička';
     $upsell_qty_prices = array( 1 => 329, 3 => 749, 6 => 999 );
-    $upsell_qty_names  = array( 1 => '1x Crna Majica', 3 => '3x Crne Majice', 6 => '6x Crnih Majica' );
+    $upsell_qty_names  = array( 1 => '1x Černé tričko', 3 => '3x Černá trička', 6 => '6x Černých triček' );
     $upsell_qty_images = array(
         1 => 'https://noriks.com/cz/wp-content/uploads/2025/09/black-1.jpg',
         3 => 'https://noriks.com/cz/wp-content/uploads/2025/09/black-3x.jpg',
