@@ -455,8 +455,8 @@ add_filter( 'woocommerce_checkout_fields', function( $fields ) {
     $fields['billing']['billing_last_name']['priority']   = 40;
     $fields['billing']['billing_address_1']['priority']   = 50;
     $fields['billing']['billing_address_2']['priority']   = 60;
-    $fields['billing']['billing_postcode']['priority']    = 70;
-    $fields['billing']['billing_city']['priority']        = 80;
+    $fields['billing']['billing_postcode']['priority']    = 80;
+    $fields['billing']['billing_city']['priority']        = 70;
     // phone/email priorities already set above (10/20)
 
     // Labels, placeholders, required
