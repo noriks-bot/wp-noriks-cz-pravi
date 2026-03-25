@@ -327,7 +327,7 @@ add_action( 'wp_footer', function() {
         $('form.checkout').css({'opacity':'0.4','pointer-events':'none','transition':'opacity 0.3s'});
       });
       $(document.body).on('checkout_error', function(){
-        $('#place_order').css('opacity','1').text('Objednat');
+        $('#place_order').css('opacity','1').text('Koupit nyní');
         $('form.checkout').css({'opacity':'1','pointer-events':''});
         /* Validate all fields after WC returns error */
         $('.woocommerce-checkout .form-row.validate-required').each(function(){
