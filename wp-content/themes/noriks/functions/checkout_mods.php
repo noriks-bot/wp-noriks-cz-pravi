@@ -330,7 +330,44 @@ add_action( 'wp_footer', function() {
       $(document.body).on('checkout_error', function(){
         $('#place_order').css('opacity','1').text('Koupit nyní');
         $('form.checkout').css({'opacity':'1','pointer-events':''});
-        /* Validate all fields after WC returns error */
+        /* Parse WC error messages and show per-field */
+        var fieldMap = {
+          'ulice': 'billing_address_1_field',
+          'address_1': 'billing_address_1_field',
+          'číslo popisné': 'billing_address_2_field',
+          'address_2': 'billing_address_2_field',
+          'město': 'billing_city_field',
+          'city': 'billing_city_field',
+          'psč': 'billing_postcode_field',
+          'postcode': 'billing_postcode_field',
+          'zip': 'billing_postcode_field',
+          'telefon': 'billing_phone_field',
+          'phone': 'billing_phone_field',
+          'e-mail': 'billing_email_field',
+          'email': 'billing_email_field',
+          'jméno': 'billing_first_name_field',
+          'first name': 'billing_first_name_field',
+          'příjmení': 'billing_last_name_field',
+          'last name': 'billing_last_name_field',
+        };
+        $('.woocommerce-NoticeGroup-checkout .woocommerce-error li').each(function(){
+          var msg = $(this).text().toLowerCase();
+          var matched = false;
+          for (var key in fieldMap) {
+            if (msg.indexOf(key) !== -1) {
+              var $row = $('#' + fieldMap[key]);
+              if ($row.length) {
+                $row.removeClass('noriks-valid woocommerce-validated').addClass('noriks-invalid woocommerce-invalid');
+                if (!$row.find('.noriks-field-error').length) {
+                  $row.append('<span class="noriks-field-error">\u2715 ' + $(this).text() + '</span>');
+                }
+                matched = true;
+              }
+              break;
+            }
+          }
+        });
+        /* Also run standard validation */
         $('.woocommerce-checkout .form-row.validate-required').each(function(){
           var input = $(this).find('input, select, textarea').first();
           if (input.length) validateField(input[0], true);

@@ -421,16 +421,3 @@ p#billing_city_field {
 
 
 
-/* Show WC checkout error messages */
-.woocommerce-NoticeGroup-checkout .woocommerce-error {
-  display: block !important;
-  background-color: #fac3ce !important;
-  border-radius: 4px !important;
-  color: #ca232c !important;
-  padding: 10px 15px !important;
-  margin-bottom: 15px !important;
-  list-style: none !important;
-}
-.woocommerce-NoticeGroup-checkout .woocommerce-error li {
-  list-style: none !important;
-}
