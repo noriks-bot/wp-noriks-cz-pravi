@@ -408,20 +408,14 @@ body.woocommerce-checkout .noriks-order-summary .review-product-info div {
 /* More space between total and Naruči button */
 .noriks-order-summary .vigo-checkout-total__sum { margin-bottom: 10px !important; }
 
-/* CZ: PSČ + Město full width stacked */
-@media (min-width: 576px) {
-  p#billing_postcode_field,
-  p#billing_city_field {
-    clear: both !important;
-    float: none !important;
-    width: 100% !important;
-  }
-}
-
-/* CZ: proper spacing between stacked fields */
-p#billing_postcode_field,
-p#billing_city_field,
+/* CZ: ALL address fields full width stacked (vigoshop.cz layout) */
 p#billing_address_1_field,
-p#billing_address_2_field {
+p#billing_address_2_field,
+p#billing_postcode_field,
+p#billing_city_field {
+  clear: both !important;
+  float: none !important;
+  width: 100% !important;
   margin-bottom: 12px !important;
 }
+
