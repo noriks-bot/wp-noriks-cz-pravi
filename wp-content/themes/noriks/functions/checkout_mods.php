@@ -323,6 +323,7 @@ add_action( 'wp_footer', function() {
       $('form.checkout').on('checkout_place_order', function(){ submitted = true; });
       $(document).on('click', '#place_order', function(){
         submitted = true;
+        $('#billing_address_2_field').addClass('validate-required');
         $(this).css('opacity','0.6').text('Zpracování...');
         $('form.checkout').css({'opacity':'0.4','pointer-events':'none','transition':'opacity 0.3s'});
       });
