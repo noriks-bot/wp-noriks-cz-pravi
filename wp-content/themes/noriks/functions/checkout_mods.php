@@ -378,6 +378,15 @@ add_action( 'wp_footer', function() {
           return false;
         }
 
+        /* Postcode format — CZ requires 5 digits */
+        if (id === 'billing_postcode_field' && val) {
+          var clean = val.replace(/\s/g, '');
+          if (!/^\d{5}$/.test(clean)) {
+            showError($row, '\u2715 Zadejte platné PSČ (5 číslic)');
+            return false;
+          }
+        }
+
         /* Email format */
         if (isEmail && val && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
           showError($row, '\u2715 Zadejte platnou e-mailovou adresu');
