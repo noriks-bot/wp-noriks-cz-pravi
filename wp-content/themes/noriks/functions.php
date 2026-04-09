@@ -13,22 +13,25 @@ include(get_template_directory() . '/functions/options.php');
 include(get_template_directory() . '/functions/single_product_mods.php');
 include(get_template_directory() . '/functions/discounts.php');
 
+/**
+ * Auto-apply coupon from URL parameter on checkout
+ */
+add_action('woocommerce_before_checkout_form', 'auto_apply_coupon_from_url', 10);
+function auto_apply_coupon_from_url() {
+    if (isset($_GET['coupon']) && !empty($_GET['coupon'])) {
+        $coupon_code = sanitize_text_field($_GET['coupon']);
+        if (!WC()->cart->has_discount($coupon_code)) {
+            WC()->cart->apply_coupon($coupon_code);
+        }
+    }
+}
+
 
 
 add_filter( 'woocommerce_gallery_image_size', function() {
-    return 'full';
+    return 'large';
 });
 
-
-
-
-
-add_filter( 'woocommerce_order_number', 'change_woocommerce_order_number' );
-function change_woocommerce_order_number( $order_id ) {
-    $prefix = 'NORIKS-CZ-';
-    $new_order_id = $prefix . $order_id;
-    return $new_order_id;
-}
 
 
 
@@ -87,48 +90,15 @@ add_action('rest_api_init', function() {
 });
 
 
-
-// Expose ACF Options "Big Reviews" via REST API
-add_action('rest_api_init', function() {
-    // GET - Read options
-    register_rest_route('acf/v3', '/options/big-reviews', [
-        'methods' => 'GET',
-        'callback' => function() {
-            return get_fields('options');
-        },
-        'permission_callback' => '__return_true'
-    ]);
-    
-    // POST - Write options (for GR)
-    register_rest_route('acf/v3', '/options/big-reviews', [
-        'methods' => 'POST',
-        'callback' => function($request) {
-            $fields = $request->get_json_params();
-            foreach ($fields as $key => $value) {
-                update_field($key, $value, 'options');
-            }
-            return ['success' => true, 'updated' => array_keys($fields)];
-        },
-        'permission_callback' => function() {
-            return current_user_can('manage_options');
-        }
-    ]);
-});
-
-
-
-/**
- * Force redirect to Cart after add-to-cart on single product pages
- * and neutralize any upsell modal JS.
-
+/*
 add_action('init', function () {
 	// Server-side redirect for NON-AJAX adds (highest priority wins)
 	add_filter('woocommerce_add_to_cart_redirect', function ($url) {
-		return home_url('/hr/cart/'); // or wc_get_cart_url()
+		return home_url('/gr/cart/'); // or wc_get_cart_url()
 	}, 9999);
 });
 
- */
+*/
 
 
 
@@ -141,10 +111,8 @@ if( $webshop_language == null  || $webshop_language == false  || $webshop_langua
 /*  include language specific files */
 if ($webshop_language == "EN") {
   include(get_template_directory() . '/functions/lang/en.php');
-} else if ($webshop_language == "HR") {
-  include(get_template_directory() . '/functions/lang/hr.php');
-} else if ($webshop_language == "CZ") {
-  include(get_template_directory() . '/functions/lang/cz.php');
+} else if ($webshop_language == "GR") {
+  include(get_template_directory() . '/functions/lang/gr.php');
 }
 /*  include language specific files */
 
@@ -246,18 +214,33 @@ function enqueue_main_styles() {
     }
 
     // Enqueue checkout.css on checkout
+        wp_enqueue_style('google-roboto', 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap', array(), null);
     if (function_exists('is_checkout') && is_checkout()) {
         wp_enqueue_style(
             'checkout-style',
             get_template_directory_uri() . '/css/checkout.css',
             array(),
-            filemtime(get_template_directory() . '/css/checkout.css'),
+            md5_file(get_template_directory() . '/css/checkout.css'),
             'all'
+        );
+        wp_enqueue_script(
+            'checkout-fields',
+            get_template_directory_uri() . '/js/checkout-fields.js',
+            array('jquery'),
+            filemtime(get_template_directory() . '/js/checkout-fields.js'),
+            true
         );
     }
     
     
    
+    // Enqueue header.css
+    wp_enqueue_style('header-style', get_template_directory_uri() . '/css/header.css', array(), filemtime(get_template_directory() . '/css/header.css'), 'all');
+    // Enqueue footer.css
+    wp_enqueue_style('footer-style', get_template_directory_uri() . '/css/footer.css', array(), filemtime(get_template_directory() . '/css/footer.css'), 'all');
+    // Enqueue header.js
+    wp_enqueue_script('header-js', get_template_directory_uri() . '/js/header.js', array('jquery'), filemtime(get_template_directory() . '/js/header.js'), true);
+
         if ( function_exists( 'is_cart' ) && is_cart() ) {
         wp_enqueue_style(
             'cart-style',
@@ -742,15 +725,55 @@ function custom_loop_columns() {
     return 4; // 4 products per row
 }
 
+function noriks_should_use_collection_gallery_image_for_loop($product_id) {
+    return noriks_get_collection_gallery_image_for_loop($product_id) > 0;
+}
+
+function noriks_get_collection_gallery_image_for_loop($product_id) {
+    if ( ! is_tax( 'collections' ) ) {
+        return 0;
+    }
+
+    $term = get_queried_object();
+    if ( ! ( $term instanceof WP_Term ) ) {
+        return 0;
+    }
+
+    $raw = get_term_meta( $term->term_id, 'noriks_collection_gallery_image_map', true );
+    if ( empty( $raw ) || ! function_exists( 'noriks_collection_gallery_image_map_from_string' ) ) {
+        return 0;
+    }
+
+    $map = noriks_collection_gallery_image_map_from_string( $raw );
+    return isset( $map[ $product_id ] ) ? (int) $map[ $product_id ] : 0;
+}
+
 
 
 
 add_action( 'woocommerce_before_shop_loop_item_title', 'add_second_product_thumbnail', 11 );
 function add_second_product_thumbnail() {
     global $product;
+    if ( ! $product ) {
+        return;
+    }
+
+    $product_id = $product->get_id();
     $gallery = $product->get_gallery_image_ids();
-    if ( ! empty( $gallery ) ) {
-        $second = wp_get_attachment_image_src( $gallery[0], 'woocommerce_thumbnail' );
+    if ( empty( $gallery ) && ! noriks_should_use_collection_gallery_image_for_loop( $product_id ) ) {
+        return;
+    }
+
+    $secondary_image_id = 0;
+
+    if ( noriks_should_use_collection_gallery_image_for_loop( $product_id ) ) {
+        $secondary_image_id = get_post_thumbnail_id( $product_id );
+    } elseif ( ! empty( $gallery ) ) {
+        $secondary_image_id = (int) $gallery[0];
+    }
+
+    if ( $secondary_image_id ) {
+        $second = wp_get_attachment_image_src( $secondary_image_id, 'woocommerce_thumbnail' );
         if ( $second ) {
             echo '<img class="secondary-image" src="' . esc_url( $second[0] ) . '" alt="" />';
         }
@@ -903,6 +926,23 @@ function my_alt_loop_product_thumbnail() {
     }
 
     $product_id = $product->get_id();
+
+    if ( noriks_should_use_collection_gallery_image_for_loop( $product_id ) ) {
+        $selected_gallery_image_id = noriks_get_collection_gallery_image_for_loop( $product_id );
+        if ( $selected_gallery_image_id ) {
+            echo wp_get_attachment_image(
+                $selected_gallery_image_id,
+                'woocommerce_thumbnail',
+                false,
+                array(
+                    'class'   => 'attachment-woocommerce_thumbnail size-woocommerce_thumbnail',
+                    'loading' => 'lazy',
+                    'alt'     => esc_attr( $product->get_name() ),
+                )
+            );
+            return;
+        }
+    }
 
     // Get your ACF image field (adjust field name if needed)
     // If the field returns an image ID:
