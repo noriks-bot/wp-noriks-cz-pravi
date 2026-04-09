@@ -485,14 +485,14 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
                   
     <?php elseif(  $is_mixed_bundle ): ?>
     
-     <img src="https://noriks.com/cz/wp-content/uploads/2025/09/noriks_tablica_cz.jpg">
+     <img src="https://noriks.com/cz/wp-content/uploads/2026/04/cz_majice.jpeg">
         
          <img src="https://noriks.com/cz/wp-content/uploads/2026/01/boxers_size_Cz.png">
           
           <?php else: ?>
       
       
-     <img src="https://noriks.com/cz/wp-content/uploads/2025/09/noriks_tablica_cz.jpg">
+     <img src="https://noriks.com/cz/wp-content/uploads/2026/04/cz_majice.jpeg">
         
         
             
