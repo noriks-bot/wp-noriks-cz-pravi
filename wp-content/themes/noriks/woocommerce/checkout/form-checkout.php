@@ -47,7 +47,7 @@ if ( WC()->cart->is_empty() ) return;
                     <span class="shipping_method_delivery_price tag tag--red">
                       <span class="woocommerce-Price-amount amount"><bdi>49<span class="woocommerce-Price-currencySymbol"> Kč</span></bdi></span>
                     </span>
-                    <span class="delivery_img"><img decoding="async" class="ceska_posta standard" style="height:22px !important;" src="https://www.ceskaposta.cz/documents/20117/1310244/Logo_Ceska_posta_horizontalni.svg/dfc68dee-9367-d5d9-c3e5-4087f47d7a7f?version=1.0&t=1754915125425"/></span>
+                    <span class="delivery_img"><img decoding="async" class="ceska_posta standard" style="height:22px !important; width:auto !important;" src="https://www.ceskaposta.cz/documents/20117/1310244/Logo_Ceska_posta_horizontalni.svg/dfc68dee-9367-d5d9-c3e5-4087f47d7a7f?version=1.0&t=1754915125425"/></span>
                   </div>
                 </div>
               </label>
