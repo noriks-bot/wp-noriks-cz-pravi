@@ -105,7 +105,7 @@ add_action('init', function () {
 $webshop_language = get_field("webshop_language", "options");
 
 if( $webshop_language == null  || $webshop_language == false  || $webshop_language == "" ) {
-  $webshop_language = "EN";
+  $webshop_language = "CZ";
 }
 
 /*  include language specific files */
