@@ -472,6 +472,14 @@ add_action( 'wp_footer', function() {
         });
       });
 
+      /* Sync shipping price: copy from review-order (AJAX-rendered) to top shipping badge */
+      function syncShippingPrice() {
+        var price = $('#noriks-shipping-price').html();
+        if (price && price.trim()) $('.shipping_method_delivery_price').html(price);
+      }
+      $(document.body).on('updated_checkout init_checkout', syncShippingPrice);
+      /* Force WC to recalculate on page load (fixes stale cache from cart) */
+
       /* WC native #place_order button handles submit */
     });
     </script>
