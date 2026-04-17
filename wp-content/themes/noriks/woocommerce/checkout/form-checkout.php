@@ -44,16 +44,7 @@ if ( WC()->cart->is_empty() ) return;
                     <strong class="hs-custom-date" id="js-delivery-dates"></strong>
                   </div>
                   <div class="inner-wrapper-img">
-                    <span class="shipping_method_delivery_price tag tag--red">
-                      <?php
-                        $ship = (float) WC()->cart->get_shipping_total();
-                        if ( $ship > 0 ) {
-                          echo wc_price( $ship );
-                        } else {
-                          echo 'Zdarma';
-                        }
-                      ?>
-                    </span>
+                    <span class="shipping_method_delivery_price tag tag--red"></span>
                     <span class="delivery_img"><img decoding="async" class="ceska_posta standard" style="height:15px !important; width:70px !important;" src="https://www.ceskaposta.cz/documents/20117/1310244/Logo_Ceska_posta_horizontalni.svg/dfc68dee-9367-d5d9-c3e5-4087f47d7a7f?version=1.0&t=1754915125425"/></span>
                   </div>
                 </div>
