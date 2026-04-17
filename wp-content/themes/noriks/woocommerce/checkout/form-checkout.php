@@ -31,6 +31,7 @@ if ( WC()->cart->is_empty() ) return;
       <div class="woocommerce-additional-fields">
 
         <!-- SHIPPING -->
+        <?php WC()->cart->calculate_totals(); ?>
         <div id="custom_shipping">
           <h3>Doprava - Česká pošta</h3>
           <ul class="shipping_method_custom">
@@ -44,7 +45,7 @@ if ( WC()->cart->is_empty() ) return;
                     <strong class="hs-custom-date" id="js-delivery-dates"></strong>
                   </div>
                   <div class="inner-wrapper-img">
-                    <span class="shipping_method_delivery_price tag tag--red"></span>
+                    <span class="shipping_method_delivery_price tag tag--red"><?php $ship = (float) WC()->cart->get_shipping_total(); echo $ship > 0 ? wc_price($ship) : 'Zdarma'; ?></span>
                     <span class="delivery_img"><img decoding="async" class="ceska_posta standard" style="height:15px !important; width:70px !important;" src="https://www.ceskaposta.cz/documents/20117/1310244/Logo_Ceska_posta_horizontalni.svg/dfc68dee-9367-d5d9-c3e5-4087f47d7a7f?version=1.0&t=1754915125425"/></span>
                   </div>
                 </div>
