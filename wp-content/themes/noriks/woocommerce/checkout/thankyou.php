@@ -53,7 +53,7 @@ if ( $upsell_is_majice ) {
 } else {
     $upsell_product_id = 4749; // Černé boxerky
     $upsell_name       = 'Černé boxerky';
-    $upsell_qty_prices = array( 1 => 199, 3 => 499, 5 => 749 );
+    $upsell_qty_prices = array( 1 => 119, 3 => 357, 5 => 595 );
     $upsell_qty_names  = array( 1 => '1x Černé boxerky', 3 => '3x Černé boxerky', 5 => '5x Černých boxerek' );
     $upsell_qty_images = array(
         1 => 'https://noriks.com/hr/wp-content/uploads/2025/11/crne-boksarice-produktna.jpg',
