@@ -16,11 +16,14 @@ import {
 	MagnifyingGlassIcon,
 	XMarkIcon,
 	ExclamationTriangleIcon,
+	BookmarkSlashIcon,
+	NoSymbolIcon,
+	ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 import { __, sprintf } from '@wordpress/i18n';
 import { useNavigate } from 'react-router-dom';
 
-import { doApiFetch, useStateValue } from '@Store';
+import { doApiFetch, useStateValue, ActionTypes } from '@Store';
 
 import SectionWrapper from '@Components/common/SectionWrapper';
 import OrderStatusBadge from '@Components/common/OrderStatusBadge';
@@ -31,13 +34,17 @@ import ExportToExcel from '@Components/common/ExportToExcel';
 import AppTooltip from '@Components/common/AppTooltip';
 import ConfirmationModal from '@Components/common/ConfirmationModal';
 import { generatePaginationPages } from '@Admin/utils/helper';
+import { useProAccess } from '@Components/pro/useProAccess';
 
 const FollowUp = () => {
 	const [ selected, setSelected ] = useState( [] );
 	const [ currentPage, setCurrentPage ] = useState( 1 );
 	const [ itemsPerPage, setItemsPerPage ] = useState( 20 );
 	const [ searchText, setSearchText ] = useState( '' );
-	const [ selectedOption, setSelectedOption ] = useState( 'All' );
+	const [ selectedOption, setSelectedOption ] = useState( {
+		id: 'all',
+		title: __( 'All', 'woo-cart-abandonment-recovery' ),
+	} );
 	const [ selectedRange, setSelectedRange ] = useState( {
 		from: null,
 		to: null,
@@ -53,6 +60,8 @@ const FollowUp = () => {
 		id: null,
 	} );
 	const [ isDeleting, setIsDeleting ] = useState( false );
+	const { shouldBlockProFeatures } = useProAccess();
+	const isFeatureBlocked = shouldBlockProFeatures();
 	const notAvailableString = __(
 		'Not Available',
 		'woo-cart-abandonment-recovery'
@@ -111,20 +120,24 @@ const FollowUp = () => {
 
 	const filterOptions = [
 		{
-			id: 1,
-			title: 'All',
+			id: 'all',
+			title: __( 'All', 'woo-cart-abandonment-recovery' ),
 		},
 		{
-			id: 2,
-			title: 'Abandoned Orders',
+			id: 'abandoned_orders',
+			title: __( 'Abandoned Orders', 'woo-cart-abandonment-recovery' ),
 		},
 		{
-			id: 3,
-			title: 'Recovered Orders',
+			id: 'recovered_orders',
+			title: __( 'Recovered Orders', 'woo-cart-abandonment-recovery' ),
 		},
 		{
-			id: 4,
-			title: 'Lost Orders',
+			id: 'lost_orders',
+			title: __( 'Lost Orders', 'woo-cart-abandonment-recovery' ),
+		},
+		{
+			id: 'blacklisted',
+			title: __( 'Blacklisted', 'woo-cart-abandonment-recovery' ),
 		},
 	];
 
@@ -138,16 +151,19 @@ const FollowUp = () => {
 
 		// Status filter
 		let statusMatch = true;
-		if ( selectedOption !== 'All' ) {
-			switch ( selectedOption ) {
-				case 'Abandoned Orders':
+		if ( selectedOption?.id !== 'all' ) {
+			switch ( selectedOption.id ) {
+				case 'abandoned_orders':
 					statusMatch = item.orderStatus === 'Abandoned';
 					break;
-				case 'Recovered Orders':
+				case 'recovered_orders':
 					statusMatch = item.orderStatus === 'Successful';
 					break;
-				case 'Lost Orders':
+				case 'lost_orders':
 					statusMatch = item.orderStatus === 'Failed';
+					break;
+				case 'blacklisted':
+					statusMatch = item.orderStatus === 'Blacklisted';
 					break;
 				default:
 					statusMatch = true;
@@ -186,12 +202,15 @@ const FollowUp = () => {
 
 	const filtersApplied =
 		searchText !== '' ||
-		selectedOption !== 'All' ||
+		selectedOption?.id !== 'all' ||
 		selectedRange.from ||
 		selectedRange.to;
 
 	const handleClearFilters = () => {
-		setSelectedOption( 'All' );
+		setSelectedOption( {
+			id: 'all',
+			title: __( 'All', 'woo-cart-abandonment-recovery' ),
+		} );
 		setSearchText( '' );
 		setSelectedRange( {
 			from: undefined,
@@ -406,6 +425,97 @@ const FollowUp = () => {
 		);
 	};
 
+	const handleBlacklist = ( id, action ) => {
+		const ajaxUrl = cart_abandonment_admin?.ajax_url;
+		const nonce =
+			'blacklist' === action
+				? cart_abandonment_admin?.blacklist_cart_nonce
+				: cart_abandonment_admin?.whitelist_cart_nonce;
+
+		const formData = new window.FormData();
+		formData.append( 'action', 'wcar_pro_' + action + '_cart' );
+		formData.append( 'id', id );
+		formData.append( 'security', nonce );
+
+		doApiFetch(
+			ajaxUrl,
+			formData,
+			'POST',
+			( response ) => {
+				if ( response.success ) {
+					const newStatus =
+						'blacklist' === action ? 'Blacklisted' : 'Abandoned';
+					const updated = data.map( ( record ) => {
+						if ( record.id === id ) {
+							return { ...record, orderStatus: newStatus };
+						}
+						return record;
+					} );
+					setData( updated );
+					dispatch( {
+						type: 'FETCH_FOLLOWUP_DATA_SUCCESS',
+						followUpData: updated,
+					} );
+					// Sync the blacklist setting in the store so the Settings
+					// page reflects the latest list without a page reload.
+					if ( response.data?.blacklist_list !== undefined ) {
+						dispatch( {
+							type: ActionTypes.UPDATE_SETTINGS_DATA,
+							payload: {
+								option: 'wcf_ca_email_blacklist_list',
+								value: response.data.blacklist_list,
+							},
+						} );
+					}
+					toast.success(
+						'blacklist' === action
+							? __(
+									'Cart blacklisted successfully',
+									'woo-cart-abandonment-recovery'
+							  )
+							: __(
+									'Cart whitelisted successfully',
+									'woo-cart-abandonment-recovery'
+							  )
+					);
+				} else {
+					toast.error(
+						'blacklist' === action
+							? __(
+									'Blacklist failed',
+									'woo-cart-abandonment-recovery'
+							  )
+							: __(
+									'Whitelist failed',
+									'woo-cart-abandonment-recovery'
+							  ),
+						{
+							description: response.data?.message || '',
+						}
+					);
+				}
+			},
+			( error ) => {
+				toast.error(
+					'blacklist' === action
+						? __(
+								'Blacklist failed',
+								'woo-cart-abandonment-recovery'
+						  )
+						: __(
+								'Whitelist failed',
+								'woo-cart-abandonment-recovery'
+						  ),
+					{
+						description: error.data?.message || '',
+					}
+				);
+			},
+			true,
+			false
+		);
+	};
+
 	// Handle detailed screen navigation
 	const handleDetailedScreen = ( id ) => {
 		navigate( {
@@ -425,7 +535,10 @@ const FollowUp = () => {
 						<Title
 							size="sm"
 							tag="h1"
-							title="Follow Up Reports"
+							title={ __(
+								'Follow Up Reports',
+								'woo-cart-abandonment-recovery'
+							) }
 							className="[&_h2]:text-gray-900"
 						/>
 						{ ! isLoading && selected.length > 0 && (
@@ -440,7 +553,13 @@ const FollowUp = () => {
 									onClick={ handleCancelSelect }
 								/>
 								<span className="text-sm font-normal text-gray-500">
-									{ selected.length } Selected
+									{ sprintf(
+										__(
+											'%d Selected',
+											'woo-cart-abandonment-recovery'
+										),
+										selected.length
+									) }
 								</span>
 								<Button
 									className="py-2 px-4 bg-red-50 text-red-600 outline-red-600 hover:bg-red-50 hover:outline-red-600"
@@ -465,9 +584,15 @@ const FollowUp = () => {
 								icon={ <XMarkIcon className="h-4 w-4" /> }
 								onClick={ handleClearFilters }
 								className="text-red-500 no-underline whitespace-nowrap focus:ring-0 [box-shadow:none] focus:[box-shadow:none] hover:no-underline hover:text-red-500"
-								aria-label="Clear Filters"
+								aria-label={ __(
+									'Clear Filters',
+									'woo-cart-abandonment-recovery'
+								) }
 							>
-								Clear Filters
+								{ __(
+									'Clear Filters',
+									'woo-cart-abandonment-recovery'
+								) }
 							</Button>
 						) }
 
@@ -478,7 +603,10 @@ const FollowUp = () => {
 							}
 							size="sm"
 							type="text"
-							aria-label="Search"
+							aria-label={ __(
+								'Search',
+								'woo-cart-abandonment-recovery'
+							) }
 							value={ searchText }
 							onChange={ handleSearch }
 							className="w-full lg:w-52"
@@ -487,7 +615,7 @@ const FollowUp = () => {
 						<Select
 							onChange={ handleSelectedOptionChange }
 							size="sm"
-							value={ selectedOption }
+							value={ selectedOption.title }
 							disabled={ isLoading }
 						>
 							<Select.Button className="w-full lg:w-52 text-gray-500" />
@@ -495,7 +623,7 @@ const FollowUp = () => {
 								{ filterOptions.map( ( option ) => (
 									<Select.Option
 										key={ option.id }
-										value={ option.title }
+										value={ option }
 									>
 										{ option.title }
 									</Select.Option>
@@ -548,13 +676,41 @@ const FollowUp = () => {
 								selected.length < filteredData.length
 							}
 						>
-							<Table.HeadCell>User Name</Table.HeadCell>
-							<Table.HeadCell>Email To</Table.HeadCell>
-							<Table.HeadCell>Cart Total</Table.HeadCell>
-							<Table.HeadCell>Order Status</Table.HeadCell>
-							<Table.HeadCell>Date & Time</Table.HeadCell>
 							<Table.HeadCell>
-								<span className="sr-only">Actions</span>
+								{ __(
+									'User Name',
+									'woo-cart-abandonment-recovery'
+								) }
+							</Table.HeadCell>
+							<Table.HeadCell>
+								{ __(
+									'Email To',
+									'woo-cart-abandonment-recovery'
+								) }
+							</Table.HeadCell>
+							<Table.HeadCell>
+								{ __(
+									'Cart Total',
+									'woo-cart-abandonment-recovery'
+								) }
+							</Table.HeadCell>
+							<Table.HeadCell>
+								{ __(
+									'Order Status',
+									'woo-cart-abandonment-recovery'
+								) }
+							</Table.HeadCell>
+							<Table.HeadCell>
+								{ __(
+									'Date & Time',
+									'woo-cart-abandonment-recovery'
+								) }
+							</Table.HeadCell>
+							<Table.HeadCell className="text-right">
+								{ __(
+									'Actions',
+									'woo-cart-abandonment-recovery'
+								) }
 							</Table.HeadCell>
 						</Table.Head>
 						{ currentItems.length > 0 ? (
@@ -635,9 +791,12 @@ const FollowUp = () => {
 														}
 													/>
 												</AppTooltip>
-												{ 0 === item.unsubscribed && (
+												{ 0 === item.unsubscribed ? (
 													<AppTooltip
-														content="Unsubscribe"
+														content={ __(
+															'Unsubscribe',
+															'woo-cart-abandonment-recovery'
+														) }
 														position="top"
 													>
 														<Button
@@ -647,10 +806,85 @@ const FollowUp = () => {
 															}
 															size="xs"
 															className="text-gray-500 hover:text-flamingo-400"
-															aria-label="Unsubscribe"
+															aria-label={ __(
+																'Unsubscribe',
+																'woo-cart-abandonment-recovery'
+															) }
 															onClick={ () =>
 																handleUnsubscribe(
 																	item.id
+																)
+															}
+														/>
+													</AppTooltip>
+												) : (
+													<AppTooltip
+														content={ __(
+															'Unsubscribed',
+															'woo-cart-abandonment-recovery'
+														) }
+														position="top"
+													>
+														<Button
+															variant="ghost"
+															icon={
+																<BookmarkSlashIcon
+																	className="h-6 w-6"
+																	aria-label={ __(
+																		'Unsubscribed',
+																		'woo-cart-abandonment-recovery'
+																	) }
+																	disabled={
+																		true
+																	}
+																/>
+															}
+															size="xs"
+															className="text-gray-500 cursor-not-allowed opacity-50"
+															aria-label={ __(
+																'Unsubscribed',
+																'woo-cart-abandonment-recovery'
+															) }
+														/>
+													</AppTooltip>
+												) }
+												{ ! isFeatureBlocked && (
+													<AppTooltip
+														content={ __(
+															'Blacklisted' ===
+																item?.orderStatus
+																? 'Whitelist'
+																: 'Blacklist',
+															'woo-cart-abandonment-recovery'
+														) }
+														position="top"
+													>
+														<Button
+															variant="ghost"
+															icon={
+																'Blacklisted' ===
+																item?.orderStatus ? (
+																	<ShieldCheckIcon className="h-6 w-6" />
+																) : (
+																	<NoSymbolIcon className="h-6 w-6" />
+																)
+															}
+															size="xs"
+															className="text-gray-500 hover:text-flamingo-400"
+															aria-label={ __(
+																'Blacklisted' ===
+																	item?.orderStatus
+																	? 'Whitelist'
+																	: 'Blacklist',
+																'woo-cart-abandonment-recovery'
+															) }
+															onClick={ () =>
+																handleBlacklist(
+																	item.id,
+																	'Blacklisted' ===
+																		item?.orderStatus
+																		? 'whitelist'
+																		: 'blacklist'
 																)
 															}
 														/>
@@ -699,7 +933,10 @@ const FollowUp = () => {
 							<div className="flex items-center justify-between w-full">
 								<div className="flex items-center gap-2">
 									<span className="text-sm font-normal leading-5 text-text-secondary whitespace-nowrap">
-										Items per page:
+										{ __(
+											'Items per page:',
+											'woo-cart-abandonment-recovery'
+										) }
 									</span>
 									<Select
 										onChange={ handleItemsPerPageChange }

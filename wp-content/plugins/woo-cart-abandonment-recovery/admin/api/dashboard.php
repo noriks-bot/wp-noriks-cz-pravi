@@ -124,6 +124,7 @@ class Dashboard extends ApiBase {
 		$conversion_rate = $total_orders ? $recovered_report['no_of_orders'] / $total_orders * 100 : 0;
 		$conversion_rate = number_format_i18n( $conversion_rate, 2 ) . '%';
 
+		$previous_period_data = $this->get_previous_period_dashboard_data( $start_date_obj, $end_date_obj );
 		// Get revenue chart data.
 		$revenue_chart_data = $this->get_revenue_chart_data( $start_date_str, $end_date_str );
 
@@ -137,17 +138,62 @@ class Dashboard extends ApiBase {
 
 			'recoverable_revenue'      => wc_price( ! empty( $abandoned_report['revenue'] ) || ! is_null( $abandoned_report['revenue'] ) ? esc_html( floatval( $abandoned_report['revenue'] ) ) : '0.0' ),
 			'recovered_revenue'        => wc_price( ! empty( $recovered_report['revenue'] ) || ! is_null( $recovered_report['revenue'] ) ? esc_html( floatval( $recovered_report['revenue'] ) ) : '0.0' ),
-
+			'recovered_revenue_amount' => floatval( $recovered_report['revenue'] ?? 0 ),
 			'recovery_rate'            => $conversion_rate,
 
 			'revenue_chart_data'       => $revenue_chart_data,
 			'recent_follow_up_reports' => $recent_email_logs,
 			'product_report'           => [],
+			'previous_period'          => $previous_period_data,
+			'duration'                 => [
+				'start' => $start_date,
+				'end'   => $end_date,
+			],
 		];
 
-		$response = apply_filters( 'wcar_dashboard_stats_data', $response, $date_range );
+		$response = apply_filters( 'wcar_dashboard_stats_data', $response, $start_date_str, $end_date_str );
 
 		return rest_ensure_response( $response );
+	}
+
+	/**
+	 * Get dashboard data.
+	 *
+	 * @param  \DateTime $start_date Start date.
+	 * @param  \DateTime $end_date   End date.
+	 * @return array
+	 */
+	public function get_previous_period_dashboard_data( $start_date, $end_date ) {
+		$interval = $start_date->diff( $end_date );
+		$days     = $interval->days;
+
+		$prev_start_obj = clone $start_date;
+		$prev_start_obj->modify( '-' . ( $days + 1 ) . ' days' );
+		$prev_end_obj = clone $start_date;
+		$prev_end_obj->modify( '-1 days' );
+
+		$prev_start_date = $prev_start_obj->format( 'Y-m-d' );
+		$prev_end_date   = $prev_end_obj->format( 'Y-m-d' );
+
+		$helper                = wcf_ca()->helper;
+		$prev_abandoned_report = $helper->get_report_by_type( $prev_start_date, $prev_end_date, WCF_CART_ABANDONED_ORDER );
+		$prev_recovered_report = $helper->get_report_by_type( $prev_start_date, $prev_end_date, WCF_CART_COMPLETED_ORDER );
+		$prev_lost_report      = $helper->get_report_by_type( $prev_start_date, $prev_end_date, WCF_CART_LOST_ORDER );
+		$prev_total_orders     = $prev_abandoned_report['no_of_orders'] + $prev_recovered_report['no_of_orders'] + $prev_lost_report['no_of_orders'];
+		$prev_conversion_rate  = $prev_total_orders ? $prev_recovered_report['no_of_orders'] / $prev_total_orders * 100 : 0;
+		$prev_conversion_rate  = number_format_i18n( $prev_conversion_rate, 2 ) . '%';
+		
+		return [
+			'start_date'               => $prev_start_date,
+			'end_date'                 => $prev_end_date,
+			'recoverable_orders'       => esc_html( $prev_abandoned_report['no_of_orders'] ),
+			'recovered_orders'         => esc_html( $prev_recovered_report['no_of_orders'] ),
+			'lost_orders'              => esc_html( $prev_lost_report['no_of_orders'] ),
+			'recoverable_revenue'      => wc_price( ! empty( $prev_abandoned_report['revenue'] ) || ! is_null( $prev_abandoned_report['revenue'] ) ? esc_html( floatval( $prev_abandoned_report['revenue'] ) ) : '0.0' ),
+			'recovered_revenue'        => wc_price( ! empty( $prev_recovered_report['revenue'] ) || ! is_null( $prev_recovered_report['revenue'] ) ? esc_html( floatval( $prev_recovered_report['revenue'] ) ) : '0.0' ),
+			'recovered_revenue_amount' => floatval( $prev_recovered_report['revenue'] ?? 0 ),
+			'recovery_rate'            => $prev_conversion_rate,
+		];
 	}
 
 	/**
@@ -267,7 +313,10 @@ class Dashboard extends ApiBase {
 			case WCF_CART_COMPLETED_ORDER:
 				return 'Successful';
 			case WCF_CART_LOST_ORDER:
+			case WCF_CART_FAILED_ORDER:
 				return 'Failed';
+			case WCF_CART_BLACKLISTED_ORDER:
+				return 'Blacklisted';
 			default:
 				return 'Normal';
 		}

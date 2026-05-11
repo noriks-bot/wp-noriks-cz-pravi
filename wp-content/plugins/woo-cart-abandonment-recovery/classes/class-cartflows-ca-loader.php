@@ -54,12 +54,15 @@ if ( ! class_exists( 'CARTFLOWS_CA_Loader' ) ) {
 
 			// deActivation hook.
 			register_deactivation_hook( CARTFLOWS_CA_FILE, [ $this, 'deactivation_reset' ] );
-			add_action( 'plugins_loaded', [ $this, 'load_libraries' ] );
+			add_action( 'plugins_loaded', [ $this, 'load_abilities' ], 1 );
+			add_action( 'plugins_loaded', [ $this, 'load_libraries' ], 99 );
 			add_action( 'init', [ $this, 'load_cf_textdomain' ] );
 			add_action( 'init', [ $this, 'load_plugin' ], 99 );
 
 			// Let WooCommerce know, Plugin is compatible with HPOS.
 			add_action( 'before_woocommerce_init', [ $this, 'declare_woo_hpos_compatibility' ] );
+			
+			add_action( 'admin_init', [ $this, 'redirect_to_onboarding' ], 20 );
 		}
 
 		/**
@@ -93,7 +96,8 @@ if ( ! class_exists( 'CARTFLOWS_CA_Loader' ) ) {
 			define( 'CARTFLOWS_CA_BASE', plugin_basename( CARTFLOWS_CA_FILE ) );
 			define( 'CARTFLOWS_CA_DIR', plugin_dir_path( CARTFLOWS_CA_FILE ) );
 			define( 'CARTFLOWS_CA_URL', plugins_url( '/', CARTFLOWS_CA_FILE ) );
-			define( 'CARTFLOWS_CA_VER', '2.0.0' );
+			define( 'CARTFLOWS_CA_VER', '2.1.1' );
+			define( 'CARTFLOWS_CA_REQ_PRO_VER', '1.2.0' );
 
 			define( 'CARTFLOWS_CA_SLUG', 'cartflows_ca' );
 
@@ -102,8 +106,11 @@ if ( ! class_exists( 'CARTFLOWS_CA_Loader' ) ) {
 			define( 'CARTFLOWS_CA_EMAIL_HISTORY_TABLE', 'cartflows_ca_email_history' );
 			define( 'CARTFLOWS_CA_EMAIL_TEMPLATE_META_TABLE', 'cartflows_ca_email_templates_meta' );
 
-			define( 'CARTFLOWS_CA_DOMAIN_URL', 'https://cartflows.com/cart-abandonment-pro-launch-waitlist/' );
+			define( 'CARTFLOWS_CA_DOMAIN_URL', 'https://cartflows.com/' );
 			define( 'CARTFLOWS_CA_NPS_WEBHOOK_URL', 'https://webhook.ottokit.com/ottokit/c883bcf8-1f86-4a16-9b81-7fd4cfaa3a49' );
+			define( 'WCAR_ONBOARDING_USER_SUB_WORKFLOW_URL', 'https://webhook.ottokit.com/ottokit/9d32a688-8d3f-4329-8f59-261dfc62c938' );
+
+			define( 'WCF_DEFAULT_CART_LOST_TIME', 30 );
 		}
 
 		/**
@@ -128,7 +135,7 @@ if ( ! class_exists( 'CARTFLOWS_CA_Loader' ) ) {
 			$this->load_helper_files_components();
 			$this->load_core_files();
 			$this->load_core_components();
-			
+
 			/**
 			 * CartFlows Init.
 			 *
@@ -150,7 +157,7 @@ if ( ! class_exists( 'CARTFLOWS_CA_Loader' ) ) {
 
 			$class = 'notice notice-error';
 			/* translators: %s: html tags */
-			$message = sprintf( __( 'Required database tables are not created for %1$sWooCommerce Cart Abandonment Recovery%2$s plugin. Please make sure that the database user has the REFERENCES privilege to create tables.', 'woo-cart-abandonment-recovery' ), '<strong>', '</strong>' );
+			$message = sprintf( __( 'Required database tables are not created for %1$sCart Abandonment Recovery for WooCommerce%2$s plugin. Please make sure that the database user has the REFERENCES privilege to create tables.', 'woo-cart-abandonment-recovery' ), '<strong>', '</strong>' );
 
 			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), wp_kses_post( $message ) );
 		}
@@ -172,7 +179,7 @@ if ( ! class_exists( 'CARTFLOWS_CA_Loader' ) ) {
 
 			$class = 'notice notice-error';
 			/* translators: %s: html tags */
-			$message = sprintf( __( 'The %1$sWooCommerce Cart Abandonment Recovery%2$s plugin requires %1$sWooCommerce%2$s plugin installed & activated.', 'woo-cart-abandonment-recovery' ), '<strong>', '</strong>' );
+			$message = sprintf( __( 'The %1$sCart Abandonment Recovery for WooCommerce%2$s plugin requires %1$sWooCommerce%2$s plugin installed & activated.', 'woo-cart-abandonment-recovery' ), '<strong>', '</strong>' );
 			$plugin  = 'woocommerce/woocommerce.php';
 
 			if ( $this->is_woo_installed() ) {
@@ -266,6 +273,8 @@ if ( ! class_exists( 'CARTFLOWS_CA_Loader' ) ) {
 			include_once CARTFLOWS_CA_DIR . 'classes/class-cartflows-ca-tabs.php';
 			
 			include_once CARTFLOWS_CA_DIR . 'classes/class-cartflows-ca-admin-notices.php';
+
+			include_once CARTFLOWS_CA_DIR . 'classes/class-cartflows-ca-rollback.php';
 			
 			if ( ! $this->is_legacy_admin() ) {
 				/* New admin loader with namespace */
@@ -293,7 +302,7 @@ if ( ! class_exists( 'CARTFLOWS_CA_Loader' ) ) {
 
 			$bsf_analytics->set_entity(
 				[
-					'cf' => [
+					'wcar' => [
 						'hide_optin_checkbox' => true,
 						'product_name'        => 'Woocommerce Cart Abandonment Recovery',
 						'usage_doc_link'      => 'https://my.cartflows.com/usage-tracking/',
@@ -307,9 +316,9 @@ if ( ! class_exists( 'CARTFLOWS_CA_Loader' ) ) {
 									'popup_logo'        => CARTFLOWS_CA_URL . 'admin/assets/images/wcar-icon.svg',
 									'plugin_version'    => CARTFLOWS_CA_VER,
 									'plugin_slug'       => 'woo-cart-abandonment-recovery',
-									'popup_title'       => __( 'Quick Feedback', 'woo-cart-abandonment-recovery' ),
+									'popup_title'       => 'Quick Feedback',
 									'support_url'       => 'https://cartflows.com/contact/',
-									'popup_description' => __( 'If you have a moment, please share why you are deactivating Cart Abandonment Recovery:', 'woo-cart-abandonment-recovery' ),
+									'popup_description' => 'If you have a moment, please share why you are deactivating Cart Abandonment Recovery:',
 									'show_on_screens'   => array( 'plugins' ),
 								),
 							)
@@ -321,6 +330,11 @@ if ( ! class_exists( 'CARTFLOWS_CA_Loader' ) ) {
 			// Load the NPS Survey library.
 			if ( ! class_exists( 'Cartflows_Ca_Nps_Survey' ) ) {
 				require_once CARTFLOWS_CA_DIR . 'lib/class-cartflows-ca-nps-survey.php';
+			}
+
+			// Load BSF Library to send the data.
+			if ( ! class_exists( 'Cartflows_Ca_Bsf_Analytics' ) ) {
+				require_once CARTFLOWS_CA_DIR . 'lib/class-cartflows-ca-bsf-analytics.php';
 			}
 		}
 
@@ -395,6 +409,33 @@ if ( ! class_exists( 'CARTFLOWS_CA_Loader' ) ) {
 		}
 
 		/**
+		 * Load MCP Abilities.
+		 *
+		 * Includes the abstract ability base, the abilities register singleton,
+		 * and all five WCAR ability classes, then bootstraps the register.
+		 *
+		 * @since 2.1.0
+		 * @return void
+		 */
+		public function load_abilities(): void {
+
+			// Ensure Meta_Options is available (it may not be in legacy-admin mode).
+			if ( ! class_exists( 'WCAR\Admin\Inc\Meta_Options' ) ) {
+				include_once CARTFLOWS_CA_DIR . 'admin/inc/meta-options.php';
+			}
+
+			include_once CARTFLOWS_CA_DIR . 'inc/abilities/class-wcar-abstract-ability.php';
+			include_once CARTFLOWS_CA_DIR . 'inc/abilities/class-wcar-abilities-register.php';
+			include_once CARTFLOWS_CA_DIR . 'inc/abilities/class-wcar-ability-get-settings.php';
+			include_once CARTFLOWS_CA_DIR . 'inc/abilities/class-wcar-ability-get-setting.php';
+			include_once CARTFLOWS_CA_DIR . 'inc/abilities/class-wcar-ability-update-setting.php';
+			include_once CARTFLOWS_CA_DIR . 'inc/abilities/class-wcar-ability-get-dashboard-stats.php';
+			include_once CARTFLOWS_CA_DIR . 'inc/abilities/class-wcar-ability-get-product-stats.php';
+
+			\WCAR\Inc\Abilities\Wcar_Abilities_Register::get_instance();
+		}
+
+		/**
 		 * Activation Reset
 		 */
 		public function activation_reset(): void {
@@ -402,6 +443,8 @@ if ( ! class_exists( 'CARTFLOWS_CA_Loader' ) ) {
 			$this->update_default_settings();
 			// Create the database tables if they do not exist.
 			$this->initialize_cart_abandonment_tables();
+			// Onboarding.
+			$this->activate();
 		}
 
 		/**
@@ -472,11 +515,13 @@ if ( ! class_exists( 'CARTFLOWS_CA_Loader' ) ) {
 		 */
 		public function should_use_new_ui(): bool {
 			$saved_version = get_option( 'wcf_ca_version', false );
-			$user_opted_in = get_option( 'cartflows_ca_use_new_ui', false );
+			$user_opted_in = get_option( 'cartflows_ca_use_new_ui', null );
 
 			// If user has explicitly opted into new UI, use it.
-			if ( $user_opted_in ) {
+			if ( 'on' === $user_opted_in ) {
 				return true;
+			} elseif ( empty( $user_opted_in ) ) {
+				return false;
 			}
 
 			// For versions above 2.0.0, use new UI by default.
@@ -496,21 +541,14 @@ if ( ! class_exists( 'CARTFLOWS_CA_Loader' ) ) {
 		 * @return bool True if notice should be shown.
 		 */
 		public function should_show_ui_switch_notice(): bool {
-			$saved_version = get_option( 'wcf_ca_version', false );
 			$user_opted_in = get_option( 'cartflows_ca_use_new_ui', false );
 
 			// Don't show notice if user already opted in.
-			if ( $user_opted_in ) {
+			if ( ! empty( $user_opted_in ) && boolval( $user_opted_in ) ) {
 				return false;
 			}
 
-			// Show notice only for versions below or equal to 2.0.0.
-			// Check for null, empty, and exclude RC versions from comparison.
-			if ( ! empty( $saved_version ) && false === stripos( $saved_version, 'RC' ) && version_compare( $saved_version, '2.0.0', '<=' ) ) {
-				return true;
-			}
-
-			return false;
+			return true;
 		}
 
 		/**
@@ -521,6 +559,68 @@ if ( ! class_exists( 'CARTFLOWS_CA_Loader' ) ) {
 		 */
 		public function is_legacy_admin(): bool {
 			return ! $this->should_use_new_ui();
+		}
+
+		/**
+		 * Activate plugin and set onboarding redirect.
+		 */
+		public function activate(): void {
+
+			if ( defined( 'WP_CLI' ) && \WP_CLI ) {
+				return;
+			}
+	
+			// Only for users who can configure the plugin.
+			if ( ! current_user_can( 'manage_options' ) ) {
+				return;
+			}
+	
+			$do_redirect = apply_filters(
+				'wcar_enable_redirect_activation',
+				get_option( 'wcar_do_redirect', true )
+			);
+	
+			// If flag is off, never redirect.
+			if ( ! $do_redirect ) {
+				return;
+			}
+	
+			// If onboarding is already completed, clear the flag and stop.
+			$done_onboarding_setup = get_option( 'wcar_onboarding_completed', false );
+			if ( $done_onboarding_setup ) {
+				update_option( 'wcar_do_redirect', false );
+				return;
+			}
+	
+			// At this point: first‑time activation + onboarding not done.
+			set_transient( 'wcar_redirect_to_onboarding', true );
+		}
+
+		/**
+		 * Redirect to onboarding page.
+		 */
+		public function redirect_to_onboarding(): void {
+			if ( ! get_transient( 'wcar_redirect_to_onboarding' ) ) {
+				return;
+			}
+
+			// Avoid redirection in case of ajax calls.
+			if ( wp_doing_ajax() ) {
+				return;
+			}
+
+			$url = add_query_arg(
+				[
+					'page' => 'woo-cart-abandonment-recovery',
+					'path' => 'onboarding',
+				],
+				admin_url( 'admin.php' )
+			);
+
+			delete_transient( 'wcar_redirect_to_onboarding' );
+
+			wp_safe_redirect( $url );
+			exit;
 		}
 
 	}

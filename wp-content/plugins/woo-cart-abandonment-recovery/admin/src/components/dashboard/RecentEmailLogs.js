@@ -28,7 +28,7 @@ const RecentEmailLogs = ( { dashboardData, isDashboardLoading } ) => {
 					size="xs"
 					tag="h2"
 					title={ __(
-						'Recent Follow Up Report',
+						'Recent Follow Up Reports',
 						'woo-cart-abandonment-recovery'
 					) }
 					className="[&>*]:text-gray-900"

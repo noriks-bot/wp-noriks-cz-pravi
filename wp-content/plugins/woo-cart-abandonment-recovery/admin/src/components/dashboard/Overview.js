@@ -1,7 +1,13 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 import parse from 'html-react-parser';
 import { Title, LineChart, Button } from '@bsf/force-ui';
-import { InformationCircleIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { __ } from '@wordpress/i18n';
+import {
+	InformationCircleIcon,
+	XMarkIcon,
+	ArrowTrendingUpIcon,
+	ArrowTrendingDownIcon,
+} from '@heroicons/react/24/outline';
+import { __, sprintf } from '@wordpress/i18n';
 
 import SectionWrapper from '@Components/common/SectionWrapper';
 import SkeletonLoader from '@Components/common/skeletons/SkeletonLoader';
@@ -46,40 +52,126 @@ const Overview = ( {
 	handleDateRangeChange,
 } ) => {
 	// Define metrics data structure
+	console.log( dashboardData );
+	const iconUp = (
+		<ArrowTrendingUpIcon className="h-4 w-4 stroke-[3px] text-green-700" />
+	);
+	const iconDown = (
+		<ArrowTrendingDownIcon className="h-4 w-4 stroke-[3px] text-red-600" />
+	);
+	const getPercentValue = ( percentString ) => {
+		// Remove anything that is not a number, dot, or minus
+		const value = parseFloat(
+			percentString?.replace( /[^\d.-]/g, '' ).trim()
+		);
+		return isNaN( value ) ? 0 : value;
+	};
+
+	const getPercentChange = ( prev, curr ) => {
+		if ( prev === 0 && curr === 0 ) {
+			return 0;
+		}
+		if ( prev === 0 && curr !== 0 ) {
+			return 100;
+		}
+		if ( prev !== 0 && curr === 0 ) {
+			return -100;
+		}
+		// Normal percentage change
+		return ( ( curr - prev ) / prev ) * 100;
+	};
+
+	const currentRecoveryRate = getPercentValue( dashboardData?.recovery_rate );
+	const previousRecoveryRate = getPercentValue(
+		dashboardData?.previous_period?.recovery_rate
+	);
+	const recoveryRateChange = getPercentChange(
+		previousRecoveryRate,
+		currentRecoveryRate
+	);
 	const metricsData = [
 		{
-			label: __( 'Recoverable Orders', 'woo-cart-abandonment-recovery' ),
-			value: dashboardData?.recoverable_orders || '0',
-			tooltip: 'The number of orders that can be recovered.',
+			label: __( 'Recovered Revenue', 'woo-cart-abandonment-recovery' ),
+			value: dashboardData?.recovered_revenue
+				? parse( dashboardData?.recovered_revenue )
+				: '0.00',
+			tooltip: __(
+				'The revenue that has been recovered.',
+				'woo-cart-abandonment-recovery'
+			),
+			color:
+				dashboardData?.recovered_revenue_amount > 0
+					? 'text-green-700'
+					: '',
 		},
 		{
 			label: __( 'Recovered Orders', 'woo-cart-abandonment-recovery' ),
 			value: dashboardData?.recovered_orders || '0',
-			tooltip: 'The number of orders that have been recovered.',
-		},
-		{
-			label: __( 'Lost Orders', 'woo-cart-abandonment-recovery' ),
-			value: dashboardData?.lost_orders || '0',
-			tooltip: 'The number of orders that have been lost.',
+			tooltip: __(
+				'The number of orders that have been recovered.',
+				'woo-cart-abandonment-recovery'
+			),
+			color: dashboardData?.recovered_orders > 0 ? 'text-green-700' : '',
 		},
 		{
 			label: __( 'Recoverable Revenue', 'woo-cart-abandonment-recovery' ),
 			value: dashboardData?.recoverable_revenue
 				? parse( dashboardData?.recoverable_revenue )
 				: '0.00',
-			tooltip: 'The revenue that can be recovered.',
+			tooltip: __(
+				'The revenue that can be recovered.',
+				'woo-cart-abandonment-recovery'
+			),
 		},
 		{
-			label: __( 'Recovered Revenue', 'woo-cart-abandonment-recovery' ),
-			value: dashboardData?.recovered_revenue
-				? parse( dashboardData?.recovered_revenue )
-				: '0.00',
-			tooltip: 'The revenue that has been recovered.',
+			label: __( 'Recoverable Orders', 'woo-cart-abandonment-recovery' ),
+			value: dashboardData?.recoverable_orders || '0',
+			tooltip: __(
+				'The number of orders that can be recovered.',
+				'woo-cart-abandonment-recovery'
+			),
+		},
+		{
+			label: __( 'Lost Orders', 'woo-cart-abandonment-recovery' ),
+			value: dashboardData?.lost_orders || '0',
+			tooltip: __(
+				'The number of orders that have been lost.',
+				'woo-cart-abandonment-recovery'
+			),
 		},
 		{
 			label: __( 'Recovery Rate', 'woo-cart-abandonment-recovery' ),
 			value: dashboardData?.recovery_rate || '0.00%',
-			tooltip: 'The percentage of orders that have been recovered.',
+			tooltip: __(
+				'The percentage of orders that have been recovered.',
+				'woo-cart-abandonment-recovery'
+			),
+			color:
+				currentRecoveryRate > previousRecoveryRate
+					? 'text-green-700'
+					: currentRecoveryRate < previousRecoveryRate &&
+					  'text-red-600',
+			icon: (
+				<AppTooltip
+					content={ sprintf(
+						/* translators: 1: recovery rate change percentage, 2: 'increase' or 'decrease'. */
+						__(
+							'%1$s%% %2$s from previous period',
+							'woo-cart-abandonment-recovery'
+						),
+						Math.abs( recoveryRateChange ).toFixed( 2 ),
+						recoveryRateChange > 0
+							? __( 'increase', 'woo-cart-abandonment-recovery' )
+							: __( 'decrease', 'woo-cart-abandonment-recovery' )
+					) }
+					position="top"
+				>
+					{ currentRecoveryRate > previousRecoveryRate
+						? iconUp
+						: currentRecoveryRate < previousRecoveryRate &&
+						  iconDown }
+				</AppTooltip>
+			),
 		},
 	];
 
@@ -151,8 +243,11 @@ const Overview = ( {
 									className="mt-1"
 								/>
 							) : (
-								<div className="text-3xl font-semibold text-gray-900">
+								<div
+									className={ `flex gap-1 justify-between text-3xl font-semibold text-gray-900 ${ item.color }` }
+								>
 									{ item.value }
+									{ item.icon && <span>{ item.icon }</span> }
 								</div>
 							) }
 						</div>
@@ -177,7 +272,7 @@ const Overview = ( {
 									<div className="h-3 w-3 bg-amber-400"></div>
 									<span className="text-gray-500 text-sm font-medium">
 										{ __(
-											'Recoverable Revenue',
+											'Recovered Revenue',
 											'woo-cart-abandonment-recovery'
 										) }
 									</span>

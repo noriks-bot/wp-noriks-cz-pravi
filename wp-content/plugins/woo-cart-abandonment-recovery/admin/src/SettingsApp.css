@@ -18,9 +18,10 @@
 }
 
 body .notice,
+body div.fs-notice.promotion, /* The SEO Yoast: bulk-image-alt-text-with-yoast */
 body.wp-admin .notice:not( #wcar-admin-app .notice ),
 body.wp-admin .error:not( #wcar-admin-app .error ) {
-	display: none;
+	display: none !important;
 }
 
 #wpcontent {
@@ -84,6 +85,47 @@ a:focus-visible {
 
 #wcar-admin-app .wp-editor-container > textarea {
 	border-radius: 0;
+}
+
+#wcar-admin-app .wp-editor-tabs {
+	display: none;
+}
+
+#wcar-admin-app .mce-toolbar-grp {
+	background: transparent;
+}
+
+#wcar-admin-app .mce-ico,
+#wcar-admin-app .mce-txt {
+	color: #111827 !important;
+}
+
+#wcar-admin-app .mce-toolbar .mce-btn-group .mce-btn:hover,
+#wcar-admin-app .mce-toolbar .mce-btn-group .mce-btn:focus {
+	box-shadow: 0 0 0 2px #f06434;
+}
+
+#wcar-admin-app .mce-top-part::before {
+	box-shadow: none;
+}
+
+#wcar-admin-app .recharts-tooltip-wrapper {
+	text-transform: capitalize;
+}
+
+/* For onboarding screens */
+#wpwrap:has( div.ca-page-content--wrapper.onboarding ) #adminmenumain {
+	display: none;
+}
+#wpwrap:has( div.ca-page-content--wrapper.onboarding ) #wpadminbar {
+	display: none;
+}
+#wpwrap:has( div.ca-page-content--wrapper.onboarding ) #wpcontent {
+	margin-left: 0;
+	margin-top: calc( 0px - var( --wp-admin--admin-bar--height ) );
+}
+#wpwrap:has( div.ca-page-content--wrapper.onboarding ) #wcar-admin-app > .onboarding {
+	width: 100%;
 }
 
 @media ( max-width: 1024px ) {

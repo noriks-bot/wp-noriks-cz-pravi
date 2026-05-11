@@ -16,6 +16,7 @@ interface Props {
   placeholder?: string
   hasError?: boolean
   storeType?: 'filters' | 'rules'
+  isThenAttributes?: boolean
 }
 
 interface Emits {
@@ -45,7 +46,7 @@ const selectedAttribute = ref<AttributeOption | null>(null)
 
 // Convert store.attributes to vue-select options format with group information
 const flattenedAttributes = computed(() => {
-  const attributes = props.storeType === 'rules' ? rulesStore.attributes : filtersStore.attributes
+  const attributes = props.isThenAttributes ? rulesStore.thenAttributes : (props.storeType === 'rules' ? rulesStore.attributes : filtersStore.attributes)
   const options: Array<{ value: string; label: string; group: string; isGroupHeader?: boolean }> = [];
   let lastGroup = '';
   
@@ -74,10 +75,6 @@ const flattenedAttributes = computed(() => {
   }
   
   return options;
-})
-
-const selectableAttributes = computed(() => {
-  return flattenedAttributes.value.filter(attr => !attr.isGroupHeader)
 })
 
 // Initialize selected attribute based on modelValue
@@ -113,6 +110,48 @@ const onAttributeSelected = (option: AttributeOption) => {
   }
 }
 
+// Custom filter function for vue-select
+const customFilter = (options: AttributeOption[], search: string) => {
+  if (!search) return options
+  
+  const filtered: AttributeOption[] = []
+  const lowerSearch = search.toLowerCase()
+  
+  // Group options by their group
+  const groupMap = new Map<string, AttributeOption[]>()
+  const groupHeaders = new Map<string, AttributeOption>()
+  
+  options.forEach(option => {
+    if (option.isGroupHeader) {
+      groupHeaders.set(option.group || '', option)
+    } else if (option.group) {
+      if (!groupMap.has(option.group)) {
+        groupMap.set(option.group, [])
+      }
+      groupMap.get(option.group)!.push(option)
+    }
+  })
+  
+  // Filter and include groups with matching options
+  groupMap.forEach((groupOptions, groupName) => {
+    const matchingOptions = groupOptions.filter(option => 
+      option.label.toLowerCase().includes(lowerSearch)
+    )
+    
+    if (matchingOptions.length > 0) {
+      // Add group header if it exists
+      const header = groupHeaders.get(groupName)
+      if (header) {
+        filtered.push(header)
+      }
+      // Add matching options
+      filtered.push(...matchingOptions)
+    }
+  })
+  
+  return filtered
+}
+
 // Watch selectedAttribute to emit changes
 watch(selectedAttribute, (newValue) => {
   if (newValue && !newValue.isGroupHeader) {
@@ -128,6 +167,7 @@ watch(selectedAttribute, (newValue) => {
       v-model="selectedAttribute"
       :options="flattenedAttributes"
       :selectable="(option: any) => !option.isGroupHeader"
+      :filter="customFilter"
       :placeholder="placeholder"
       :components="{ OpenIndicator }"
       :clearable="false"

@@ -31,6 +31,7 @@ import ProUpgradeCtaMsg from './ProUpgradeCtaMsg';
  * @param {string}  root0.footerMessage    - Footer message.
  * @param {string}  root0.variation        - Message variations: modal, message.
  * @param {string}  root0.highlightText    - The Highlight Text to display before the main heading.
+ * @param {boolean} root0.backgroundBlur   - Whether to add blurred background to the modal.
  */
 const ProUpgradeCta = ( {
 	isVisible = false,
@@ -45,6 +46,7 @@ const ProUpgradeCta = ( {
 	actionBtnUrlArgs = '',
 	footerMessage = '',
 	variation = 'modal',
+	backgroundBlur = false,
 } ) => {
 	if ( ! isVisible ) {
 		return null;
@@ -62,12 +64,15 @@ const ProUpgradeCta = ( {
 		actionbtnUrl,
 		actionBtnUrlArgs,
 		footerMessage,
+		backgroundBlur,
 	};
 
 	return (
 		<div className="absolute inset-0 z-10 flex items-center justify-center">
 			{ /* White blurred background overlay - reduced blur for better readability */ }
-			<div className="absolute inset-0 bg-white/20 backdrop-blur-[2px]"></div>
+			{ backgroundBlur && (
+				<div className="absolute inset-0 bg-white/20 backdrop-blur-[2px]"></div>
+			) }
 
 			{ variation === 'modal' ? (
 				<ProUpgradeCtaModal props={ componentProps } />

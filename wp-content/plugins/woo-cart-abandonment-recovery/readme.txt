@@ -2,8 +2,8 @@
 Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, cart abandonment, cart recovery
 Requires at least: 5.4
-Tested up to: 6.8
-Stable tag: 2.0.0
+Tested up to: 6.9
+Stable tag: 2.1.1
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -71,27 +71,27 @@ Use smart shortcodes in email subject lines for personalized, dynamic messaging.
 ### 9. Option to Show Tax/VAT in Emails
 Display tax or VAT details in recovery emails, based on plugin settings. Helps reduce confusion and builds purchase confidence.
 
-### 10. Product-Specific Reports (Coming Soon)
+### 10. Product-Specific Reports (Pro)
 Track abandoned/recovered stats for each product individually. View product name, number of times abandoned, and recovered—to see which products need attention.
 
-### 11. Advanced Email Tracking (Coming Soon)
+### 11. Advanced Email Tracking (Pro)
 Gain insights into how each email performs with metrics like sent, open rate, click rate, and unsubscribe rate. Perfect for testing and optimizing your recovery strategy.
 
-### 12. Rule Engine for Email Logic (Coming Soon)
+### 12. Rule Engine for Email Logic (Pro)
 Set up smart conditions for when and how emails are sent. Exclude certain products, send product-specific sequences, skip certain emails, or trigger offers based on cart subtotal.
 
-### 13. Real-Time Admin Notifications (Coming Soon)
-Get instant alerts when a cart is abandoned or recovered. Stay informed and take action quickly if needed.
-
-### 14. WhatsApp Integration (Coming Soon)
-Send cart recovery messages via WhatsApp to connect with customers where they're most active. Boost engagement with a personal touch.
-
-### 15. SMS Recovery Messages (Coming Soon)
+### 13. SMS Recovery Messages (Pro)
 Reach users via SMS for higher visibility and faster conversions. A great addition to your multi-channel recovery strategy.
 
-### OttoKit Integration (Coming Soon)
+### 14. OttoKit Integration
 Connect with OttoKit to create powerful automations and sequences beyond email.
 Perfect for advanced marketers and power users.
+
+### 15. Real-Time Admin Notifications (Coming Soon)
+Get instant alerts when a cart is abandoned or recovered. Stay informed and take action quickly if needed.
+
+### 16. WhatsApp Integration (Coming Soon)
+Send cart recovery messages via WhatsApp to connect with customers where they're most active. Boost engagement with a personal touch.
 
 ## 🔍 How It Works – Just 3 Simple Steps
 
@@ -163,6 +163,54 @@ You can report the issue through our [Bug Bounty Program](https://brainstormforc
 4. General settings for Email, Webhook (Coupon Code), GDPR
 
 == Changelog ==
+
+= Version 2.1.1 - Wednesday, 18th March 2026 =
+- New: Added integration with the WordPress Abilities API.
+- Improvement: Strengthened the plugin's security.
+
+= Version 2.1.0 - Tuesday, 24th February 2026 =
+- Security Fix: Hardened the security of the plugin suggested by PatchStack.
+- Improvement: Enhanced TinyMCE configuration for better compatibility with email templates and an improved editor UI.
+
+= Version 2.0.7 - Monday, 2nd February 2026 =
+- Fix: Resolved an issue where some address fields were not captured for abandoned carts in block-based checkout.
+- Fix: Improved responsiveness of the date range selector.
+
+= Version 2.0.6 - Monday, 26th January 2026 =
+- New: Added plugin rollback functionality.
+- New: Introduced a lost-time setting for abandoned carts.
+- Improvement: Improved structure and processing logic of weekly email reports.
+
+= Version 2.0.5 - Tuesday, 30th December 2025 =
+- New: Added onboarding screens for a smoother initial setup.
+- Improvement: Updated UI for improved usability.
+- Improvement: Enhanced dashboard metrics.
+
+= Version 2.0.4 - Thursday, 20th November 2025 =
+- Fix: Resolved the issue where the {store_address} shortcode did not render in Abandoned Cart emails when WooCommerce email styling was enabled.
+- Improvement: Removed unnecessary plugin notices from the dashboard.
+- Improvement: Added unsubscribed email indicators to the follow-up report and detailed report.
+
+= Version 2.0.3 - Wednesday, 29th October 2025 =
+- Fix: Resolved an issue where completed orders were incorrectly marked as abandoned after the cutoff time, despite being excluded.
+- Fix: Corrected incorrect UTM parameters used in tracking links.
+- Improvement: Added support for custom order statuses to improve compatibility.
+- Improvement: Implemented minor UI enhancements for a smoother and more intuitive user experience.
+
+= Version 2.0.2 - Friday, 17th October 2025 =
+- Fix: Users with the Shop Manager role were unable to delete records from Follow-up Reports.
+- Fix: UI toggle for switching to the older version was not functioning as expected.
+- Fix: Resolved a fatal error caused by a call to an undefined utils function when enabling webhook settings in certain cases.
+- Fix: Improved toggle field logic to ensure correct display and saving of values when enabling or disabling settings.
+- Fix: Resolved an issue where the GDPR opt-out link below the email field was unclickable.
+
+= Version 2.0.1 - Tuesday, 30th September 2025 =
+- Improvement: Added future compatibility support for the Pro plugin.
+- Improvement: Standardized function calls by replacing direct helper usage with common methods.
+- Improvement: Made minor UI enhancements across multiple screens.
+- Fix: Resolved an issue where the switch UI notice continued to display even after updating to the new UI.
+- Fix: Corrected the improper usage of the _load_textdomain_just_in_time function.
+- Fix: Fixed a critical error that occurred when all order statuses were unchecked in the "Exclude email sending for" option.
 
 = Version 2.0.0 - Thursday, 21st August 2025 =
 - New: Revamped the whole Cart Abandoned user-interface to add a user-friendly touch.

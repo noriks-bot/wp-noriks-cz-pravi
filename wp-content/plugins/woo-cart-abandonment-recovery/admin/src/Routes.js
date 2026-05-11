@@ -3,14 +3,18 @@ import { useLocation } from 'react-router-dom';
 
 import { Toaster } from '@bsf/force-ui';
 
+import Header from '@Components/common/Header';
 import Dashboard from '@Admin/pages/Dashboard';
 import Settings from '@Admin/pages/Settings';
 import FollowUp from '@Admin/pages/FollowUp';
 import Product from '@Admin/pages/Product';
 import DetailedReport from '@Admin/pages/DetailedReport';
-import FollowUpEmails from '@Admin/pages/FollowUpEmails';
-// import Integrations from '@Admin/pages/Integrations';
-import Ottokit from '@Admin/components/integrations/Ottokit';
+import FollowUpTemplates from '@Admin/pages/FollowUpTemplates';
+import Integrations from '@Admin/pages/Integrations';
+import OnboardingLayout from '@Components/onboarding/OnboardingLayout';
+import ProUpgradeHeaderBanner from '@Components/pro/ProUpgradeHeaderBanner';
+import LegacyUiNotice from '@Components/common/LegacyUiNotice';
+// import Ottokit from '@Admin/components/integrations/Ottokit';
 
 const Routes = () => {
 	const urlParams = new URLSearchParams( useLocation().search );
@@ -43,12 +47,16 @@ const Routes = () => {
 			component: <DetailedReport />,
 		},
 		{
-			path: 'follow-up-emails',
-			component: <FollowUpEmails />,
+			path: 'follow-up-templates',
+			component: <FollowUpTemplates />,
 		},
 		{
 			path: 'integrations',
-			component: <Ottokit />,
+			component: <Integrations />,
+		},
+		{
+			path: 'onboarding',
+			component: <OnboardingLayout />,
 		},
 	];
 
@@ -60,6 +68,13 @@ const Routes = () => {
 		<div
 			className={ `ca-page-content--wrapper ${ currentPath } bg-primary-background` }
 		>
+			{ currentPath !== 'onboarding' && (
+				<>
+					<LegacyUiNotice />
+					<ProUpgradeHeaderBanner />
+					<Header />
+				</>
+			) }
 			{ routePage }
 			<Toaster
 				position="top-right"
@@ -74,3 +89,4 @@ const Routes = () => {
 };
 
 export default Routes;
+

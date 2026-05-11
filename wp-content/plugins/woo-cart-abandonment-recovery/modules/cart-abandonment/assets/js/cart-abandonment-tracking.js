@@ -3,32 +3,15 @@
 	const wcf_cart_abandonment = {
 		init() {
 			$( document ).ready( function () {
-				if (
-					wcf_ca_vars._show_gdpr_message &&
-					! $( '#wcf_cf_gdpr_message_block' ).length
-				) {
-					const target = wcf_ca_vars._is_block_based_checkout
-						? $( '#email' ).parent()
-						: $( '#billing_email' );
-					target.after(
-						"<span id='wcf_cf_gdpr_message_block'> <span style='font-size: xx-small'> " +
-							wcf_ca_vars._gdpr_message +
-							" <a style='cursor: pointer' id='wcf_ca_gdpr_no_thanks'> " +
-							wcf_ca_vars._gdpr_nothanks_msg +
-							' </a></span></span>'
-					);
-				}
+				wcf_cart_abandonment._add_gdpr_message_section();
+				wcf_cart_abandonment._register_events();
 			} );
 
 			$( document ).on(
 				'keyup keypress change',
-				'#email, #billing-phone, #billing_email, #billing_phone, #shipping-phone, #shipping_phone,  input.input-text, textarea.input-text, select',
+				'#email, #billing-phone, #billing_email, #billing_phone, #shipping-phone, #shipping_phone, #gdpr_phone_consent, input.input-text, textarea.input-text, select',
 				this._getCheckoutData
 			);
-
-			$( '#wcf_ca_gdpr_no_thanks' ).on( 'click', function () {
-				wcf_cart_abandonment._set_cookie();
-			} );
 
 			$( document.body ).on( 'updated_checkout', function () {
 				wcf_cart_abandonment._getCheckoutData();
@@ -39,6 +22,44 @@
 					wcf_cart_abandonment._getCheckoutData();
 				}, 800 );
 			} );
+		},
+
+		/**
+		 * Registers event handlers for cart abandonment tracking.
+		 * Currently, it attaches a click handler to the "No Thanks" button in the GDPR message block.
+		 * Additional event listeners can be added here for other tracking interactions as needed.
+		 */
+		_register_events() {
+			// Click event on no thanks button to dismiss the GDPR notice.
+			$( '#wcf_ca_gdpr_no_thanks' ).on( 'click', function () {
+				wcf_cart_abandonment._set_cookie();
+			} );
+		},
+
+		/**
+		 * Adds the GDPR message section to the checkout page if GDPR tracking messaging is enabled and the message
+		 * block does not already exist.
+		 *
+		 * Depending on whether the checkout is block-based or not, this function appends the GDPR message with
+		 * a "No Thanks" link near the appropriate input field. This message allows users to opt out of cart
+		 * abandonment tracking as per GDPR requirements.
+		 */
+		_add_gdpr_message_section() {
+			if (
+				wcf_ca_vars._show_gdpr_message &&
+				! $( '#wcf_cf_gdpr_message_block' ).length
+			) {
+				const target = wcf_ca_vars._is_block_based_checkout
+					? $( '#email' ).parent()
+					: $( '#billing_email' );
+				target.after(
+					"<span id='wcf_cf_gdpr_message_block'> <span style='font-size: xx-small'> " +
+						wcf_ca_vars._gdpr_message +
+						" <a style='cursor: pointer' id='wcf_ca_gdpr_no_thanks'> " +
+						wcf_ca_vars._gdpr_nothanks_msg +
+						' </a></span></span>'
+				);
+			}
 		},
 
 		_set_cookie() {
@@ -120,21 +141,22 @@
 					billing_last_name: 'billing-last_name',
 					billing_city: 'billing-city',
 					billing_company: 'billing-company',
-					billing_country: 'components-form-token-input-2',
+					billing_country: 'billing-country',
 					billing_address_1: 'billing-address_1',
 					billing_address_2: 'billing-address_2',
-					billing_state: 'components-form-token-input-3',
+					billing_state: 'billing-state',
 					billing_postcode: 'billing-postcode',
 					shipping_first_name: 'shipping-first_name',
 					shipping_last_name: 'shipping-last_name',
 					shipping_company: 'shipping-company',
-					shipping_country: 'components-form-token-input-0',
+					shipping_country: 'shipping-country',
 					shipping_address_1: 'shipping-address_1',
 					shipping_address_2: 'shipping-address_2',
 					shipping_city: 'shipping-city',
-					shipping_state: 'components-form-token-input-1',
+					shipping_state: 'shipping-state',
 					shipping_postcode: 'shipping-postcode',
 					order_comments: 'checkbox-control-0',
+					gdpr_phone_consent: 'gdpr_phone_consent:checked',
 				};
 
 				const fieldMapping = {
@@ -213,3 +235,4 @@
 
 	wcf_cart_abandonment.init();
 } )( jQuery );
+

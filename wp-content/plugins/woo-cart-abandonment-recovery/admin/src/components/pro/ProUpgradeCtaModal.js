@@ -11,11 +11,7 @@
 import React from 'react';
 import { Title, Text, Button } from '@bsf/force-ui';
 import ctaBanner from '@Images/cta-banner.svg';
-import {
-	getUpgradeMessage,
-	getUpgradeToProUrl,
-	getActionButtonText,
-} from './proStatus';
+import { useProAccess } from '@Components/pro/useProAccess';
 
 import { CheckIcon, BoltIcon } from '@heroicons/react/24/outline';
 
@@ -28,6 +24,8 @@ import { CheckIcon, BoltIcon } from '@heroicons/react/24/outline';
  * @param {Object} root0.props - Props object containing all component props
  */
 const ProUpgradeCtaModal = ( { props } ) => {
+	const { getUpgradeMessage, getActionButtonText, upgradeActionButton } =
+		useProAccess();
 	// Destructure props from the props object
 	const {
 		highlightText,
@@ -40,12 +38,15 @@ const ProUpgradeCtaModal = ( { props } ) => {
 		actionbtnUrl,
 		actionBtnUrlArgs,
 		footerMessage,
+		backgroundBlur,
 	} = props;
 
 	return (
 		<div className="absolute inset-0 z-10 flex items-center justify-center">
 			{ /* White blurred background overlay - reduced blur for better readability */ }
-			<div className="absolute inset-0 bg-white/20 backdrop-blur-[2px]"></div>
+			{ backgroundBlur && (
+				<div className="absolute inset-0 bg-white/20 backdrop-blur-[2px]"></div>
+			) }
 
 			{ /* Modal content - reduced height */ }
 			<div className="relative z-20 bg-white rounded-lg shadow-2xl w-full max-w-xl mx-4 p-6 border border-gray-200">
@@ -116,13 +117,10 @@ const ProUpgradeCtaModal = ( { props } ) => {
 						size="md"
 						className="px-8 py-3 w-full mt-2.5"
 						onClick={ () => {
-							const finalUrl = getUpgradeToProUrl(
+							upgradeActionButton(
 								actionBtnUrlArgs,
 								actionbtnUrl
 							);
-							if ( finalUrl ) {
-								window.open( finalUrl, '_blank' );
-							}
 						} }
 					>
 						{ actionBtnText

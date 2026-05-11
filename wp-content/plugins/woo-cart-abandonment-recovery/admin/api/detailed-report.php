@@ -104,6 +104,8 @@ class DetailedReport extends ApiBase {
 			'checkout_link'    => $checkout_link,
 		];
 
+		$response = apply_filters( 'wcar_detailed_report_data', $response, $details );
+
 		return rest_ensure_response( $response );
 	}
 
@@ -122,6 +124,8 @@ class DetailedReport extends ApiBase {
 			case WCF_CART_LOST_ORDER:
 			case WCF_CART_FAILED_ORDER:
 				return 'Failed';
+			case WCF_CART_BLACKLISTED_ORDER:
+				return 'Blacklisted';
 			default:
 				return 'Normal';
 		}

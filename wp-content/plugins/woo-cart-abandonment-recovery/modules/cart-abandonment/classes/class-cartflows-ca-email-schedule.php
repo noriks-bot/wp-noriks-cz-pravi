@@ -80,7 +80,7 @@ class Cartflows_Ca_Email_Schedule {
 				if ( ! $this->check_if_already_purchased_by_email_product_ids( $email_data, $email_data->cart_contents ) ) {
 					return false;
 				}
-
+				
 				/**
 				 * Filter to determine if email should be sent.
 				 *
@@ -113,10 +113,12 @@ class Cartflows_Ca_Email_Schedule {
 			$subject_email_preview = str_replace( '{{customer.firstname}}', $user_first_name, $subject_email_preview );
 			$subject_email_preview = str_replace( '{{customer.lastname}}', $user_last_name, $subject_email_preview );
 			$subject_email_preview = str_replace( '{{customer.fullname}}', $user_full_name, $subject_email_preview );
-			$body_email_preview    = convert_smilies( $email_data->email_body );
-			$body_email_preview    = str_replace( '{{customer.firstname}}', $user_first_name, $body_email_preview );
-			$body_email_preview    = str_replace( '{{customer.lastname}}', $user_last_name, $body_email_preview );
-			$body_email_preview    = str_replace( '{{customer.fullname}}', $user_full_name, $body_email_preview );
+			
+			$body_email_preview = html_entity_decode( $email_data->email_body, ENT_QUOTES, 'UTF-8' );
+			$body_email_preview = convert_smilies( $body_email_preview );
+			$body_email_preview = str_replace( '{{customer.firstname}}', $user_first_name, $body_email_preview );
+			$body_email_preview = str_replace( '{{customer.lastname}}', $user_last_name, $body_email_preview );
+			$body_email_preview = str_replace( '{{customer.fullname}}', $user_full_name, $body_email_preview );
 
 			$email_instance = Cartflows_Ca_Email_Templates::get_instance();
 			if ( $preview_email ) {
@@ -139,6 +141,9 @@ class Cartflows_Ca_Email_Schedule {
 				'wcf_preview_email' => $preview_email ? true : false,
 			];
 
+			// Filter to modify token data.
+			$token_data = apply_filters( 'wcar_add_token_data', $token_data, $email_data );
+
 			$checkout_url = Cartflows_Ca_Helper::get_instance()->get_checkout_url( $email_data->checkout_id, $token_data );
 
 			$subject_email_preview = str_replace( '{{cart.coupon_code}}', $coupon_code, $subject_email_preview );
@@ -151,6 +156,7 @@ class Cartflows_Ca_Email_Schedule {
 			$body_email_preview    = str_replace( '{{cart.unsubscribe}}', $unsubscribe_element, $body_email_preview );
 			$body_email_preview    = str_replace( 'http://{{cart.checkout_url}}', '{{cart.checkout_url}}', $body_email_preview );
 			$body_email_preview    = str_replace( 'https://{{cart.checkout_url}}', '{{cart.checkout_url}}', $body_email_preview );
+			$body_email_preview    = str_replace( "'{{cart.checkout_url}}'", '{{cart.checkout_url}}', $body_email_preview );
 			$body_email_preview    = str_replace( '{{cart.checkout_url}}', $checkout_url, $body_email_preview );
 			$host                  = wp_parse_url( get_site_url() );
 			$body_email_preview    = str_replace( '{{site.url}}', $host['host'], $body_email_preview );
@@ -179,6 +185,9 @@ class Cartflows_Ca_Email_Schedule {
 			$body_email_preview = str_replace( '{{cart.product.table}}', $var, $body_email_preview );
 			$body_email_preview = wpautop( $body_email_preview );
 
+			// Convert TinyMCE alignment classes to inline styles for email compatibility.
+			$body_email_preview = $this->convert_alignment_classes_to_styles( $body_email_preview );
+
 			/**
 			 * Filter to modify email body before sending.
 			 *
@@ -205,6 +214,27 @@ class Cartflows_Ca_Email_Schedule {
 
 				$site_title                 = get_bloginfo( 'name' );
 				$email_body_template_footer = str_ireplace( '{site_title}', $site_title, $email_body_template_footer );
+				
+				$address  = get_option( 'woocommerce_store_address' );
+				$address2 = get_option( 'woocommerce_store_address_2' );
+				$city     = get_option( 'woocommerce_store_city' );
+				$postcode = get_option( 'woocommerce_store_postcode' );
+				$country  = get_option( 'woocommerce_default_country' );
+				// Build the address only with non-empty fields.
+				$parts = array_filter(
+					[
+						$address,
+						$address2,
+						$city,
+						$postcode,
+						$country,
+					] 
+				);
+
+				// Join parts with commas.
+				$full_address = implode( ', ', $parts );
+
+				$email_body_template_footer = str_replace( '{store_address}', $full_address, $email_body_template_footer );
 
 				$final_email_body = $email_body_template_header . $body_email_preview . $email_body_template_footer;
 				return $this->send_email( $email_data, $subject_email_preview, $final_email_body, $headers, $preview_email, 'wc_mail' );
@@ -239,6 +269,9 @@ class Cartflows_Ca_Email_Schedule {
 		$email_data->email_body    = filter_input( INPUT_POST, 'email_body', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 		$email_data->email_subject = $helper_class->sanitize_text_filter( 'email_subject', 'POST' );
 		$email_data->email_body    = html_entity_decode( $email_data->email_body, ENT_COMPAT, 'UTF-8' );
+		$email_data->email_body    = preg_replace( '#<script\b[^>]*>[\s\S]*?<\/script>#i', '', $email_data->email_body );
+		$email_data->email_body    = preg_replace( '#\s+on[a-z]+\s*=\s*(?:"[^"]*"|\'[^\']*\'|[^\s>]*)#i', '', $email_data->email_body );
+		$email_data->email_body    = preg_replace( '#(href|src)\s*=\s*(["\'])\s*javascript:[^"\']*\2#i', '$1=$2$2', $email_data->email_body );
 		$email_data->other_fields  = maybe_serialize(
 			[
 				'wcf_first_name' => $current_user->user_firstname,
@@ -526,7 +559,6 @@ class Cartflows_Ca_Email_Schedule {
 				'coupon_amount'       => $amount,
 				'individual_use'      => $individual_use,
 				'product_ids'         => '',
-				'exclude_product_ids' => '',
 				'usage_limit'         => '1',
 				'usage_count'         => '0',
 				'date_expires'        => $expiry,
@@ -566,7 +598,7 @@ class Cartflows_Ca_Email_Schedule {
 	 * @param array $cart_items Cart items array.
 	 * @return bool
 	 */
-	private function cart_contains_out_of_stock_products( $cart_items ) {
+	public function cart_contains_out_of_stock_products( $cart_items ) {
 		if ( empty( $cart_items ) || ! is_array( $cart_items ) ) {
 			return false;
 		}
@@ -618,6 +650,83 @@ class Cartflows_Ca_Email_Schedule {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Convert TinyMCE alignment classes to inline styles for email compatibility.
+	 *
+	 * @param string $content Email content with potential alignment classes.
+	 * @return string Content with alignment classes converted to inline styles.
+	 */
+	public function convert_alignment_classes_to_styles( $content ) {
+		// Pattern to match img tags with alignment classes.
+		$pattern = '/<img([^>]*?)class=["\']([^"\']*?)(alignleft|aligncenter|alignright|alignnone)([^"\']*?)["\']([^>]*?)>/i';
+		
+		return preg_replace_callback( $pattern, array( __CLASS__, 'replace_alignment_callback' ), $content );
+	}
+
+	/**
+	 * Callback function to replace alignment classes with inline styles.
+	 *
+	 * @param array $matches Regex matches.
+	 * @return string Modified img tag with inline styles.
+	 */
+	private function replace_alignment_callback( $matches ) {
+		$before_class = $matches[1];
+		$class_before = $matches[2];
+		$alignment    = $matches[3];
+		$class_after  = $matches[4];
+		$after_class  = $matches[5];
+		
+		// Remove the alignment class from the class attribute.
+		$new_classes = trim( $class_before . ' ' . $class_after );
+		$new_classes = preg_replace( '/\s+/', ' ', $new_classes );
+		
+		// Get alignment style.
+		$alignment_style = $this->get_alignment_style( $alignment );
+		
+		// Check if style attribute already exists.
+		if ( preg_match( '/style=["\']([^"\']*)["\']/', $before_class . $after_class, $style_matches ) ) {
+			// Merge with existing styles.
+			$existing_style = rtrim( $style_matches[1], '; ' );
+			$new_style      = $existing_style . '; ' . $alignment_style;
+			$img_tag        = preg_replace( '/style=["\'][^"\']*["\']/', 'style="' . $new_style . '"', $before_class . $after_class );
+		} else {
+			// Add new style attribute.
+			$img_tag = $before_class . ' style="' . $alignment_style . '"' . $after_class;
+		}
+		
+		// Rebuild the img tag.
+		if ( ! empty( $new_classes ) ) {
+			$class_attr = ' class="' . $new_classes . '"';
+		} else {
+			$class_attr = '';
+			// Remove empty class attribute.
+			$img_tag = preg_replace( '/\s*class=["\']["\']/', '', $img_tag );
+		}
+		
+		return '<img' . $img_tag . $class_attr . '>';
+	}
+
+	/**
+	 * Get CSS style for alignment.
+	 *
+	 * @param string $alignment Alignment class (alignleft, aligncenter, alignright, alignnone).
+	 * @return string CSS style string.
+	 */
+	private function get_alignment_style( $alignment ) {
+		switch ( $alignment ) {
+			case 'alignleft':
+				return 'float: left; margin: 0 10px 10px 0';
+			case 'alignright':
+				return 'float: right; margin: 0 0 10px 10px';
+			case 'aligncenter':
+				return 'display: block; margin: 0 auto';
+			case 'alignnone':
+				return 'display: inline; margin: 0';
+			default:
+				return '';
+		}
 	}
 
 }

@@ -18,6 +18,7 @@ use AdTribes\PFP\Classes\Admin_Pages\Manage_Feeds_Page;
 use AdTribes\PFP\Classes\Rules;
 use AdTribes\PFP\Classes\Filters;
 use AdTribes\PFP\Classes\Upsell;
+use AdTribes\PFP\Factories\Admin_Notice;
 
 /**
  * Edit_Feed_Page class.
@@ -78,7 +79,8 @@ class Edit_Feed_Page extends Admin_Page {
      * @since 13.4.4
      */
     public function enqueue_scripts() {
-        $tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'general'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $tab     = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'general'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $feed_id = isset( $_GET['id'] ) ? sanitize_text_field( wp_unslash( $_GET['id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
         // Load Google Taxonomy JS.
         switch ( $tab ) {
@@ -127,13 +129,23 @@ class Edit_Feed_Page extends Admin_Page {
             array(
                 'adtNonce'   => wp_create_nonce( 'adt_nonce' ),
                 'upsellL10n' => Upsell::instance()->upsell_l10n(),
+                'feed_id'    => $feed_id,
+                'feed_data'  => array(),
             )
         );
+
+        // Get the feed data if it's editing an existing feed.
+        if ( $feed_id > 0 ) {
+            $feed = Product_Feed_Helper::get_product_feed( $feed_id );
+
+            // Product_Feed extended from WP_Post object to usable array for JS.
+            $l10n['feed_data'] = $feed->data;
+        }
 
         $app = new Vite_App(
             'adt-edit-feed-script',
             'src/vanilla/edit-feed/index.ts',
-            array( 'jquery', 'wp-i18n', 'select2' ),
+            array( 'jquery', 'wp-i18n', Helper::get_wc_script_handle( 'select2' ) ),
             $l10n,
             'adtObj',
             array()
@@ -328,7 +340,7 @@ class Edit_Feed_Page extends Admin_Page {
      *
      * @since 13.4.4
      * @param string|array $json_data The JSON data to decode.
-     * @return array The decoded and sanitized data.
+     * @return array The decoded data.
      */
     private function decode_json_data( $json_data ) {
         // Handle JSON string input.
@@ -341,15 +353,10 @@ class Edit_Feed_Page extends Admin_Page {
 
             $decoded_data = json_decode( $json_data, true );
             if ( json_last_error() === JSON_ERROR_NONE && is_array( $decoded_data ) ) {
-                return Sanitization::sanitize_array( $decoded_data );
+                return $decoded_data;
             } else {
                 return array();
             }
-        }
-
-        // If it's already an array, just sanitize it.
-        if ( is_array( $json_data ) ) {
-            return Sanitization::sanitize_array( $json_data );
         }
 
         return array();
@@ -368,7 +375,10 @@ class Edit_Feed_Page extends Admin_Page {
         }
 
         // First, sanitize the entire array structure using Helper method.
-        $filters_data = Sanitization::sanitize_array( $filters_data );
+        $filters_data = Sanitization::sanitize_array(
+            $filters_data,
+            array( 'allow_html' => true )
+        );
 
         $cleaned_data     = array();
         $valid_conditions = Filters::instance()->get_conditions( true );
@@ -559,7 +569,10 @@ class Edit_Feed_Page extends Admin_Page {
         }
 
         // First, sanitize the entire array structure.
-        $rules_data = Sanitization::sanitize_array( $rules_data );
+        $rules_data = Sanitization::sanitize_array(
+            $rules_data,
+            array( 'allow_html' => true )
+        );
 
         $cleaned_rules    = array();
         $valid_conditions = Rules::instance()->get_conditions( true );
@@ -573,6 +586,8 @@ class Edit_Feed_Page extends Admin_Page {
             }
 
             $cleaned_rule = array();
+
+            $cleaned_rule['name'] = $rule['name'] ?? '';
 
             // Process IF conditions.
             $cleaned_rule['if'] = $this->clean_rule_conditions( $rule['if'], $valid_conditions );
@@ -724,21 +739,37 @@ class Edit_Feed_Page extends Admin_Page {
                 wp_die( esc_html__( 'Feed not found', 'woo-product-feed-pro' ) );
             }
 
-            // Process the form based on the active tab.
-            $this->process_tab_form( $active_tab, $feed );
+            // Prevent updating feed settings while feed is processing.
+            if ( 'processing' === $feed->status ) {
+                // Redirect back to the same tab with processing message.
+                wp_safe_redirect(
+                    add_query_arg(
+                        array(
+                            'page'    => self::MENU_SLUG,
+                            'id'      => $feed_id,
+                            'tab'     => $active_tab,
+                            'message' => 2,
+                        ),
+                        admin_url( 'admin.php' )
+                    )
+                );
+            } else {
+                // Process the form based on the active tab.
+                $this->process_tab_form( $active_tab, $feed );
 
-            // Redirect back to the same tab to prevent form resubmission.
-            wp_safe_redirect(
-                add_query_arg(
-                    array(
-                        'page'    => self::MENU_SLUG,
-                        'id'      => $feed_id,
-                        'tab'     => $active_tab,
-                        'updated' => '1',
-                    ),
-                    admin_url( 'admin.php' )
-                )
-            );
+                // Redirect back to the same tab to prevent form resubmission.
+                wp_safe_redirect(
+                    add_query_arg(
+                        array(
+                            'page'    => self::MENU_SLUG,
+                            'id'      => $feed_id,
+                            'tab'     => $active_tab,
+                            'message' => 1,
+                        ),
+                        admin_url( 'admin.php' )
+                    )
+                );
+            }
         } else {
             // New feed - process temp data.
             $feed = $this->update_temp_product_feed( $_POST ?? array() ); // phpcs:ignore WordPress.Security.NonceVerification
@@ -784,8 +815,8 @@ class Edit_Feed_Page extends Admin_Page {
                     )
                 );
             }
-            exit;
         }
+        exit;
     }
 
     /**
@@ -835,9 +866,12 @@ class Edit_Feed_Page extends Admin_Page {
     private function process_general_tab_form( $feed ) {
         // phpcs:disable WordPress.Security.NonceVerification
 
-        // Get the current refresh interval.
-        $refresh_interval_before = $feed->refresh_interval ?? '';
+        // Get the current feed.
+        $feed_before = clone $feed;
 
+        // Process total_product_orders_lookback field - preserve empty strings.
+        $total_product_orders_lookback = isset( $_POST['total_product_orders_lookback'] ) ? sanitize_text_field( wp_unslash( $_POST['total_product_orders_lookback'] ) ) : '';
+        $total_product_orders_lookback = '' !== trim( $total_product_orders_lookback ) ? absint( $total_product_orders_lookback ) : '';
         // Process form data.
         $props_to_update = array(
             'title'                                  => isset( $_POST['projectname'] ) ? sanitize_text_field( wp_unslash( $_POST['projectname'] ) ) : '',
@@ -850,8 +884,17 @@ class Edit_Feed_Page extends Admin_Page {
             'include_all_shipping_countries'         => isset( $_POST['include_all_shipping_countries'] ) ? 'yes' : 'no',
             'create_preview'                         => isset( $_POST['preview_feed'] ) ? 'yes' : 'no',
             'refresh_only_when_product_changed'      => isset( $_POST['products_changed'] ) ? 'yes' : 'no',
-            'utm_total_product_orders_lookback'      => isset( $_POST['total_product_orders_lookback'] ) ? intval( $_POST['total_product_orders_lookback'] ) : '',
+            'utm_total_product_orders_lookback'      => $total_product_orders_lookback,
         );
+
+        // Allow updating the countries for all feeds channel.
+        if ( Product_Feed_Helper::is_all_feeds_channel( $feed->get_channel( 'fields' ) ) ) {
+            if ( isset( $_POST['countries'] ) && '' !== $_POST['countries'] ) {
+                $props_to_update['country'] = Product_Feed_Helper::get_code_from_legacy_country_name( sanitize_text_field( wp_unslash( $_POST['countries'] ) ) );
+            } else {
+                $props_to_update['country'] = '';
+            }
+        }
 
         /**
          * Filter the product feed properties to update for the general tab.
@@ -867,7 +910,7 @@ class Edit_Feed_Page extends Admin_Page {
         $feed->save();
 
         // Re-register the product feed action scheduler if the refresh interval has changed.
-        if ( '' !== $feed->refresh_interval && $refresh_interval_before !== $feed->refresh_interval ) {
+        if ( '' !== $feed->refresh_interval && $feed_before->refresh_interval !== $feed->refresh_interval ) {
             $feed->register_action();
         } elseif ( '' === $feed->refresh_interval ) {
             $feed->unregister_action();
@@ -879,8 +922,9 @@ class Edit_Feed_Page extends Admin_Page {
          * @since 13.4.4
          * @param object $feed The product feed object.
          * @param array  $props_to_update The updated properties.
+         * @param object $feed_before The feed object before the update.
          */
-        do_action( 'adt_after_process_general_tab_form', $feed, $props_to_update );
+        do_action( 'adt_after_process_general_tab_form', $feed, $props_to_update, $feed_before );
         // phpcs:enable WordPress.Security.NonceVerification
     }
 
@@ -896,6 +940,14 @@ class Edit_Feed_Page extends Admin_Page {
 
         // Process field mapping data.
         $attributes = isset( $_POST['attributes'] ) ? Sanitization::sanitize_array( $_POST['attributes'] ) : array(); // phpcs:ignore
+
+        // Clean up attributes: remove static_value flag if it's not actually a static value.
+        foreach ( $attributes as $key => $attribute ) {
+            // If static_value flag is not 'true', remove it from the attribute.
+            if ( isset( $attribute['static_value'] ) && 'true' !== $attribute['static_value'] ) {
+                unset( $attributes[ $key ]['static_value'] );
+            }
+        }
 
         $props_to_update = array(
             'attributes' => $attributes,
@@ -1117,7 +1169,6 @@ class Edit_Feed_Page extends Admin_Page {
             'utm_source'   => isset( $_POST['utm_source'] ) ? sanitize_text_field( wp_unslash( $_POST['utm_source'] ) ) : '',
             'utm_medium'   => isset( $_POST['utm_medium'] ) ? sanitize_text_field( wp_unslash( $_POST['utm_medium'] ) ) : '',
             'utm_campaign' => isset( $_POST['utm_campaign'] ) ? sanitize_text_field( wp_unslash( $_POST['utm_campaign'] ) ) : '',
-            'utm_term'     => isset( $_POST['utm_term'] ) ? sanitize_text_field( wp_unslash( $_POST['utm_term'] ) ) : '',
             'utm_content'  => isset( $_POST['utm_content'] ) ? sanitize_text_field( wp_unslash( $_POST['utm_content'] ) ) : '',
         );
 
@@ -1214,7 +1265,6 @@ class Edit_Feed_Page extends Admin_Page {
                     'utm_source'                        => $feed_data['utm_source'] ?? '',
                     'utm_medium'                        => $feed_data['utm_medium'] ?? '',
                     'utm_campaign'                      => $feed_data['utm_campaign'] ?? '',
-                    'utm_term'                          => $feed_data['utm_term'] ?? '',
                     'utm_content'                       => $feed_data['utm_content'] ?? '',
                     'utm_total_product_orders_lookback' => $feed_data['total_product_orders_lookback'] ?? '',
                     'legacy_project_hash'               => $feed_data['project_hash'] ?? '',
@@ -1253,7 +1303,7 @@ class Edit_Feed_Page extends Admin_Page {
          * Run the product feed batch processing.
          * This is the legacy code base processing logic.
          */
-        $product_feed->generate( 'cron' );
+        $product_feed->generate( 'schedule' );
     }
 
     /**
@@ -1332,6 +1382,41 @@ class Edit_Feed_Page extends Admin_Page {
     }
 
     /**
+     * Display admin messages using WordPress standard approach.
+     *
+     * @since 13.4.7
+     * @return void
+     */
+    public function display_admin_messages() {
+        // Only show on edit feed page.
+        $screen = get_current_screen();
+        if ( 'product-feed-pro_page_adt-edit-feed' !== $screen->id && 'product-feed-elite_page_adt-edit-feed' !== $screen->id ) {
+            return;
+        }
+
+        // Get message from URL parameter.
+        $message = isset( $_GET['message'] ) ? sanitize_text_field( wp_unslash( $_GET['message'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+        // Define messages similar to WordPress post_updated_messages.
+        $messages = array(
+            1 => array(
+                'message' => __( 'Feed settings updated successfully.', 'woo-product-feed-pro' ),
+                'type'    => 'success',
+            ),
+            2 => array(
+                'message' => __( 'Failed to update feed settings.', 'woo-product-feed-pro' ),
+                'type'    => 'error',
+            ),
+        );
+
+        // Display the appropriate message.
+        if ( ! empty( $message ) && isset( $messages[ $message ] ) ) {
+            $admin_notice = new Admin_Notice( $messages[ $message ]['message'], $messages[ $message ]['type'] );
+            $admin_notice->run();
+        }
+    }
+
+    /**
      * Run the admin page.
      *
      * @since 13.4.4
@@ -1349,5 +1434,8 @@ class Edit_Feed_Page extends Admin_Page {
 
         // Register AJAX endpoint to check required fields in temporary feed data.
         add_action( 'wp_ajax_check_temp_feed_required_fields', array( $this, 'ajax_check_temp_feed_required_fields' ) );
+
+        // Admin notices for our custom page (following WordPress conventions).
+        add_action( 'admin_notices', array( $this, 'display_admin_messages' ) );
     }
 }

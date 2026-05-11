@@ -68,15 +68,36 @@ class Filters_Rules extends Abstract_REST {
      * @access private
      *
      * @param Product_Feed $feed The feed object.
+     * @param string       $type The type of data to get.
+     *                           'filters' for filters and rules builder.
+     *                           'rules' for rules builder.
+     *                           'rules_then' for then attributes builder.
      * @return array
      */
-    private function get_attributes( $feed = null ) {
+    private function get_attributes( $feed = null, $type = 'filters' ) {
         // Get the Product_Feed_Attributes instance.
         $product_feed_attributes = Product_Feed_Attributes::instance();
         $attributes              = $product_feed_attributes->get_attributes();
         $feed_channel            = $feed ? $feed->get_channel( 'fields' ) : null;
 
-        $attributes = apply_filters( 'adt_pfp_get_filters_rules_attributes', $attributes, $feed_channel );
+        if ( 'filters' === $type || 'rules' === $type ) {
+            // Exclude attributes for filter and rules conditions builder.
+            $attributes_to_exclude = array(
+                'Other fields' => array(
+                    'static_value',
+                    'page_url',
+                    'post_url',
+                ),
+            );
+
+            foreach ( $attributes_to_exclude as $group_name => $group_attributes ) {
+                foreach ( $group_attributes as $attribute ) {
+                    unset( $attributes[ $group_name ][ $attribute ] );
+                }
+            }
+        }
+
+        $attributes = apply_filters( 'adt_pfp_get_filters_rules_attributes', $attributes, $feed_channel, $type );
 
         // Transform the attributes to match the expected format.
         $formatted_attributes = array();
@@ -218,7 +239,7 @@ class Filters_Rules extends Abstract_REST {
         }
 
         // Get attributes, conditions, and categories for the builder.
-        $response_data['attributes'] = $this->get_attributes( $feed );
+        $response_data['attributes'] = $this->get_attributes( $feed, $type );
         $response_data['categories'] = $this->get_categories_data( $feed_id );
 
         // Get conditions and actions for the builder.
@@ -236,7 +257,11 @@ class Filters_Rules extends Abstract_REST {
         $default_rules   = array( 'rules' => array() );
 
         if ( 'rules' === $type ) {
-            $response_data['actions'] = $this->rules->get_actions();
+            $response_data['actions']       = $this->rules->get_actions();
+            $response_data['field_mapping'] = $feed ? $feed->attributes : array();
+
+            // Get then attributes for rules builder.
+            $response_data['thenAttributes'] = $this->get_attributes( $feed, 'rules_then' );
 
             if ( $feed ) {
                 // Existing feed - get from feed data.
@@ -405,10 +430,63 @@ class Filters_Rules extends Abstract_REST {
 
         // Transform exclude filters to new schema.
         if ( ! empty( $exclude_filters ) ) {
-            $new_filters['exclude'] = $this->build_group( $exclude_filters );
+            $new_filters['exclude'] = $this->build_exclude_groups( $exclude_filters );
         }
 
         return $new_filters;
+    }
+
+    /**
+     * Build separate groups for exclude filters with OR logic.
+     *
+     * @since 13.4.6
+     * @access private
+     *
+     * @param array $exclude_filters Array of exclude filter data.
+     * @return array The groups structure with OR logic.
+     */
+    private function build_exclude_groups( $exclude_filters ) {
+        if ( empty( $exclude_filters ) ) {
+            return array();
+        }
+
+        $groups       = array();
+        $filter_count = count( $exclude_filters );
+
+        foreach ( $exclude_filters as $index => $filter ) {
+            if ( empty( $filter['attribute'] ) || empty( $filter['value'] ) ) {
+                continue;
+            }
+
+            // Build the data array for the filter.
+            $data = array(
+                'attribute'      => $filter['attribute'],
+                'condition'      => $filter['condition'] ?? 'contains',
+                'value'          => $filter['value'],
+                'case_sensitive' => $filter['case_sensitive'] ?? false,
+            );
+
+            // Create a separate group for each exclude filter.
+            $groups[] = array(
+                'type'   => 'group',
+                'fields' => array(
+                    array(
+                        'type' => 'field',
+                        'data' => $data,
+                    ),
+                ),
+            );
+
+            // Add group logic operator between groups (except after the last group).
+            if ( $index < $filter_count - 1 ) {
+                $groups[] = array(
+                    'type'  => 'group_logic',
+                    'value' => 'or',
+                );
+            }
+        }
+
+        return $groups;
     }
 
     /**
@@ -441,7 +519,7 @@ class Filters_Rules extends Abstract_REST {
 
             // Add type-specific fields.
             $data['condition']      = $item['condition'] ?? 'contains';
-            $data['case_sensitive'] = $item['case_sensitive'] ?? '0';
+            $data['case_sensitive'] = $item['case_sensitive'] ?? false;
 
             // Add the field.
             $fields[] = array(

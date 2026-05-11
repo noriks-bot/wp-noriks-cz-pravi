@@ -90,7 +90,7 @@ class Cartflows_Ca_Admin_Notices {
                             </div>
                         </div>',
 					$image_path,
-					__( 'Hello! Seems like you have used WooCommerce Cart Abandonment Recovery by CartFlows plugin to recover abandoned carts. &mdash; Thanks a ton!', 'woo-cart-abandonment-recovery' ),
+					__( 'Hello! Seems like you have used Cart Abandonment Recovery for WooCommerce plugin to recover abandoned carts. &mdash; Thanks a ton!', 'woo-cart-abandonment-recovery' ),
 					__( 'Could you please do us a BIG favor and give it a 5-star rating on WordPress? This would boost our motivation and help other users make a comfortable decision while choosing the CartFlows cart abandonment plugin.', 'woo-cart-abandonment-recovery' ),
 					$review_url,
 					__( 'Ok, you deserve it', 'woo-cart-abandonment-recovery' ),
@@ -124,16 +124,19 @@ class Cartflows_Ca_Admin_Notices {
 
 					// Step 1 i.e rating input.
 					'logo'                  => esc_url( CARTFLOWS_CA_URL . 'admin/assets/images/wcar-icon.svg' ),
-					'plugin_name'           => __( 'WooCommerce Cart Abandonment Recovery', 'woo-cart-abandonment-recovery' ),
+					'plugin_name'           => __( 'Cart Abandonment Recovery', 'woo-cart-abandonment-recovery' ),
 					'nps_rating_message'    => __( 'How likely are you to recommend #pluginname to your friends or colleagues?', 'woo-cart-abandonment-recovery' ),
 
 					// Step 2A i.e. positive.
-					'feedback_content'      => __( 'Could you please do us a favor and give us a 5-star rating on WordPress? It would help others choose WooCommerce Cart Abandonment Recovery with confidence. Thank you!', 'woo-cart-abandonment-recovery' ),
+					'feedback_content'      => __( 'Could you please do us a favor and give us a 5-star rating on WordPress? It would help others choose Cart Abandonment Recovery for WooCommerce with confidence. Thank you!', 'woo-cart-abandonment-recovery' ),
 					'plugin_rating_link'    => esc_url( 'https://wordpress.org/support/plugin/cartflows/reviews/?filter=5#new-post' ),
 
 					// Step 2B i.e. negative.
 					'plugin_rating_title'   => __( 'Thank you for your feedback', 'woo-cart-abandonment-recovery' ),
 					'plugin_rating_content' => __( 'We value your input. How can we improve your experience?', 'woo-cart-abandonment-recovery' ),
+				),
+				'privacy_policy'   => array(
+					'url' => 'https://cartflows.com/privacy-policy/',
 				),
 			)
 		);
@@ -157,7 +160,7 @@ class Cartflows_Ca_Admin_Notices {
 			$setting_url = admin_url( 'admin.php?page=woo-cart-abandonment-recovery&action=settings#wcf-ca-weekly-report-email-settings' );
 
 			/* translators: %1$s Software Title, %2$s Plugin, %3$s Anchor opening tag, %4$s Anchor closing tag, %5$s Software Title. */
-			$message = sprintf( __( '%1$sWooCommerce Cart Abandonment recovery:%2$s We just introduced an awesome new feature, weekly order recovery reports via email. Now you can see how many orders we are recovering for your store each week, without having to log into your website. You can set the email address for these email from %3$shere.%4$s', 'woo-cart-abandonment-recovery' ), '<strong>', '</strong>', '<a class="wcf-ca-redirect-to-settings" target="_blank" href=" ' . esc_url( $setting_url ) . ' ">', '</a>' );
+			$message = sprintf( __( '%1$sCart Abandonment Recovery for WooCommerce:%2$s We just introduced an awesome new feature, weekly order recovery reports via email. Now you can see how many orders we are recovering for your store each week, without having to log into your website. You can set the email address for these email from %3$shere.%4$s', 'woo-cart-abandonment-recovery' ), '<strong>', '</strong>', '<a class="wcf-ca-redirect-to-settings" target="_blank" href=" ' . esc_url( $setting_url ) . ' ">', '</a>' );
 			$output  = '<div class="weekly-report-email-notice wcar-dismissible-notice notice notice-info is-dismissible">';
 			$output .= '<p>' . $message . '</p>';
 			$output .= '</div>';
@@ -232,16 +235,16 @@ class Cartflows_Ca_Admin_Notices {
 
 		Astra_Notices::add_notice(
 			array(
-				'id'                   => 'wcar-new-ui-notice',
-				'type'                 => 'info',
-				'class'                => 'wcar-new-ui',
+				'id'                   => 'wcar-ui-switch-notice',
+				'type'                 => 'warning',
+				'class'                => 'wcar-switch-ui',
 				'show_if'              => true,
 				/* translators: %1$s white label plugin name and %2$s deactivation link */
 				'message'              => sprintf(
-					'<div class="notice-image" style="display: flex;">
-                        <img src="%1$s" class="custom-logo" alt="WooCommerce Cart Abandonment Recovery Icon" itemprop="logo"></div>
+					'<div class="notice-image">
+                        <img src="%1$s" class="custom-logo" alt="Cart Abandonment Recovery for WooCommerce Icon" itemprop="logo"></div>
                         <div class="notice-content">
-                            <div class="notice-heading">
+                            <div class="notice-heading" style="font-weight: 700;">
                                 %2$s
                             </div>
                             <div class="notice-description">
@@ -251,22 +254,16 @@ class Cartflows_Ca_Admin_Notices {
 								<button type="button" class="astra-notice-close astra-review-notice button-primary wcar-switch-ui-btn" data-action="new-ui" data-nonce="%4$s">
 									%5$s
 								</button>
-                                <a href="#" data-repeat-notice-after="%6$s" class="astra-notice-close astra-review-notice" data-nonce="%7$s">
-                                	%8$s
-                                </a>
                             </div>
                         </div>',
 					$image_path,
-					__( "We've Got a New Look!", 'woo-cart-abandonment-recovery' ),
-					__( 'We’ve updated the admin interface to make it faster and easier to use. Switch now for a better experience.', 'woo-cart-abandonment-recovery' ),
+					__( 'Legacy UI Deprecation', 'woo-cart-abandonment-recovery' ),
+					__( 'We’re retiring the Legacy UI of Cart Abandonment Recovery to improve performance, ensure better WooCommerce compatibility, and support upcoming features. Please switch to the new UI to maintain uninterrupted cart recovery.', 'woo-cart-abandonment-recovery' ),
 					$ajax_nonce,
-					__( 'Use New UI', 'woo-cart-abandonment-recovery' ),
-					2 * WEEK_IN_SECONDS,
-					$ajax_nonce,
-					__( 'Nope, maybe later', 'woo-cart-abandonment-recovery' ),
+					__( 'Switch to New UI', 'woo-cart-abandonment-recovery' )
 				),
-				'repeat-notice-after'  => 2 * WEEK_IN_SECONDS,
-				'display-notice-after' => false, // Display notice after 2 weeks.
+				'repeat-notice-after'  => 1 * WEEK_IN_SECONDS,
+				'display-notice-after' => false,
 			)
 		);
 	}
@@ -355,7 +352,7 @@ class Cartflows_Ca_Admin_Notices {
 		 *
 		 * @since 2.0.0
 		 */
-		return ( 0 <= $total_email_templates );
+		return ( 1 <= $total_email_templates );
 	}
 }
 

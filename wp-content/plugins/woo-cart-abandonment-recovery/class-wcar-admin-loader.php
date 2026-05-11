@@ -16,6 +16,7 @@ use WCAR\Admin\Ajax\Ajax_Init;
 use WCAR\Admin\Api\ApiInit;
 use WCAR\Admin\Inc\Meta_Options;
 use WCAR\Admin\Inc\Wcar_Admin;
+use WCAR\Admin\Inc\Wcar_Onboarding;
 
 /**
  * Class Admin_Loader.
@@ -110,6 +111,7 @@ class WCAR_Admin_Loader {
 		ApiInit::get_instance();
 		Ajax_Init::get_instance();
 		Meta_Options::get_instance();
+		Wcar_Onboarding::get_instance();
 
 		if ( is_admin() ) {
 			Wcar_Admin::get_instance();

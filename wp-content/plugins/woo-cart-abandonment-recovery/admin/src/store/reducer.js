@@ -8,11 +8,14 @@ export const initialState = {
 		values: cart_abandonment_admin?.settings || {},
 		fields: cart_abandonment_admin?.settings_fields || {},
 	},
+	licenseStatus: cart_abandonment_admin?.license_status || '',
 	dashboardData: '',
 	isDashboardLoading: false,
 	dashboardError: '',
 	followUpData: '',
 	productData: '',
+	legacyUiNoticeDismissed:
+		cart_abandonment_admin?.car_legacy_ui_notice_dismissed || false,
 };
 
 export const reducer = ( state = initialState, action ) => {
@@ -82,7 +85,18 @@ export const reducer = ( state = initialState, action ) => {
 				...state,
 				productData: action.productData,
 			};
+		case ActionTypes.UPDATE_LICENSE_STATUS:
+			return {
+				...state,
+				licenseStatus: action.payload,
+			};
+		case ActionTypes.DISMISS_LEGACY_UI_NOTICE:
+			return {
+				...state,
+				legacyUiNoticeDismissed: action.payload,
+			};
 		default:
 			return state;
 	}
 };
+

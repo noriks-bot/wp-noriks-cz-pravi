@@ -25,7 +25,7 @@ class Cartflows_Ca_Setting_Functions {
 	 */
 	public function __construct() {
 
-		$page = Cartflows_Ca_Helper::get_instance()->sanitize_text_filter( 'page', 'GET' );
+		$page = wcf_ca()->helper->sanitize_text_filter( 'page', 'GET' );
 
 		if ( WCF_CA_PAGE_NAME === $page ) {
 			// Adding filter to add new button to add custom fields.
@@ -74,7 +74,7 @@ class Cartflows_Ca_Setting_Functions {
 	 */
 	public function wcf_filter_mce_plugin( $plugins ) {
 
-		$file_ext = Cartflows_Ca_Helper::get_instance()->get_js_file_ext();
+		$file_ext = wcf_ca()->helper->get_js_file_ext();
 
 		$plugins['cartflows_ac'] = CARTFLOWS_CA_URL . 'admin/assets/' . $file_ext['folder'] . '/admin-mce.' . $file_ext['file_ext'];
 		return $plugins;
@@ -120,13 +120,19 @@ class Cartflows_Ca_Setting_Functions {
 			$coupon_count = count( $coupons );
 
 			if ( $coupon_count ) {
-				$coupons_post_ids = implode( ',', wp_list_pluck( $coupons, 'ID' ) );
-				// Can't use placeholders for table/column names, it will be wrapped by a single quote (') instead of a backquote (`).
+				$coupons_post_ids = array_map( 'absint', wp_list_pluck( $coupons, 'ID' ) );
+				$placeholders     = implode( ',', array_fill( 0, count( $coupons_post_ids ), '%d' ) );
 				$wpdb->query(
-					"DELETE FROM {$wpdb->prefix}postmeta WHERE post_id IN( {$coupons_post_ids} )" //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					$wpdb->prepare(
+						"DELETE FROM {$wpdb->prefix}postmeta WHERE post_id IN({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+						...$coupons_post_ids
+					)
 				); // db call ok; no cache ok.
 				$wpdb->query(
-					"DELETE FROM {$wpdb->prefix}posts WHERE ID IN( {$coupons_post_ids} )" //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					$wpdb->prepare(
+						"DELETE FROM {$wpdb->prefix}posts WHERE ID IN({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+						...$coupons_post_ids
+					)
 				); // db call ok; no cache ok.
 			}
 

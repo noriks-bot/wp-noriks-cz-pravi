@@ -1,4 +1,5 @@
-import { Title } from '@bsf/force-ui';
+import { Title, Badge } from '@bsf/force-ui';
+import { __ } from '@wordpress/i18n';
 
 import SectionWrapper from '@Components/common/SectionWrapper';
 import OrderStatusBadge from '@Components/common/OrderStatusBadge';
@@ -9,6 +10,7 @@ const UserAddressDetails = ( {
 	email,
 	orderStatus,
 	checkoutLink,
+	unsubscribed,
 	isLoading,
 } ) => {
 	return (
@@ -17,10 +19,26 @@ const UserAddressDetails = ( {
 				<Title
 					size="sm"
 					tag="h2"
-					title="User Address Details"
+					title={ __(
+						'User Address Details',
+						'woo-cart-abandonment-recovery'
+					) }
 					className="[&_h2]:text-gray-900"
 				/>
-				{ ! isLoading && <OrderStatusBadge status={ orderStatus } /> }
+				{ ! isLoading && (
+					<div className="flex gap-2">
+						<OrderStatusBadge status={ orderStatus } />
+						{ '1' === unsubscribed && (
+							<Badge
+								label="Unsubscribed"
+								size="sm"
+								type="pill"
+								variant="red"
+								className="w-fit"
+							/>
+						) }
+					</div>
+				) }
 			</div>
 			{ isLoading ? (
 				<div className="flex flex-col md:flex-row gap-8">
@@ -57,52 +75,83 @@ const UserAddressDetails = ( {
 						<Title
 							size="xs"
 							tag="h3"
-							title="Billing Address:"
+							title={ __(
+								'Billing Address:',
+								'woo-cart-abandonment-recovery'
+							) }
 							className="[&_h2]:text-gray-900"
 						/>
 						<div className="flex flex-col gap-2">
 							<p className="m-0 text-gray-500">
 								<span className="text-gray-900">
-									Full Name:
+									{ __(
+										'Full Name:',
+										'woo-cart-abandonment-recovery'
+									) }
 								</span>{ ' ' }
 								{ `${ userDetails.wcf_first_name } ${ userDetails.wcf_last_name }` }
 							</p>
 							<p className="m-0 text-gray-500">
 								<span className="text-gray-900">
-									Contact Email:
+									{ __(
+										'Contact Email:',
+										'woo-cart-abandonment-recovery'
+									) }
 								</span>{ ' ' }
 								{ email }
 							</p>
 							<p className="m-0 text-gray-500">
 								<span className="text-gray-900">
-									Contact Number:
+									{ __(
+										'Contact Number:',
+										'woo-cart-abandonment-recovery'
+									) }
 								</span>{ ' ' }
 								{ userDetails.wcf_phone_number }
 							</p>
 							<p className="m-0 text-gray-500">
 								<span className="text-gray-900">
-									Street Address 1:
+									{ __(
+										'Street Address 1:',
+										'woo-cart-abandonment-recovery'
+									) }
 								</span>{ ' ' }
 								{ userDetails.wcf_billing_address_1 }
 							</p>
 							<p className="m-0 text-gray-500">
 								<span className="text-gray-900">
-									Street Address 2:
+									{ __(
+										'Street Address 2:',
+										'woo-cart-abandonment-recovery'
+									) }
 								</span>{ ' ' }
 								{ userDetails.wcf_billing_address_2 }
 							</p>
 							<p className="m-0 text-gray-500">
 								<span className="text-gray-900">
-									Country, City:
+									{ __(
+										'Country, City:',
+										'woo-cart-abandonment-recovery'
+									) }
 								</span>{ ' ' }
 								{ userDetails.wcf_location }
 							</p>
 							<p className="m-0 text-gray-500">
-								<span className="text-gray-900">State:</span>{ ' ' }
+								<span className="text-gray-900">
+									{ __(
+										'State:',
+										'woo-cart-abandonment-recovery'
+									) }
+								</span>{ ' ' }
 								{ userDetails.wcf_billing_state }
 							</p>
 							<p className="m-0 text-gray-500">
-								<span className="text-gray-900">Zip Code:</span>{ ' ' }
+								<span className="text-gray-900">
+									{ __(
+										'Zip Code:',
+										'woo-cart-abandonment-recovery'
+									) }
+								</span>{ ' ' }
 								{ userDetails.wcf_billing_postcode }
 							</p>
 						</div>
@@ -112,48 +161,76 @@ const UserAddressDetails = ( {
 						<Title
 							size="xs"
 							tag="h3"
-							title="Shipping Address:"
+							title={ __(
+								'Shipping Address:',
+								'woo-cart-abandonment-recovery'
+							) }
 							className="[&_h2]:text-gray-900"
 						/>
 						<div className="flex flex-col gap-2">
 							<p className="m-0 text-gray-500">
 								<span className="text-gray-900">
-									Street Address 1:
+									{ __(
+										'Street Address 1:',
+										'woo-cart-abandonment-recovery'
+									) }
 								</span>{ ' ' }
 								{ userDetails.wcf_shipping_address_1 }
 							</p>
 							<p className="m-0 text-gray-500">
 								<span className="text-gray-900">
-									Street Address 2:
+									{ __(
+										'Street Address 2:',
+										'woo-cart-abandonment-recovery'
+									) }
 								</span>{ ' ' }
 								{ userDetails.wcf_shipping_address_2 }
 							</p>
 							<p className="m-0 text-gray-500">
 								<span className="text-gray-900">
-									Country, City:
+									{ __(
+										'Country, City:',
+										'woo-cart-abandonment-recovery'
+									) }
 								</span>{ ' ' }
 								{ userDetails.wcf_shipping_city +
 									', ' +
 									userDetails.wcf_shipping_country }
 							</p>
 							<p className="m-0 text-gray-500">
-								<span className="text-gray-900">State:</span>{ ' ' }
+								<span className="text-gray-900">
+									{ __(
+										'State:',
+										'woo-cart-abandonment-recovery'
+									) }
+								</span>{ ' ' }
 								{ userDetails.wcf_shipping_state }
 							</p>
 							<p className="m-0 text-gray-500">
-								<span className="text-gray-900">Zip Code:</span>{ ' ' }
+								<span className="text-gray-900">
+									{ __(
+										'Zip Code:',
+										'woo-cart-abandonment-recovery'
+									) }
+								</span>{ ' ' }
 								{ userDetails.wcf_shipping_postcode }
 							</p>
 						</div>
 						<div className="flex gap-4 items-center">
 							<span className="text-base text-gray-900 font-medium">
-								Checkout Page:
+								{ __(
+									'Checkout Page:',
+									'woo-cart-abandonment-recovery'
+								) }
 							</span>
 							<a
 								href={ checkoutLink }
-								className="pb-0.5 text-xs font-semibold text-flamingo-400 no-underline border-0 border-solid border-b border-flamingo-400"
+								className="text-xs font-semibold text-flamingo-400 no-underline border-0"
 							>
-								Link to Checkout Page
+								{ __(
+									'Link to Checkout Page',
+									'woo-cart-abandonment-recovery'
+								) }
 							</a>
 						</div>
 					</div>
@@ -164,3 +241,4 @@ const UserAddressDetails = ( {
 };
 
 export default UserAddressDetails;
+

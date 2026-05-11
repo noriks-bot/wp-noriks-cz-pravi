@@ -197,6 +197,10 @@ class Cartflows_Ca_Default_Meta {
 				'default'  => 20,
 				'sanitize' => 'FILTER_SANITIZE_NUMBER_INT',
 			],
+			'wcf_ca_cart_lost_time'                       => [
+				'default'  => WCF_DEFAULT_CART_LOST_TIME,
+				'sanitize' => 'FILTER_SANITIZE_NUMBER_INT',
+			],
 			'wcf_ca_ignore_users'                         => [
 				'default'  => [],
 				'sanitize' => 'FILTER_SANITIZE_STRING',
@@ -219,7 +223,7 @@ class Cartflows_Ca_Default_Meta {
 			],
 			'wcf_ca_admin_email'                          => [
 				'default'  => get_option( 'admin_email' ),
-				'sanitize' => 'FILTER_SANITIZE_STRING',
+				'sanitize' => 'FILTER_SANITIZE_MULTILINE_STRING',
 			],
 			'wcf_ca_send_recovery_report_emails_to_admin' => [
 				'default'  => 'on',
@@ -275,7 +279,7 @@ class Cartflows_Ca_Default_Meta {
 			],
 			'wcf_ca_global_param'                         => [
 				'default'  => '',
-				'sanitize' => 'FILTER_SANITIZE_STRING',
+				'sanitize' => 'FILTER_SANITIZE_MULTILINE_STRING',
 			],
 			'wcf_ca_cut_off_time'                         => [
 				'default'  => 15,
@@ -289,9 +293,17 @@ class Cartflows_Ca_Default_Meta {
 				'default'  => 'off',
 				'sanitize' => 'FILTER_SANITIZE_STRING',
 			],
+			'wcar_usage_optin'                            => [
+				'default'  => 'off',
+				'sanitize' => 'FILTER_SANITIZE_STRING',
+			],
 			// TODO: Remove this after new UI is enabled by default.
 			'cartflows_ca_use_new_ui'                     => [
-				'default'  => '',
+				'default'  => false,
+				'sanitize' => 'FILTER_SANITIZE_STRING',
+			],
+			'car_legacy_ui_notice_dismissed'              => [
+				'default'  => false,
 				'sanitize' => 'FILTER_SANITIZE_STRING',
 			],
 		];
@@ -359,30 +371,63 @@ class Cartflows_Ca_Default_Meta {
 		if ( ! $sanitize_method ) {
 			$sanitize_method = 'FILTER_SANITIZE_STRING';
 		}
+		
+		$meta_value = '';
 
 		// Handle different sanitization methods.
 		switch ( $sanitize_method ) {
 			case 'FILTER_SANITIZE_URL':
-				return esc_url_raw( $value );
+				$meta_value = esc_url_raw( $value );
+				break;
 
 			case 'FILTER_SANITIZE_NUMBER_INT':
-				return absint( $value );
+				$meta_value = absint( $value );
+				break;
 
 			case 'FILTER_SANITIZE_FULL_SPECIAL_CHARS':
-				// For email body content - allows HTML but sanitizes it.
-				$sanitized = filter_var( wp_unslash( $value ), FILTER_SANITIZE_FULL_SPECIAL_CHARS );
-				// Decode HTML entities for email body.
-				return html_entity_decode( $sanitized, ENT_COMPAT, 'UTF-8' );
+				// Preserve the original encode/decode pattern for email body HTML, then strip
+				// the three main stored-XSS vectors: <script> blocks, inline event-handler
+				// attributes (on*=), and javascript: protocol in href/src.
+				$sanitized  = filter_var( wp_unslash( $value ), FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+				$meta_value = html_entity_decode( $sanitized, ENT_COMPAT, 'UTF-8' );
+				$meta_value = preg_replace( '#<script\b[^>]*>[\s\S]*?<\/script>#i', '', $meta_value );
+				$meta_value = preg_replace( '#\s+on[a-z]+\s*=\s*(?:"[^"]*"|\'[^\']*\'|[^\s>]*)#i', '', $meta_value );
+				$meta_value = preg_replace( '#(href|src)\s*=\s*(["\'])\s*javascript:[^"\']*\2#i', '$1=$2$2', $meta_value );
+				break;
 
 			case 'FILTER_SANITIZE_STRING':
-			default:
-				// Handle arrays (like multi-select fields).
 				if ( is_array( $value ) ) {
-					return array_map( 'sanitize_text_field', array_map( 'wp_unslash', $value ) );
+					$meta_value = array_map( 'sanitize_text_field', array_map( 'wp_unslash', $value ) );
+				} else {
+					$meta_value = sanitize_text_field( wp_unslash( $value ) );
 				}
-				// Handle regular strings.
-				return sanitize_text_field( wp_unslash( $value ) );
+
+				break;
+			
+			case 'FILTER_SANITIZE_MULTILINE_STRING':
+				if ( is_array( $value ) ) {
+					$meta_value = array_map( 'sanitize_textarea_field', array_map( 'wp_unslash', $value ) );
+				} else {
+					$meta_value = sanitize_textarea_field( wp_unslash( $value ) );
+				}
+				break;
+				
+			case 'FILTER_SANITIZE_ARRAY':
+				if ( is_array( $value ) ) {
+					$meta_value = array_map( 'sanitize_text_field', array_map( 'wp_unslash', $value ) );
+				}
+				break;
+
+			default:
+				if ( 'FILTER_DEFAULT' === $sanitize_method ) {
+					$meta_value = sanitize_text_field( wp_unslash( $value ) );
+				} else {
+					$meta_value = apply_filters( 'wcar_sanitize_settings_values', $value, $setting_key, $sanitize_method );
+				}
+				break;
 		}
+
+		return $meta_value;
 	}
 
 	/**
@@ -556,6 +601,22 @@ class Cartflows_Ca_Default_Meta {
 		}
 
 		return __( 'Admin', 'woo-cart-abandonment-recovery' );
+	}
+
+	/**
+	 * Checks if plugin option exists
+	 *
+	 * @param string $setting_key Setting key to check.
+	 * @return bool
+	 * @since 2.0.8
+	 */
+	public function plugin_option_exist( $setting_key ) {
+		$plugin_options = $this->get_plugin_options();
+
+		if ( isset( $plugin_options[ $setting_key ] ) ) {
+			return true;
+		}
+		return false;
 	}
 }
 
