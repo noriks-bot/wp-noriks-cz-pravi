@@ -658,7 +658,7 @@ add_action('woocommerce_review_order_before_submit', function(){
             var ok=r.ok;return r.text().then(function(html){return{ok:ok,html:html};});
         }).then(function(res){
             msg.style.display='block';
-            var isError=!res.ok||res.html.indexOf('error')!==-1||res.html.indexOf('neexistuje')!==-1||res.html.indexOf('není platný')!==-1||res.html.indexOf('removed')!==-1;
+            var isError=!res.ok||res.html.indexOf('woocommerce-error')!==-1||res.html.indexOf('woocommerce-message')===-1;
             if(isError){
                 msg.style.background='#fde8e8';msg.style.color='#c00';
                 var txt=res.html.replace(/<[^>]*>/g,'').trim();
