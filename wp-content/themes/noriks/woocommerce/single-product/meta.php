@@ -420,7 +420,8 @@ $is_mixed_bundle = has_term( array( 'sady','orto-starter','orto-majica-bokserica
  <div class="accordion">
 
 
-    <!-- 1 - detajli -->
+    <!-- 1 - detajli --> <!-- skryto na norikshers -->
+    <?php if ( ! ( function_exists('noriks_is_type') && noriks_is_type('norikshers', $current_product_id) ) ) : ?>
     <div class="accordion-item">
       <div class="accordion-header" onclick="toggleAccordion(this)">
         <h3><?php echo get_field("singlepp_acc_h_1","options"); ?></h3>
@@ -474,8 +475,10 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
     
     
      
+     <?php endif; // /skryto na norikshers (detajli) ?>
+
      <!-- 2 - slika tablica velicina -->
-     <?php if ( ! ( function_exists('noriks_is_type') && ( noriks_is_type('bunion', $current_product_id) || noriks_is_type('fisiorest', $current_product_id) ) ) ) : // žádná tabulka velikostí pro bunion + fisiorest ?>
+     <?php if ( ! ( function_exists('noriks_is_type') && ( noriks_is_type('bunion', $current_product_id) || noriks_is_type('fisiorest', $current_product_id) || noriks_is_type('norikshers', $current_product_id) ) ) ) : // žádná tabulka velikostí pro bunion + fisiorest + norikshers ?>
      <div class="accordion-item">
       <div class="accordion-header" onclick="toggleAccordion(this)">
         <h3>Tabulka velikostí</h3>
@@ -524,7 +527,7 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
 
 
     <!-- 3 - savjeti za pranje-->
-    <?php if ( ! ( function_exists('noriks_is_type') && ( noriks_is_type('ortopas', $current_product_id) || noriks_is_type('bunion', $current_product_id) || noriks_is_type('fisiorest', $current_product_id) ) ) ) : // žádné tipy na praní pro pás/bunion/fisiorest ?>
+    <?php if ( ! ( function_exists('noriks_is_type') && ( noriks_is_type('ortopas', $current_product_id) || noriks_is_type('bunion', $current_product_id) || noriks_is_type('fisiorest', $current_product_id) || noriks_is_type('norikshers', $current_product_id) ) ) ) : // žádné tipy na praní pro pás/bunion/fisiorest + norikshers ?>
     <div class="accordion-item">
       <div class="accordion-header" onclick="toggleAccordion(this)">
         <h3><?php echo get_field("singlepp_acc_h_2","options"); ?></h3>
