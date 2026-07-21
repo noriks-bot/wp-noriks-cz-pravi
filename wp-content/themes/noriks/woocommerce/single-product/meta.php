@@ -428,13 +428,25 @@ $is_mixed_bundle = has_term( array( 'sady','orto-starter','orto-majica-bokserica
       </div>
       <div class="accordion-content">
           
-         <?php if( !$is_boxers &&  !$is_carape &&   !$is_mixed_bundle ): ?>
-         
-         
-         
+         <?php if( !$is_boxers &&  !$is_carape &&   !$is_mixed_bundle && ! ( function_exists('noriks_is_type') && ( noriks_is_type('fisiorest', $current_product_id) || noriks_is_type('bunion', $current_product_id) || noriks_is_type('ortopas', $current_product_id) ) ) ): ?>
+
+
+
         <?php echo get_field("singlepp_acc_t_1","options"); ?>
-        
-        
+
+
+        <?php elseif( function_exists('noriks_is_type') && noriks_is_type('fisiorest', $current_product_id) ): ?>
+
+                NORIKS FisioRest je terapeutický polštář na krk, který kombinuje trakci, teplo a vibrační masáž v ergonomickém designu z paměťové pěny. Jemně protahuje krk pod správným úhlem, odlehčuje krční páteř a teplem i masáží uvolňuje svalové napětí. Bezdrátový, dobíjecí a obalený měkkým chladivým hedvábím – bezpečný i pro spánek.
+
+        <?php elseif( function_exists('noriks_is_type') && noriks_is_type('bunion', $current_product_id) ): ?>
+
+                NORIKS korektor vbočeného palce s pokročilou terapií srovnání a patentovaným kloubovým mechanismem jemně vrací palec do přirozené polohy, zmírňuje nepohodlí a zabraňuje dalšímu růstu výrůstku. Pohyblivá konstrukce umožňuje v něm i chodit. Přizpůsobí se všem velikostem chodidel, bez levé či pravé strany. Určen pro použití v klidu – při odpočinku, sledování TV, čtení nebo spánku.
+
+        <?php elseif( function_exists('noriks_is_type') && noriks_is_type('ortopas', $current_product_id) ): ?>
+
+                NORIKS ortopedický pás cíleně stabilizuje spodní část zad pomocí cílené komprese, správně srovnává pánev a odlehčuje ischiadický nerv. Tenký a nenápadný pod oblečením, s nastavitelnou mírou opory. Vhodný při bolestech v kříži, ischiasu, svalovém napětí a potížích se SI kloubem.
+
         <?php elseif(  has_term( array( 'orto-starter', 'orto-majica-bokserica' ), 'product_cat', $current_product_id )  ): ?>
         
         
@@ -463,14 +475,23 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
     
      
      <!-- 2 - slika tablica velicina -->
+     <?php if ( ! ( function_exists('noriks_is_type') && ( noriks_is_type('bunion', $current_product_id) || noriks_is_type('fisiorest', $current_product_id) ) ) ) : // žádná tabulka velikostí pro bunion + fisiorest ?>
      <div class="accordion-item">
       <div class="accordion-header" onclick="toggleAccordion(this)">
         <h3>Tabulka velikostí</h3>
         <div class="toggle">+</div>
       </div>
       <div class="accordion-content">
-          
-           <?php if( $is_boxers ): ?>
+
+           <?php if( function_exists('noriks_is_type') && noriks_is_type('ortopas', $current_product_id) ): ?>
+
+          <div style="line-height:1.9;">
+            <strong>S/M</strong> : obvod boků 75–110 cm<br>
+            <strong>L/XL</strong> : obvod boků 110–140 cm<br><br>
+            Změřte prosím obvod boků, abyste našli svou velikost.
+          </div>
+
+        <?php elseif( $is_boxers ): ?>
        
         
           <img src="https://noriks.com/cz/wp-content/uploads/2026/01/boxers_size_Cz.png">
@@ -499,9 +520,11 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
         <?php endif; ?>
       </div>
     </div>
+    <?php endif; // /žádná tabulka velikostí pro bunion + fisiorest ?>
 
 
     <!-- 3 - savjeti za pranje-->
+    <?php if ( ! ( function_exists('noriks_is_type') && ( noriks_is_type('ortopas', $current_product_id) || noriks_is_type('bunion', $current_product_id) || noriks_is_type('fisiorest', $current_product_id) ) ) ) : // žádné tipy na praní pro pás/bunion/fisiorest ?>
     <div class="accordion-item">
       <div class="accordion-header" onclick="toggleAccordion(this)">
         <h3><?php echo get_field("singlepp_acc_h_2","options"); ?></h3>
@@ -510,20 +533,21 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
       <div class="accordion-content">
              <?php if( !$is_boxers &&  !$is_carape &&   !$is_mixed_bundle ): ?>
         <?php echo get_field("singlepp_acc_t_2","options"); ?>
-        
-         
+
+
         <?php elseif(  has_term( array( 'orto-starter', 'orto-majica-bokserica' ), 'product_cat', $current_product_id )  ): ?>
-        
-        
-        
-                         Perite boje s bojama.  Program za nježno pranje na hladnoj vodi.  Sušite ravno položeno ili u sušilici na niskoj temperaturi.  Ne izbjeljivati              
-        
-        
+
+
+
+                         Perite boje s bojama.  Program za nježno pranje na hladnoj vodi.  Sušite ravno položeno ili u sušilici na niskoj temperaturi.  Ne izbjeljivati
+
+
           <?php else: ?>
             <?php echo get_field("__overwrite_sekcije_bellow_3"); ?>
         <?php endif; ?>
       </div>
     </div>
+    <?php endif; // /žádné tipy na praní pro pás/bunion/fisiorest ?>
 
 
 

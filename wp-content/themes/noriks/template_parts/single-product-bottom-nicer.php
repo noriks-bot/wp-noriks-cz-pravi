@@ -1,6 +1,19 @@
 
-<?php 
-if (  has_term( array( 'startovaci-balicek','orto-starter' ), 'product_cat', get_the_id() )  )   : 
+<?php
+/* Bunion / ortopas / fisiorest: vlastní why-sekce (bez return — poté běží
+   společný systém recenzí). Ostatních produktů se nedotkne. */
+if ( function_exists( 'noriks_is_type' ) ) {
+    if ( noriks_is_type( 'bunion' ) ) {
+        get_template_part( 'template_parts/product-bottom/why-bunion' );
+    } elseif ( noriks_is_type( 'ortopas' ) ) {
+        get_template_part( 'template_parts/product-bottom/why-ortopas' );
+    } elseif ( noriks_is_type( 'fisiorest' ) ) {
+        get_template_part( 'template_parts/product-bottom/why-fisiorest' );
+    }
+}
+?>
+<?php
+if (  has_term( array( 'startovaci-balicek','orto-starter' ), 'product_cat', get_the_id() )  )   :
 ?>
 
 
@@ -656,8 +669,19 @@ Flexibilní střih pro silnější stehna
   $current_product_id = (function_exists('is_product') && is_product()) ? get_queried_object_id() : get_the_id();
   $is_bokserice_page  = has_term( array( 'boxerky','orto-bokserice', 'bokserice-sastavi-paket' ), 'product_cat', $current_product_id );
 
+  // Special orto products: dedicated Czech review pools (text-only, no avatars).
+  $is_ortopas_page    = ( function_exists('noriks_is_type') && noriks_is_type('ortopas', $current_product_id) );
+  $is_bunion_page     = ( function_exists('noriks_is_type') && noriks_is_type('bunion', $current_product_id) );
+  $is_fisiorest_page  = ( function_exists('noriks_is_type') && noriks_is_type('fisiorest', $current_product_id) );
+
   // Include review pools
-  if ( ! $is_bokserice_page )  {
+  if ( $is_fisiorest_page ) {
+    include get_stylesheet_directory() . '/auto_reviews/CZ_fisiorest.php';
+  } elseif ( $is_bunion_page ) {
+    include get_stylesheet_directory() . '/auto_reviews/CZ_bunion.php';
+  } elseif ( $is_ortopas_page ) {
+    include get_stylesheet_directory() . '/auto_reviews/CZ_ortopas.php';
+  } elseif ( ! $is_bokserice_page )  {
     include get_stylesheet_directory() . '/auto_reviews/'.$reviews_language.'.php';
   } else {
     include get_stylesheet_directory() . '/auto_reviews/CZ_bokserice.php';
@@ -988,7 +1012,8 @@ function assign_unique_avatars_first_n(array $reviews, array $avatar_pool, strin
 
   // Avatar pools based on page category
   $avatar_type = $is_bokserice_page ? 'bokserice' : 'majice';
-  $avatar_pool = get_review_avatar_pool($avatar_type);
+  // Belt + bunion + fisiorest: text-only reviews (no avatar images).
+  $avatar_pool = ( $is_ortopas_page || $is_bunion_page || $is_fisiorest_page ) ? array() : get_review_avatar_pool($avatar_type);
 
   $product_pool = get_wc_product_pool();
 
@@ -1029,6 +1054,10 @@ $auto_reviews_ship = assign_unique_avatars_first_n($auto_reviews_ship, $avatar_p
   $prod_count = count($auto_reviews_en);
   $ship_count = count($auto_reviews_ship);
 ?>
+
+<?php if ( $is_ortopas_page || $is_bunion_page || $is_fisiorest_page ) : ?>
+<style>/* belt + bunion + fisiorest: text-only reviews, no avatar */ #reviews-section .avatar { display: none !important; }</style>
+<?php endif; ?>
 
 <section id="reviews-section" class="basic-reviews-section" style="margin-bottom:40px!important;padding-bottom:40px!important;">
   <div class="container basic-reviews-section-container" style="width:100%;max-width:1440px;padding-top:20px!important;margin:0 auto;padding-left: 10px; padding-right: 10px;">
@@ -1441,10 +1470,58 @@ $auto_reviews_ship = assign_unique_avatars_first_n($auto_reviews_ship, $avatar_p
 
 
 
-<?php 
+<?php
 $faq_list = get_field('faq_list', 'option');
 $faq_list2 = get_field('faq_list_2', 'option');
 $faq_list3 = get_field('faq_list_3', 'option');
+
+// Special orto products: swap ONLY the product-info FAQ container ("...o produktu");
+// delivery/returns containers stay untouched.
+$is_ortopas_faq   = ( function_exists('noriks_is_type') && noriks_is_type('ortopas') );
+$is_bunion_faq    = ( function_exists('noriks_is_type') && noriks_is_type('bunion') );
+$is_fisiorest_faq = ( function_exists('noriks_is_type') && noriks_is_type('fisiorest') );
+
+// Korektor vbočeného palce — FAQ o produktu (překlad, NORIKS).
+$bunion_faq = array(
+  array( 'questioon' => 'Jak rychle se budu cítit lépe?', 'answer' => 'Přibližně 30 minut — tolik času je potřeba, aby se zmírnilo nepohodlí. Při pravidelném používání po dobu dvou týdnů pocítíte výraznou úlevu při každodenních činnostech, jako je chůze, stání nebo spánek.' ),
+  array( 'questioon' => 'Jak rychle si všimnu rozdílu na vbočeném palci?', 'answer' => 'V závislosti na závažnosti vbočeného palce si většina zákazníků všimne viditelného zlepšení po 4–8 týdnech. Mírný stav: 4 týdny. Střední stav: 4 týdny. Těžší stav: 8 týdnů.' ),
+  array( 'questioon' => 'Dá se nosit v botách? Můžu v něm chodit?', 'answer' => 'Ne, do boty se nevejde. Ano, můžete v něm chodit. Je však určen pro klidový režim — když ležíte na gauči, díváte se na TV, čtete nebo spíte.' ),
+  array( 'questioon' => 'Co když mi to bude nepříjemné?', 'answer' => 'To je zcela normální! NORIKS korektor je navržen dostatečně pevně, aby srovnal kloub palce, zastavil zánět a zmírnil nepohodlí. Možná budete potřebovat 1–2 relace, než si zvyknete, poté se budete cítit mnohem lépe!' ),
+  array( 'questioon' => 'Jak dlouho ho mám používat?', 'answer' => 'Doporučujeme začít 30 minutami denně a postupně zvyšovat až na relaci 1 až 3 hodiny. Až vám bude pohodlně, můžete ho začít nosit i během spánku. Noste ho při odpočinku — na gauči, u TV, při čtení nebo spánku.' ),
+  array( 'questioon' => 'Pomůže mi u mého konkrétního stavu?', 'answer' => 'NORIKS korektor je ideální pro: zmírnění nepohodlí, které ovlivňuje každodenní činnosti, jako je chůze nebo stání; úlevu od nepohodlí způsobeného vbočeným palcem během odpočinku či spánku; řešení vbočeného palce v rané fázi, který může postupovat; vbočený palec, který se vrátil po operaci; pomoc u těžšího stavu připraveného k operaci; a jako účinnou nechirurgickou možnost.' ),
+  array( 'questioon' => 'Bude vyhovovat mému chodidlu? Existuje levá a pravá strana?', 'answer' => 'Bez ohledu na velikost chodidla — od nejmenšího dětského po velké chodidlo dospělého — se NORIKS korektor pohodlně přizpůsobí. Nemá strany! Díky přizpůsobitelné konstrukci se stejně snadno přizpůsobí levému i pravému chodidlu.' ),
+);
+
+// Ortopedický pás — FAQ o produktu (překlad, NORIKS).
+$ortopas_faq = array(
+  array( 'questioon' => 'Jak rychle pocítím úlevu od bolesti?', 'answer' => 'Mnoho uživatelů pocítí znatelnou úlevu od ischiasu a bolesti v kříži ihned po nasazení pásu NORIKS. Jeho cílená komprese nabízí okamžitou oporu, stabilizuje páteř a snižuje tlak na nervy. Pro dlouhotrvající účinek doporučujeme pás nosit důsledně podle návodu alespoň dva týdny. Postupem času můžete při správném používání a zdravých návycích pocítit trvalou úlevu a lepší pohyblivost.' ),
+  array( 'questioon' => 'Jak pás správně nasadit?', 'answer' => 'Pás NORIKS noste kolem kyčlí, kousek pod linií pasu. Měl by se nacházet nad křížovou oblastí (spodní část zad, těsně nad hýžděmi) a pod hřebenem pánve (horní část bočních kyčlí). Více informací najdete v návodu k použití.' ),
+  array( 'questioon' => 'Neoslabí pás moje svaly?', 'answer' => 'Ne, pás NORIKS neoslabuje svaly jako klasický korzet na záda. Pouze pomáhá držet SI klouby pohromadě a obnovuje normální napětí vazů. Můžete ho nosit týdny nebo měsíce bez obav z atrofie svalů.' ),
+  array( 'questioon' => 'Můžu pás nosit i během spánku?', 'answer' => 'Ano, pás lze nosit i v noci. Doba nošení není omezena a delší nošení nemá negativní účinky.' ),
+  array( 'questioon' => 'Jak pevně ho mám nasadit?', 'answer' => 'Pás by měl těsně přiléhat, ale ne příliš, abyste se vyhnuli nepohodlí. Měli byste se bez problémů pohybovat, aniž by se pás zařezával nebo sklouzával. Napětí se snadno nastavuje elastickými pásky.' ),
+  array( 'questioon' => 'Komu ho doporučujete?', 'answer' => 'Všem, kdo se potýkají s bolestmi v kříži, ischiasem, svalovým napětím, výhřezem meziobratlové ploténky, bolestmi kyčlí nebo pánve a potížemi se SI kloubem. Bez ohledu na věk, pohlaví, výšku a váhu.' ),
+  array( 'questioon' => 'Existuje záruka vrácení peněz?', 'answer' => 'Nabízíme záruku spokojenosti! Pokud nejste s pásem NORIKS spokojeni, kontaktujte nás na info@noriks.com pro vrácení a proplacení do 90 dnů. Lhůta se počítá od převzetí pásu.' ),
+);
+
+// FisioRest — FAQ o produktu (překlad, NORIKS).
+$fisiorest_faq = array(
+  array( 'questioon' => 'Jak NORIKS FisioRest funguje?', 'answer' => 'FisioRest kombinuje trakci, teplo a vibrační masáž s ergonomickým designem z paměťové pěny. Tato technologie protahuje krk pod přesně správným úhlem a odlehčuje krční páteř. Poté uklidňující teplá masáž podpoří přísun krve bohaté na kyslík a živiny do svalů a pomáhá tak regeneraci tkání.' ),
+  array( 'questioon' => 'V čem je FisioRest lepší než jiné přístroje?', 'answer' => 'NORIKS FisioRest je výjimečný, protože spojuje <strong>tři terapie v jedné</strong> — teplo, masáž a jemnou trakci — které uvolní svaly a znovu srovnají krk pro dlouhotrvající úlevu. Navíc je <strong>bezdrátový, bezpečný pro spánek a obalený chladivým hedvábím</strong> pro pohodlí, jaké jinde nenajdete.' ),
+  array( 'questioon' => 'Jak se FisioRest používá?', 'answer' => '1. Nabijte ho přiloženým USB-C kabelem a nabíječkou přibližně 4 až 6 hodin. 2. Podržte tlačítko masáže nebo tepla 5 sekund, dokud se nerozsvítí kontrolka. 3. Opětovným stiskem tlačítek měníte rychlost masáže a nastavení tepla. 4. Užijte si uvolňující masáž!' ),
+  array( 'questioon' => 'Jak dlouho mám FisioRest používat?', 'answer' => 'Doporučujeme začít 15 minutami, aby si krk zvykl. Postupem času můžete přejít na plnou relaci. Pro orientaci: cyklus jemného tepla, masáže a trakce trvá 30 minut, což je obvykle ideální doba, aby se krk uvolnil a obnovil své přirozené zakřivení.' ),
+  array( 'questioon' => 'Je FisioRest bezdrátový?', 'answer' => 'Ano! NORIKS FisioRest je zcela bezdrátový a dobíjecí pro každodenní použití.' ),
+  array( 'questioon' => 'Jak se FisioRest čistí?', 'answer' => 'Látka je odolná vůči olejům a prachu, ale doporučujeme FisioRest po použití otřít dezinfekčním ubrouskem, protože potah polštáře není pratelný.' ),
+  array( 'questioon' => 'Je bezpečný pro každého?', 'answer' => 'NORIKS FisioRest je navržen tak, aby vyhovoval všem bez ohledu na věk nebo pohlaví. Každá situace je však jiná. Pro podrobné pokyny přizpůsobené vašim potřebám doporučujeme konzultaci s lékařem.' ),
+  array( 'questioon' => 'Můžu ho vrátit, pokud nevidím výsledky?', 'answer' => 'Samozřejmě! Nabízíme plnou záruku vrácení peněz do 90 dnů od doručení, pokud nejste s produktem spokojeni. Napište nám na info@noriks.com a odpovíme do 12 hodin od přijetí zprávy!' ),
+);
+
+$faq_pick = function( $title, $list ) use ( $is_ortopas_faq, $ortopas_faq, $is_bunion_faq, $bunion_faq, $is_fisiorest_faq, $fisiorest_faq ) {
+  $is_info = ( stripos( (string) $title, 'produktu' ) !== false );
+  if ( $is_fisiorest_faq && $is_info ) { return $fisiorest_faq; }
+  if ( $is_bunion_faq && $is_info )    { return $bunion_faq; }
+  if ( $is_ortopas_faq && $is_info )   { return $ortopas_faq; }
+  return $list;
+};
 ?>
 
 
@@ -1461,8 +1538,9 @@ $faq_list3 = get_field('faq_list_3', 'option');
             font-weight: 700;
             color: #222223;
             margin-bottom: 10px; "><?php echo get_field('faq_title_1', 'option'); ?></h4>
-            <?php 
-              if( $faq_list && is_array($faq_list) ): 
+            <?php
+              $faq_list = $faq_pick( get_field('faq_title_1', 'option'), $faq_list );
+              if( $faq_list && is_array($faq_list) ):
                       foreach( $faq_list as $faq_item ):
               ?>
                     <div class="faq-item">
@@ -1487,8 +1565,9 @@ $faq_list3 = get_field('faq_list_3', 'option');
             font-weight: 700;
             color: #001e36;
             margin-bottom: 10px; "><?php echo get_field('faq_title_2', 'option'); ?></h4>
-            <?php 
-              if( $faq_list2 && is_array($faq_list2) ): 
+            <?php
+              $faq_list2 = $faq_pick( get_field('faq_title_2', 'option'), $faq_list2 );
+              if( $faq_list2 && is_array($faq_list2) ):
                       foreach( $faq_list2 as $faq_item ):
               ?>
                     <div class="faq-item">
@@ -1513,8 +1592,9 @@ $faq_list3 = get_field('faq_list_3', 'option');
             font-weight: 700;
             color: #001e36;
             margin-bottom: 10px; "><?php echo get_field('faq_title_3', 'option'); ?></h4>
-            <?php 
-              if( $faq_list3 && is_array($faq_list3) ): 
+            <?php
+              $faq_list3 = $faq_pick( get_field('faq_title_3', 'option'), $faq_list3 );
+              if( $faq_list3 && is_array($faq_list3) ):
                       foreach( $faq_list3 as $faq_item ):
               ?>
                     <div class="faq-item">
