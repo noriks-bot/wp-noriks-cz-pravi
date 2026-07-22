@@ -588,8 +588,12 @@ Flexibilní střih pro silnější stehna
       <!--<h4 style="" class="highlight"><?php echo get_field("singlepp_content_standard_reviews_t1","options"); ?></h4>-->
       <h1 style="color:black;     margin-bottom: 4px;">
           
-          <?php if ( !has_term( array( 'bokserice', 'bokserice-sastavi-paket' ), 'product_cat', get_the_ID() ) ): ?>
-          
+          <?php if ( function_exists('noriks_is_type') && noriks_is_type('norikshers') ): ?>
+
+          Nejste sami v hledání hladké pleti bez vrásek.
+
+          <?php elseif ( !has_term( array( 'bokserice', 'bokserice-sastavi-paket' ), 'product_cat', get_the_ID() ) ): ?>
+
           <?php echo get_field("singlepp_content_standard_reviews_t2","options"); ?>
           
           <?php else: ?>
@@ -600,7 +604,7 @@ Flexibilní střih pro silnější stehna
           
           
           </h1>
-    <p class="note" style="color: black; margin-top: 0px; margin-bottom: 5px;"><?php echo get_field("singlepp_content_standard_reviews_t3","options"); ?></p>
+    <p class="note" style="color: black; margin-top: 0px; margin-bottom: 5px;"><?php if ( function_exists('noriks_is_type') && noriks_is_type('norikshers') ): ?>Tisíce žen už používají HERS silikonové kolagenové pásky pro hladší, pevnější a mladší vzhled pleti.<?php else: ?><?php echo get_field("singlepp_content_standard_reviews_t3","options"); ?><?php endif; ?></p>
     </div>
   </section>
   </div>
