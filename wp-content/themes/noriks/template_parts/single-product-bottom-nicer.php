@@ -200,7 +200,7 @@ NEJSNADNĚJŠÍ A NEJBEZPEČNĚJŠÍ ZAČÁTEK
 
 
 <?php 
-if (  has_term( array( 'tricka', 'orto-majice' ), 'product_cat', get_the_id() )  ||  has_term( 'sady', 'product_cat', get_the_id() )) : 
+if (  has_term( array( 'tricka', 'orto-majice', 'orto-majica-darila' ), 'product_cat', get_the_id() )  ||  has_term( 'sady', 'product_cat', get_the_id() )) : 
 ?>
 
 
