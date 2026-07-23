@@ -798,7 +798,7 @@ function gck_render_bundle_selector() {
 
     <?php
     // Your extra conditional style block (kept)
-    if (  has_term( array(  'startovaci-balicek' ), 'product_cat', $product_id )  )   :
+    if (  has_term( array( 'orto-starter', 'orto-majice', 'orto-bokserice', 'orto-kompresijske-carape', 'orto-ortopas', 'orto-bunion', 'orto-fisiorest', 'orto-norikshers', 'orto-noriks-hers', 'orto-majica-darila', 'orto-leak-boxers', 'orto-kompresijske-majice' ), 'product_cat', $product_id )  )   :
     ?>
         <style>
           .bundle-option { border: 2px solid #ededed; background: #f4f4f4b0  !important; border-radius: 4px; }
