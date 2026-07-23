@@ -1893,7 +1893,7 @@ function gck_shgifts_free_gifts_notice() {
     // Gifts shown: 1x boxerky + 5x pár ponožek. Images + crossed-out reference
     // prices are editable placeholders — adjust to real photos/prices.
     $boxer_img = 'https://noriks.com/cz/wp-content/uploads/2026/01/StarterPack_2xcrnaboksarica.png';
-    $socks_img = 'https://noriks.com/cz/wp-content/uploads/2025/11/stumfi_crni3942-683x1024.jpg.webp';
+    $socks_img = 'https://noriks.com/cz/wp-content/uploads/2026/01/stumfi_crni3942.jpg';
 
     $gifts = array(
         array( 'label' => '1x boxerky', 'img' => $boxer_img, 'price' => '499 Kč' ),
