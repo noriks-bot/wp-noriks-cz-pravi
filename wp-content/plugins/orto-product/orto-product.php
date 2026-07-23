@@ -796,6 +796,12 @@ function gck_render_bundle_selector() {
         </style>
     <?php endif; ?>
 
+    <?php if ( has_term( array( 'orto-kompresijske-carape' ), 'product_cat', $product_id ) ) : // wider size select for compression socks ?>
+        <style>
+          .bundle-box select { max-width: 195px !important; min-width: 92px !important; padding-right: 26px !important; }
+        </style>
+    <?php endif; ?>
+
     <?php
     // Your extra conditional style block (kept)
     if (  has_term( array( 'orto-starter', 'orto-majice', 'orto-bokserice', 'orto-kompresijske-carape', 'orto-ortopas', 'orto-bunion', 'orto-fisiorest', 'orto-norikshers', 'orto-noriks-hers', 'orto-majica-darila', 'orto-leak-boxers', 'orto-kompresijske-majice' ), 'product_cat', $product_id )  )   :
