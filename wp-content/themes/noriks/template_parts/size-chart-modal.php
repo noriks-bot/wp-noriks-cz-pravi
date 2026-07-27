@@ -239,9 +239,47 @@
     
       src="https://noriks.com/cz/wp-content/uploads/2026/01/boxers_size_Cz.png"
       alt="Size Guide">
-     
-      
-      
+
+
+
+      <?php elseif ( function_exists('noriks_is_type') && noriks_is_type( 'leakboxers' ) ): ?>
+
+      <div style="margin:30px 0;padding:0 6px;">
+        <p style="margin:0 0 4px;font-weight:700;font-size:15px;">Jak změřit boky</p>
+        <p style="margin:0 0 14px;line-height:1.6;font-size:14px;color:#333;">Obtočte krejčovský metr kolem nejširší části boků (přes hýždě), bez utahování, a zapište si míru v centimetrech.</p>
+        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+          <thead><tr style="background:#12233b;color:#fff;">
+            <th style="padding:9px 10px;text-align:left;background:#e9e9e9 !important;color:#111 !important;">Velikost</th><th style="padding:9px 10px;text-align:left;background:#e9e9e9 !important;color:#111 !important;">Boky (cm)</th>
+          </tr></thead>
+          <tbody>
+          <?php foreach ( array(array('S','do 76 cm','do 30"'),array('M','77 – 85 cm','30 – 33"'),array('L','86 – 94 cm','34 – 37"'),array('XL','95 – 102 cm','37 – 40"'),array('2XL','103 – 114 cm','41 – 45"'),array('3XL','115 – 121 cm','45 – 48"'),array('4XL','122 – 129 cm','48 – 51"'),array('5XL','130 – 137 cm','51 – 54"'),array('6XL','138 – 145 cm','54 – 57"'),array('7XL','146 – 153 cm','57 – 60"'),array('8XL','154 cm a více','61" a více') ) as $i=>$r): ?>
+            <tr style="background:<?php echo ($i%2)?'#f5f7f9':'#fff'; ?>;border-bottom:1px solid #eee;">
+              <td style="padding:8px 10px;font-weight:700;"><?php echo esc_html($r[0]); ?></td><td style="padding:8px 10px;"><?php echo esc_html($r[1]); ?></td>
+            </tr>
+          <?php endforeach; ?>
+          </tbody>
+        </table>
+        <p style="margin-top:12px;font-size:14px;color:#444;"><strong>Mezi dvěma velikostmi?</strong> Doporučujeme větší velikost pro optimální pohodlí a maximální savost.</p>
+      </div>
+
+      <?php elseif ( function_exists('noriks_is_type') && noriks_is_type( 'kompresijske-majice' ) ): ?>
+
+      <div style="margin:30px 0;padding:0 6px;">
+        <table style="width:100%;border-collapse:collapse;font-size:16px;">
+          <thead><tr style="background:#111;color:#fff;">
+            <th style="padding:11px 12px;text-align:left;background:#e9e9e9 !important;color:#111 !important;">Velikost</th><th style="padding:11px 12px;text-align:left;background:#e9e9e9 !important;color:#111 !important;">Odpovídající hmotnost</th>
+          </tr></thead>
+          <tbody>
+          <?php foreach ( array(array('S','50 – 70 kg'),array('M','70 – 90 kg'),array('L','90 – 110 kg'),array('XL','110 – 130 kg'),array('2XL','130 – 150 kg'),array('3XL','150 – 170 kg'),array('4XL','170 – 190 kg'),array('5XL','190 – 210 kg') ) as $i=>$r): ?>
+            <tr style="background:<?php echo ($i%2)?'#f2f2f2':'#fff'; ?>;border-bottom:1px solid #e6e6e6;">
+              <td style="padding:11px 12px;font-weight:800;"><?php echo esc_html($r[0]); ?></td><td style="padding:11px 12px;font-weight:700;"><?php echo esc_html($r[1]); ?></td>
+            </tr>
+          <?php endforeach; ?>
+          </tbody>
+        </table>
+        <p style="margin-top:12px;font-size:14px;color:#444;">Zvolte velikost podle své hmotnosti. Mezi dvěma velikostmi? Pro silnější kompresi zvolte menší velikost.</p>
+      </div>
+
       <?php else: ?>
 
       <!-- MAJICE: HTML size chart (visina x teza matrika) -->

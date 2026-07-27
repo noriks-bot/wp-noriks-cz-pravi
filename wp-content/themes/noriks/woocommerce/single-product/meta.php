@@ -420,6 +420,45 @@ $is_mixed_bundle = has_term( array( 'sady','orto-starter','orto-majica-bokserica
  <div class="accordion">
 
 
+    <!-- KidsNest: prvni dve accordion mista (dlouhy obsah ze summary) -->
+    <?php if ( function_exists('noriks_is_type') && noriks_is_type( 'kidsnest', $current_product_id ) ) : ?>
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion(this)">
+        <h3>Obličej vašeho dítěte se formuje právě teď — a čas máte do 9 let</h3>
+        <div class="toggle">+</div>
+      </div>
+      <div class="accordion-content">
+        <p>Výzkumníci dýchacích cest a dětští stomatologové roky upozorňují na stejný vzorec — a většina rodičů o něm nikdy neslyšela. Říká se mu <strong>syndrom protáhlého obličeje</strong> (adenoidní obličej).</p>
+        <p>Každou noc, kdy dítě spí s otevřenými ústy na nesprávném polštáři, se dějí čtyři věci najednou: jazyk padá dozadu, čelist se stahuje, patro se zužuje do vysokého oblouku a obličej začíná růst vertikálně místo horizontálně. Po tisících takových nocí mezi 3. a 9. rokem se změny upevní.</p>
+        <p>Proto se dnes devítileté děti objevují u ortodontisty se zataženou bradou, kruhy pod očima, natěsnanými zuby — a drahým účtem za rovnátka. Způsob, jakým dítě dýchá mezi 3. a 9. rokem, silně ovlivňuje obličej, který ponese celý život.</p>
+        <p>NORIKS <strong>KidsNest</strong> je navržen tak, aby působil na základní příčinu — nesprávnou polohu hlavy a čelisti během 9 hodin spánku — díky <strong>3zónové ergonomické struktuře</strong>, která drží hlavu, krk a čelist ve správném zarovnání od první noci.</p>
+        <p><strong>Co uvidíte u svého dítěte:</strong></p>
+        <ul style="margin:6px 0 12px;padding-left:18px;">
+          <li style="margin:0 0 7px;"><strong>Méně dýchání ústy:</strong> rty zavřené během noci, návrat dýchání nosem, konec sucha v ústech po ránu.</li>
+          <li style="margin:0 0 7px;"><strong>Tišší noci:</strong> chrápání se u většiny dětí zklidní během 1–2 týdnů.</li>
+          <li style="margin:0 0 7px;"><strong>Podpora vyvíjející se čelisti:</strong> správná poloha noc co noc, v letech, kdy na tom nejvíce záleží.</li>
+          <li style="margin:0 0 7px;"><strong>Chytrá prevence:</strong> jeden polštář dnes — místo drahých korekcí zítra.</li>
+        </ul>
+        <p><strong>Jeden polštář dnes večer. Nebo tisíce později.</strong></p>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion(this)">
+        <h3>Starší než 9 let? Okno se zužuje. Škody nekončí.</h3>
+        <div class="toggle">+</div>
+      </div>
+      <div class="accordion-content">
+        <p>Rada, kterou jste slyšeli, je pravdivá jen napůl. Ano, horní patro se zpevní kolem 9. roku. Ale obličej se vyvíjí do 20 let, dolní čelist roste do 17 a dýchací cesty se neustále přizpůsobují.</p>
+        <p>Proto každá noc dýchání ústy po 9. roce vrší nové škody na staré: skřípání zubů, bolesti hlavy, spánek, který neodpočine, pokles koncentrace — a únavu, kterou si všichni pletou s leností. Váš teenager není líný. Každou noc šest hodin sotva dýchá.</p>
+        <p>KidsNest ve velikosti <strong>9–18 let</strong> je vyroben pro starší hlavu, krk a ramena. Jiná kontura, jiná výška, jiná opora. Stejný základní mechanismus: správné zarovnání hlavy, krku a čelisti, celou noc, na těle, které ještě roste.</p>
+        <p>Co rodiče pozorují: chrápání se zklidní za 7 až 14 nocí, vrací se skutečná ranní energie, bolesti hlavy slábnou, soustředění se vrací.</p>
+        <p>Nejlepší okno je stále od 3 do 9 let. Silné okno je od 8 do 18. Žádné není úplně zavřené — ale každá noc čekání přidává tlak tělu, které se snaží zotavit.</p>
+        <p><strong>Včerejšek je pryč. Dnešní večer je stále váš.</strong></p>
+      </div>
+    </div>
+    <?php endif; ?>
+
+
     <!-- 1 - detajli --> <!-- skryto na norikshers -->
     <?php if ( ! ( function_exists('noriks_is_type') && noriks_is_type('norikshers', $current_product_id) ) ) : ?>
     <div class="accordion-item">
@@ -429,7 +468,7 @@ $is_mixed_bundle = has_term( array( 'sady','orto-starter','orto-majica-bokserica
       </div>
       <div class="accordion-content">
           
-         <?php if( !$is_boxers &&  !$is_carape &&   !$is_mixed_bundle && ! ( function_exists('noriks_is_type') && ( noriks_is_type('fisiorest', $current_product_id) || noriks_is_type('bunion', $current_product_id) || noriks_is_type('ortopas', $current_product_id) ) ) ): ?>
+         <?php if( !$is_boxers &&  !$is_carape &&   !$is_mixed_bundle && ! ( function_exists('noriks_is_type') && ( noriks_is_type('fisiorest', $current_product_id) || noriks_is_type('bunion', $current_product_id) || noriks_is_type('ortopas', $current_product_id) || noriks_is_type('kidsnest', $current_product_id) || noriks_is_type('leakboxers', $current_product_id) || noriks_is_type('kompresijske-majice', $current_product_id) ) ) ): ?>
 
 
 
@@ -447,6 +486,18 @@ $is_mixed_bundle = has_term( array( 'sady','orto-starter','orto-majica-bokserica
         <?php elseif( function_exists('noriks_is_type') && noriks_is_type('ortopas', $current_product_id) ): ?>
 
                 NORIKS ortopedický pás cíleně stabilizuje spodní část zad pomocí cílené komprese, správně srovnává pánev a odlehčuje ischiadický nerv. Tenký a nenápadný pod oblečením, s nastavitelnou mírou opory. Vhodný při bolestech v kříži, ischiasu, svalovém napětí a potížích se SI kloubem.
+
+        <?php elseif( function_exists('noriks_is_type') && noriks_is_type('kidsnest', $current_product_id) ): ?>
+
+                NORIKS KidsNest je vyroben z hypoalergenní paměťové pěny s certifikací OEKO-TEX® — bez formaldehydu, těžkých kovů a BPA — s prodyšným, pratelným potahem, který se jednoduše sundává.<br><br>Jeho 3zónová ergonomická struktura jemně přijímá hlavu, podpírá krk a pomáhá udržet páteř v přirozeném zarovnání — i když se dítě během noci hodně otáčí. Podporuje tak dýchání nosem a klidnější, hlubší spánek.<br><br>Je k dispozici ve třech velikostech (1–3, 3–9 a 9–18 let), roste s vaším dítětem a poskytuje správnou výšku opory v každé fázi vývoje.
+
+        <?php elseif( function_exists('noriks_is_type') && noriks_is_type('leakboxers', $current_product_id) ): ?>
+
+                Inkontinenční boxerky NORIKS jsou vyrobeny z měkkého antibakteriálního bambusového vlákna s voděodolnou vnější vrstvou. Uprostřed je 7vrstvé jádro PureDry™, které okamžitě absorbuje a uzamkne až 300 ml tekutiny, takže kůže zůstává suchá a únik zůstane uvnitř.<br><br>Střih je tenký a diskrétní — vypadá a působí jako běžné prádlo, bez objemnosti a bez pocitu „pleny“. Ochrana kolem nohou brání bočnímu protečení a kontrola zápachu udržuje svěžest po celý den.<br><br>Jsou pratelné a opakovaně použitelné — savost si udrží i po stovkách praní, jako ekologická a úsporná alternativa jednorázových vložek a plen.
+
+        <?php elseif( function_exists('noriks_is_type') && noriks_is_type('kompresijske-majice', $current_product_id) ): ?>
+
+                NORIKS FIT je vyroben z pokročilé iontové kompresní tkaniny, která poskytuje přiléhavý, podpůrný střih. Cílená komprese rovnoměrně stahuje břicho a boky, vyhlazuje siluetu a podporuje vzpřímené držení těla — bez škrcení, které omezuje dýchání nebo pohyb.<br><br>Mikrotkaná vlákna podporují cirkulaci a pomáhají vám během dne stát vzpřímeněji a cítit se jistěji. Tkanina je lehká, prodyšná a odvádí vlhkost, takže zůstáváte v suchu a pohodlí.<br><br>Tenký a diskrétní střih ho činí neviditelným pod jakoukoli košilí a zároveň může posloužit i jako sportovní tričko. Výsledek: ostřejší vzhled, lepší držení těla a sebevědomí — jakmile si ho oblečete.
 
         <?php elseif(  has_term( array( 'orto-starter', 'orto-majica-bokserica' ), 'product_cat', $current_product_id )  ): ?>
         
@@ -486,7 +537,81 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
       </div>
       <div class="accordion-content">
 
-           <?php if( function_exists('noriks_is_type') && noriks_is_type('ortopas', $current_product_id) ): ?>
+           <?php if( function_exists('noriks_is_type') && noriks_is_type('kidsnest', $current_product_id) ): ?>
+
+          <div class="kn-size">
+            <img src="<?php echo get_template_directory_uri(); ?>/img/kidsnest/tablica-velicine.webp" alt="KidsNest velikosti podle věku" style="width:100%;height:auto;border-radius:10px;display:block;margin:0 0 12px;" loading="lazy">
+            <p style="margin:0;line-height:1.6;"><strong>Je dítě mezi dvěma velikostmi?</strong> Vždy zvolte větší. Polštář je navržen tak, aby podpíral zdravé zarovnání, zatímco dítě roste — větší velikost dává více prostoru a delší dobu používání.</p>
+          </div>
+
+        <?php elseif( function_exists('noriks_is_type') && noriks_is_type('leakboxers', $current_product_id) ): ?>
+
+          <div class="lbx-size">
+            <p style="margin:0 0 6px;font-weight:700;">Jak změřit boky</p>
+            <p style="margin:0 0 14px;line-height:1.6;">Obtočte krejčovský metr kolem nejširší části boků (přes hýždě), bez utahování. Stůjte uvolněně a vzpřímeně a zapište si míru v centimetrech.</p>
+            <table style="width:100%;border-collapse:collapse;font-size:14px;">
+              <thead>
+                <tr style="background:#12233b;color:#fff;">
+                  <th style="padding:8px 10px;text-align:left;background:#e9e9e9 !important;color:#111 !important;">Velikost</th>
+                  <th style="padding:8px 10px;text-align:left;background:#e9e9e9 !important;color:#111 !important;">Boky (cm)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php
+                $lbx_sizes = array(
+                  array('S','do 76 cm','do 30"'),
+                  array('M','77 – 85 cm','30 – 33"'),
+                  array('L','86 – 94 cm','34 – 37"'),
+                  array('XL','95 – 102 cm','37 – 40"'),
+                  array('2XL','103 – 114 cm','41 – 45"'),
+                  array('3XL','115 – 121 cm','45 – 48"'),
+                  array('4XL','122 – 129 cm','48 – 51"'),
+                  array('5XL','130 – 137 cm','51 – 54"'),
+                  array('6XL','138 – 145 cm','54 – 57"'),
+                  array('7XL','146 – 153 cm','57 – 60"'),
+                  array('8XL','154 cm a více','61" a více'),
+                );
+                foreach ( $lbx_sizes as $i => $r ) :
+                  $bg = ( $i % 2 ) ? '#f7fafb' : '#fff'; ?>
+                  <tr style="background:<?php echo $bg; ?>;border-bottom:1px solid #eee;">
+                    <td style="padding:8px 10px;font-weight:700;"><?php echo esc_html($r[0]); ?></td>
+                    <td style="padding:8px 10px;"><?php echo esc_html($r[1]); ?></td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+            <p style="margin:14px 0 0;line-height:1.6;"><strong>Mezi dvěma velikostmi?</strong> Vždy doporučujeme větší velikost pro optimální pohodlí a maximální savost.</p>
+          </div>
+
+        <?php elseif( function_exists('noriks_is_type') && noriks_is_type('kompresijske-majice', $current_product_id) ): ?>
+
+          <div class="kmf-size">
+            <table style="width:100%;border-collapse:collapse;font-size:15px;">
+              <thead>
+                <tr style="background:#111;color:#fff;">
+                  <th style="padding:9px 12px;text-align:left;background:#e9e9e9 !important;color:#111 !important;">Velikost</th>
+                  <th style="padding:9px 12px;text-align:left;background:#e9e9e9 !important;color:#111 !important;">Odpovídající hmotnost</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php
+                $kmf_sizes = array(
+                  array('S','50 – 70 kg'), array('M','70 – 90 kg'), array('L','90 – 110 kg'), array('XL','110 – 130 kg'),
+                  array('2XL','130 – 150 kg'), array('3XL','150 – 170 kg'), array('4XL','170 – 190 kg'), array('5XL','190 – 210 kg'),
+                );
+                foreach ( $kmf_sizes as $i => $r ) :
+                  $bg = ( $i % 2 ) ? '#f4f4f4' : '#fff'; ?>
+                  <tr style="background:<?php echo $bg; ?>;border-bottom:1px solid #eaeaea;">
+                    <td style="padding:9px 12px;font-weight:800;"><?php echo esc_html($r[0]); ?></td>
+                    <td style="padding:9px 12px;font-weight:700;"><?php echo esc_html($r[1]); ?></td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+            <p style="margin:12px 0 0;line-height:1.6;">Zvolte velikost podle své hmotnosti. Mezi dvěma velikostmi? Pro silnější kompresi zvolte menší velikost.</p>
+          </div>
+
+        <?php elseif( function_exists('noriks_is_type') && noriks_is_type('ortopas', $current_product_id) ): ?>
 
           <div style="line-height:1.9;">
             <strong>S/M</strong> : obvod boků 75–110 cm<br>
@@ -527,14 +652,22 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
 
 
     <!-- 3 - savjeti za pranje-->
-    <?php if ( ! ( function_exists('noriks_is_type') && ( noriks_is_type('ortopas', $current_product_id) || noriks_is_type('bunion', $current_product_id) || noriks_is_type('fisiorest', $current_product_id) || noriks_is_type('norikshers', $current_product_id) ) ) ) : // žádné tipy na praní pro pás/bunion/fisiorest + norikshers ?>
+    <?php if ( ! ( function_exists('noriks_is_type') && ( noriks_is_type('ortopas', $current_product_id) || noriks_is_type('bunion', $current_product_id) || noriks_is_type('fisiorest', $current_product_id) || noriks_is_type('norikshers', $current_product_id) || noriks_is_type('kidsnest', $current_product_id) ) ) ) : // žádné tipy na praní pro pás/bunion/fisiorest + norikshers + kidsnest ?>
     <div class="accordion-item">
       <div class="accordion-header" onclick="toggleAccordion(this)">
         <h3><?php echo get_field("singlepp_acc_h_2","options"); ?></h3>
         <div class="toggle">+</div>
       </div>
       <div class="accordion-content">
-             <?php if( !$is_boxers &&  !$is_carape &&   !$is_mixed_bundle ): ?>
+             <?php if( function_exists('noriks_is_type') && noriks_is_type('leakboxers', $current_product_id) ): ?>
+
+                Perte na 30–40 °C na programu pro jemné prádlo. Bez aviváže a bělidla. Sušte na vzduchu. Savost si udrží i po stovkách praní.
+
+             <?php elseif( function_exists('noriks_is_type') && noriks_is_type('kompresijske-majice', $current_product_id) ): ?>
+
+                Perte v pračce ve studené vodě na šetrný program. Bez bělidla a aviváže. Nesušte v sušičce — sušte na vzduchu, aby se zachovala komprese a tvar.
+
+             <?php elseif( !$is_boxers &&  !$is_carape &&   !$is_mixed_bundle ): ?>
         <?php echo get_field("singlepp_acc_t_2","options"); ?>
 
 

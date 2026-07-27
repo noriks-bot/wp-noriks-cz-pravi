@@ -11,6 +11,12 @@ if ( function_exists( 'noriks_is_type' ) ) {
         get_template_part( 'template_parts/product-bottom/why-fisiorest' );
     } elseif ( noriks_is_type( 'norikshers' ) ) {
         get_template_part( 'template_parts/product-bottom/why-norikshers' );
+    } elseif ( noriks_is_type( 'leakboxers' ) ) {
+        get_template_part( 'template_parts/product-bottom/why-leakboxers' );
+    } elseif ( noriks_is_type( 'kompresijske-majice' ) ) {
+        get_template_part( 'template_parts/product-bottom/why-kompresijske-majice' );
+    } elseif ( noriks_is_type( 'kidsnest' ) ) {
+        get_template_part( 'template_parts/product-bottom/why-kidsnest' );
     } elseif ( noriks_is_type( 'kompresijske-nogavice' ) ) {
         get_template_part( 'template_parts/product-bottom/why-kompresijske' );
     }
@@ -594,6 +600,18 @@ Flexibilní střih pro silnější stehna
 
           Nejste sami v hledání hladké pleti bez vrásek.
 
+          <?php elseif ( function_exists('noriks_is_type') && noriks_is_type('leakboxers') ): ?>
+
+          Nejste sami v hledání spolehlivé ochrany proti úniku moči.
+
+          <?php elseif ( function_exists('noriks_is_type') && noriks_is_type('kompresijske-majice') ): ?>
+
+          Nejste sami v hledání ostřejší siluety a lepšího držení těla.
+
+          <?php elseif ( function_exists('noriks_is_type') && noriks_is_type('kidsnest') ): ?>
+
+          Nejste sami v hledání klidného dětského spánku.
+
           <?php elseif ( !has_term( array( 'bokserice', 'bokserice-sastavi-paket' ), 'product_cat', get_the_ID() ) ): ?>
 
           <?php echo get_field("singlepp_content_standard_reviews_t2","options"); ?>
@@ -606,7 +624,7 @@ Flexibilní střih pro silnější stehna
           
           
           </h1>
-    <p class="note" style="color: black; margin-top: 0px; margin-bottom: 5px;"><?php if ( function_exists('noriks_is_type') && noriks_is_type('norikshers') ): ?>Tisíce žen už používají HERS silikonové kolagenové pásky pro hladší, pevnější a mladší vzhled pleti.<?php else: ?><?php echo get_field("singlepp_content_standard_reviews_t3","options"); ?><?php endif; ?></p>
+    <p class="note" style="color: black; margin-top: 0px; margin-bottom: 5px;"><?php if ( function_exists('noriks_is_type') && noriks_is_type('norikshers') ): ?>Tisíce žen už používají HERS silikonové kolagenové pásky pro hladší, pevnější a mladší vzhled pleti.<?php elseif ( function_exists('noriks_is_type') && noriks_is_type('leakboxers') ): ?>Tisíce mužů už nosí savé boxerky NORIKS pro sucho a sebevědomí – bez vložek a plen.<?php elseif ( function_exists('noriks_is_type') && noriks_is_type('kompresijske-majice') ): ?>Tisíce mužů už nosí kompresní tričko NORIKS pro vyhlazené břicho, lepší držení těla a více sebevědomí.<?php elseif ( function_exists('noriks_is_type') && noriks_is_type('kidsnest') ): ?>Tisíce rodičů už vyměnily obyčejný polštář za NORIKS KidsNest – tišší noci, dýchání nosem a spánek, který skutečně odpočine.<?php else: ?><?php echo get_field("singlepp_content_standard_reviews_t3","options"); ?><?php endif; ?></p>
     </div>
   </section>
   </div>
@@ -682,12 +700,24 @@ Flexibilní střih pro silnější stehna
   $is_bunion_page     = ( function_exists('noriks_is_type') && noriks_is_type('bunion', $current_product_id) );
   $is_fisiorest_page  = ( function_exists('noriks_is_type') && noriks_is_type('fisiorest', $current_product_id) );
   $is_norikshers_review_page = ( function_exists('noriks_is_type') && noriks_is_type('norikshers', $current_product_id) );
+  $is_leakboxers_page = ( function_exists('noriks_is_type') && noriks_is_type('leakboxers', $current_product_id) );
+  $is_kompmajice_page = ( function_exists('noriks_is_type') && noriks_is_type('kompresijske-majice', $current_product_id) );
+  $is_kidsnest_page   = ( function_exists('noriks_is_type') && noriks_is_type('kidsnest', $current_product_id) );
 
   // Fallback product name shown in review cards.
-  $rv_fallback_title = $is_norikshers_review_page ? 'NORIKS HERS' : 'Jedna Siva Majica';
+  $rv_fallback_title = $is_kidsnest_page ? 'NORIKS KidsNest polštář'
+                     : ( $is_leakboxers_page ? 'NORIKS savé boxerky'
+                     : ( $is_kompmajice_page ? 'NORIKS FIT kompresní tričko'
+                     : ( $is_norikshers_review_page ? 'NORIKS HERS' : 'Jedna Siva Majica' ) ) );
 
   // Include review pools
-  if ( $is_norikshers_review_page ) {
+  if ( $is_kidsnest_page ) {
+    include get_stylesheet_directory() . '/auto_reviews/CZ_kidsnest.php';
+  } elseif ( $is_leakboxers_page ) {
+    include get_stylesheet_directory() . '/auto_reviews/CZ_leakboxers.php';
+  } elseif ( $is_kompmajice_page ) {
+    include get_stylesheet_directory() . '/auto_reviews/CZ_kompresijske-majice.php';
+  } elseif ( $is_norikshers_review_page ) {
     include get_stylesheet_directory() . '/auto_reviews/CZ_norikshers.php';
   } elseif ( $is_fisiorest_page ) {
     include get_stylesheet_directory() . '/auto_reviews/CZ_fisiorest.php';
@@ -761,12 +791,14 @@ Flexibilní střih pro silnější stehna
 
       $is_bokserice = false;
       $is_norikshers = false;
+      $is_kidsnest  = false;
       if ( $product_id ) {
           $is_bokserice = has_term( array( 'bokserice','orto-bokserice', 'bokserice-sastavi-paket' ), 'product_cat', $product_id );
           $is_norikshers = ( function_exists('noriks_is_type') && noriks_is_type('norikshers', $product_id) );
+          $is_kidsnest  = ( function_exists('noriks_is_type') && noriks_is_type('kidsnest', $product_id) );
       }
 
-      $cache_key = $transient_key . ( $is_norikshers ? '_norikshers' : ( $is_bokserice ? '_bokserice' : '_all' ) );
+      $cache_key = $transient_key . ( $is_kidsnest ? '_kidsnest' : ( $is_norikshers ? '_norikshers' : ( $is_bokserice ? '_bokserice' : '_all' ) ) );
 
       if ( function_exists( 'get_transient' ) ) {
           $cached = get_transient( $cache_key );
@@ -783,7 +815,9 @@ Flexibilní střih pro silnější stehna
           'order'   => 'DESC',
       ];
 
-      if ( $is_norikshers ) {
+      if ( $is_kidsnest ) {
+          $args['category'] = [ 'orto-kidsnest' ];
+      } elseif ( $is_norikshers ) {
           $args['category'] = [ 'orto-norikshers', 'orto-noriks-hers' ];
       } elseif ( $is_bokserice ) {
           $args['category'] = [ 'boxerky' ];
@@ -1030,10 +1064,12 @@ function assign_unique_avatars_first_n(array $reviews, array $avatar_pool, strin
 
   // Avatar pools based on page category
   $avatar_type = $is_bokserice_page ? 'bokserice' : 'majice';
-  // Belt + bunion + fisiorest + norikshers: text-only reviews (no avatar images).
-  $avatar_pool = ( $is_ortopas_page || $is_bunion_page || $is_fisiorest_page || $is_norikshers_review_page ) ? array() : get_review_avatar_pool($avatar_type);
+  // Belt + bunion + fisiorest + norikshers + leak boxers + kompresni tricka + kidsnest: text-only reviews (no avatar images).
+  $avatar_pool = ( $is_ortopas_page || $is_bunion_page || $is_fisiorest_page || $is_norikshers_review_page || $is_leakboxers_page || $is_kompmajice_page || $is_kidsnest_page ) ? array() : get_review_avatar_pool($avatar_type);
 
-  $product_pool = get_wc_product_pool();
+  // On single-product landing pages (leak boxers / kompresni tricka) the cards should
+  // reference THIS product (via $rv_fallback_title), not random pool products.
+  $product_pool = ( $is_leakboxers_page || $is_kompmajice_page ) ? array() : get_wc_product_pool();
 
   // 1) Stable daily shuffle of review pools
   $auto_reviews_en   = shuffle_with_seed($auto_reviews_en,   'pool-en:'   . $daily_seed);
@@ -1073,8 +1109,8 @@ $auto_reviews_ship = assign_unique_avatars_first_n($auto_reviews_ship, $avatar_p
   $ship_count = count($auto_reviews_ship);
 ?>
 
-<?php if ( $is_ortopas_page || $is_bunion_page || $is_fisiorest_page || $is_norikshers_review_page ) : ?>
-<style>/* belt + bunion + fisiorest + norikshers: text-only reviews, no avatar */ #reviews-section .avatar { display: none !important; }</style>
+<?php if ( $is_ortopas_page || $is_bunion_page || $is_fisiorest_page || $is_norikshers_review_page || $is_leakboxers_page || $is_kompmajice_page || $is_kidsnest_page ) : ?>
+<style>/* belt + bunion + fisiorest + norikshers + leak boxers + kompresni tricka + kidsnest: text-only reviews, no avatar */ #reviews-section .avatar { display: none !important; }</style>
 <?php endif; ?>
 
 <section id="reviews-section" class="basic-reviews-section" style="margin-bottom:40px!important;padding-bottom:40px!important;">
@@ -1499,6 +1535,71 @@ $is_ortopas_faq    = ( function_exists('noriks_is_type') && noriks_is_type('orto
 $is_bunion_faq     = ( function_exists('noriks_is_type') && noriks_is_type('bunion') );
 $is_fisiorest_faq  = ( function_exists('noriks_is_type') && noriks_is_type('fisiorest') );
 $is_norikshers_faq = ( function_exists('noriks_is_type') && noriks_is_type('norikshers') );
+$is_leakboxers_faq = ( function_exists('noriks_is_type') && noriks_is_type('leakboxers') );
+$is_kompmajice_faq = ( function_exists('noriks_is_type') && noriks_is_type('kompresijske-majice') );
+$is_kidsnest_faq   = ( function_exists('noriks_is_type') && noriks_is_type('kidsnest') );
+
+// NORIKS FIT (kompresní/tvarující tričko) — FAQ o produktu (překlad, NORIKS FIT).
+$kompmajice_faq = array(
+  array(
+    'questioon' => 'Pro koho je NORIKS FIT určen?',
+    'answer'    => 'NORIKS FIT je stvořen pro muže, kteří chtějí štíhlejší vzhled, vrátit si sebevědomí ve vlastní tělo, napravit držení těla, cítit se během dne energičtěji a vypadat štíhleji pod jakýmkoli oblečením.'
+  ),
+  array(
+    'questioon' => 'Jak tričko NORIKS FIT vlastně funguje?',
+    'answer'    => 'NORIKS FIT používá pokročilou iontovou kompresní tkaninu, která aktivuje přirozenou reakci těla. Mikrotkaná vlákna podporují zdravou cirkulaci a pomáhají vám udržet vzpřímené držení těla od rána do večera. Při pravidelném nošení přináší viditelně tvarovanější trup, lepší zarovnání páteře a více sebevědomí.'
+  ),
+  array(
+    'questioon' => 'Jak rychle si všimnu výsledků?',
+    'answer'    => 'Každé tělo je jiné, ale většina zákazníků hlásí viditelnou změnu během prvních 30 dnů. Pro nejlepší účinek noste NORIKS FIT každý den a kombinujte ho s vyváženou stravou a pravidelným pohybem.'
+  ),
+  array(
+    'questioon' => 'Je vidět pod košilí?',
+    'answer'    => 'Ne. NORIKS FIT je tenký, diskrétní a neviditelný pod jakoukoli košilí, a přitom tvaruje břicho a hrudník a podporuje držení těla.'
+  ),
+  array(
+    'questioon' => 'Jak se pere a z čeho je vyroben?',
+    'answer'    => 'Je vyroben z 80 % nylonu a 20 % elastanu. Perte ho ve studené vodě na šetrný program, abyste zachovali kompresi a prodloužili životnost tkaniny.'
+  ),
+);
+
+// NORIKS LEAK BOXERS (inkontinenční boxerky) — FAQ o produktu (překlad, NORIKS).
+$leakboxers_faq = array(
+  array(
+    'questioon' => 'Proč si NORIKS vybralo více než 123 000 mužů?',
+    'answer'    => 'NORIKS jsou nejsavější pratelné boxerky pro mužský únik moči: pojmou až 300 ml, mají certifikaci Oeko-Tex® a neobsahují škodlivé látky, jsou pratelné a opakovaně použitelné (ekologická alternativa jednorázových vložek), navržené pro celodenní pohodlí a sebevědomí. Celých 87 % zákazníků si po prvním nákupu objedná znovu.'
+  ),
+  array(
+    'questioon' => 'Kolik absorbují?',
+    'answer'    => 'Až 300 ml — téměř 3× více než většina produktů na trhu. Díky 7vrstvému jádru PureDry™ se tekutina okamžitě absorbuje a uzamkne hluboko uvnitř, kůže zůstává suchá a vnější vrstva je voděodolná.'
+  ),
+  array(
+    'questioon' => 'Jsou vidět pod oblečením?',
+    'answer'    => 'Ne. Boxerky NORIKS jsou tenké, diskrétní a pružné — vypadají a působí jako běžné prádlo, bez objemnosti a bez pocitu „pleny“.'
+  ),
+  array(
+    'questioon' => 'Jak se perou?',
+    'answer'    => 'Perte na 30–40 °C, bez aviváže a bělidla, sušte na vzduchu. Savost si udrží i po stovkách praní.'
+  ),
+  array(
+    'questioon' => 'Je doručení diskrétní?',
+    'answer'    => 'Ano. Všechny objednávky posíláme v neutrálním, diskrétním balení bez viditelného označení obsahu, abychom chránili vaše soukromí.'
+  ),
+  array(
+    'questioon' => 'Z čeho jsou vyrobeny?',
+    'answer'    => 'Vnější vrstva z bambusového vlákna s elastanem, 7vrstvé savé jádro z technických mikrovláken a voděodolná prodyšná membrána.'
+  ),
+);
+
+// KidsNest dětský polštář — FAQ o produktu (NORIKS, zmírněná tvrzení).
+$kidsnest_faq = array(
+  array( 'questioon' => 'Jak rychle uvidím, že dýchání ústy přestává?', 'answer' => 'Většina rodičů si všimne tiššího dýchání a méně probouzení s otevřenými ústy během prvních 5–7 nocí. Do 14. noci se u většiny dětí zklidní chrápání a rty zůstávají zavřené. Plný rozdíl — viditelně lepší polohu a klidnější spánek — rodiče nejčastěji popisují kolem 21. až 30. dne. Používejte ho každou noc.' ),
+  array( 'questioon' => 'Pro jaký věk je KidsNest určen?', 'answer' => 'KidsNest je k dispozici ve třech velikostech: 1–3, 3–9 a 9–18 let. Nejdůležitější okno je mezi 3. a 9. rokem, kdy se patro a čelist vyvíjejí nejintenzivněji — ale každý věk má svou velikost a svůj přínos.' ),
+  array( 'questioon' => 'Je bezpečný? Co je uvnitř?', 'answer' => 'KidsNest je vyroben z hypoalergenní paměťové pěny s certifikací OEKO-TEX® — bez formaldehydu, těžkých kovů a BPA. Je odolný vůči roztočům a prodyšný a potah se dá sundat a vyprat v pračce.' ),
+  array( 'questioon' => 'Bude ho mé dítě opravdu používat?', 'answer' => 'Ano. Ergonomický tvar působí jako opora, ne jako něco zvláštního — většina dětí si zvykne za 1–2 noci. Rodiče často hlásí, že děti po prvním týdnu nechtějí spát bez něj. 3zónová struktura přirozeně přijímá hlavu — neexistuje „správný způsob“, žádné boje před spaním.' ),
+  array( 'questioon' => 'Funguje, i když mé dítě už dýchá ústy?', 'answer' => 'Ano — právě pro takové děti je navržen. 3zónová struktura pomáhá zabránit zaklánění hlavy, kvůli kterému se ústa ve spánku otevírají. U většiny dětí se během 7–14 nocí rty přirozeně zavřou a dýchání nosem se vrátí.' ),
+  array( 'questioon' => 'Co když mému dítěti nepomůže?', 'answer' => 'Nechte dítě spát na KidsNestu 30 nocí. Pokud nevidíte rozdíl — méně dýchání ústy, tišší noci, klidnější spánek — ozvěte se nám a vrátíme vám peníze. Bez otázek a bez drobného písma.' ),
+);
 
 // Korektor vbočeného palce — FAQ o produktu (překlad, NORIKS).
 $bunion_faq = array(
@@ -1548,8 +1649,11 @@ $norikshers_faq = array(
   array( 'questioon' => 'Existuje záruka vrácení peněz?', 'answer' => 'Ano, nabízíme 30denní záruku bez rizika. Pokud nejste spokojeni, jednoduše nás kontaktujte a vyřešíme to.' ),
 );
 
-$faq_pick = function( $title, $list ) use ( $is_ortopas_faq, $ortopas_faq, $is_bunion_faq, $bunion_faq, $is_fisiorest_faq, $fisiorest_faq, $is_norikshers_faq, $norikshers_faq ) {
+$faq_pick = function( $title, $list ) use ( $is_ortopas_faq, $ortopas_faq, $is_bunion_faq, $bunion_faq, $is_fisiorest_faq, $fisiorest_faq, $is_norikshers_faq, $norikshers_faq, $is_leakboxers_faq, $leakboxers_faq, $is_kompmajice_faq, $kompmajice_faq, $is_kidsnest_faq, $kidsnest_faq ) {
   $is_info = ( stripos( (string) $title, 'produktu' ) !== false );
+  if ( $is_kidsnest_faq && $is_info )  { return $kidsnest_faq; }
+  if ( $is_leakboxers_faq && $is_info ) { return $leakboxers_faq; }
+  if ( $is_kompmajice_faq && $is_info ) { return $kompmajice_faq; }
   if ( $is_norikshers_faq && $is_info ) { return $norikshers_faq; }
   if ( $is_fisiorest_faq && $is_info ) { return $fisiorest_faq; }
   if ( $is_bunion_faq && $is_info )    { return $bunion_faq; }
