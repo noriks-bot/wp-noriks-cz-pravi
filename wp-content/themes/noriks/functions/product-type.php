@@ -35,6 +35,8 @@ function noriks_product_type_map() : array {
         'norikshers'              => array( 'orto-norikshers', 'orto-noriks-hers', 'norikshers' ),
         // KidsNest detsky polstar pro spravne dychani/drzeni (Needo-style).
         'kidsnest'                => array( 'orto-kidsnest', 'kidsnest' ),
+        // ErgoSit orthopedic pillow (ortopedicky polstar na sezeni) — no colour/size, quantity-only bundle.
+        'ortopedski-jastuk'       => array( 'orto-ortopedski-jastuk', 'ortopedski-jastuk' ),
         'leakboxers'              => array( 'orto-leak-boxers', 'leak-boxers' ),
         'kompresijske-majice'     => array( 'orto-kompresijske-majice', 'kompresijske-majice' ),
         'majica-darila'           => array( 'orto-majica-darila', 'majica-darila' ),
