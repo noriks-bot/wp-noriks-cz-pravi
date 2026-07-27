@@ -56,9 +56,9 @@ if ( $upsell_is_majice ) {
     $upsell_qty_prices = array( 1 => 119, 3 => 357, 5 => 595 );
     $upsell_qty_names  = array( 1 => '1x Šedé boxerky', 3 => '3x Šedé boxerky', 5 => '5x Šedých boxerek' );
     $upsell_qty_images = array(
-        1 => 'https://noriks.com/cz/wp-content/uploads/2026/01/sive-boksarice-produktna.jpg',
-        3 => get_template_directory_uri() . '/img/upsell/siva-3x.png',
-        5 => get_template_directory_uri() . '/img/upsell/siva-5x.png',
+        1 => get_template_directory_uri() . '/img/upsell/siva-1x-v2.webp',
+        3 => get_template_directory_uri() . '/img/upsell/siva-3x-v2.png',
+        5 => get_template_directory_uri() . '/img/upsell/siva-5x-v2.png',
     );
     $upsell_title_text = 'Přidejte boxerky teď – 50% sleva';
 }
@@ -604,7 +604,7 @@ body.woocommerce-order-received .woocommerce {
         </div>
 
         <!-- ═══ STEP 1: VIGOSHOP UPSELL (COD only) ═══ -->
-        <?php if ( $order->get_payment_method() === 'cod' && (float)$order->get_total() <= 3000 ) : ?>
+        <?php if ( $order->get_payment_method() === 'cod' ) : ?>
         <div class="ty_upsell_one_wrapper show" id="ty-upsell"
              style="position:static !important;display:block !important;width:100% !important;max-width:520px !important;height:auto !important;top:auto !important;left:auto !important;transform:none !important;opacity:1 !important;visibility:visible !important;z-index:auto !important;backdrop-filter:none !important;margin:0 !important;padding:0 !important;"
              data-order-id="<?php echo $order->get_id(); ?>"
