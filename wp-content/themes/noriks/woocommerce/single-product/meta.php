@@ -101,6 +101,16 @@ global $product;
 
 
 
+<?php if ( noriks_is_type( 'ortopas' ) ) : ?>
+<!-- Ortopas: kartica "preverjeno s strani zdravnika" (slika) -->
+<div class="ortopas-doctor-card" style="margin:14px 0;">
+  <img src="<?php echo esc_url( get_template_directory_uri() . '/img/ortopas/ortopas-zdravnik.png' ); ?>"
+       alt="Ověřeno lékařem — ortopedický pás NORIKS"
+       style="width:100%; height:auto; display:block; border-radius:10px;"
+       loading="lazy" decoding="async">
+</div>
+<?php endif; ?>
+
 <!-- date and countdown section -->
 
 <div class="shipping-box">
