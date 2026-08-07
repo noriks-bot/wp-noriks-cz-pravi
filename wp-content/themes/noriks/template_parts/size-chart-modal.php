@@ -210,6 +210,16 @@
       
       
        
+      <?php elseif ( function_exists('noriks_is_type') && noriks_is_type( 'kompresijske-nogavice' ) ): ?>
+
+      <div style="line-height:1.9; text-align:left; margin:40px 0; padding:0 6px; font-size:15px; color:#111;">
+        <strong>S/M</strong> : velikost obuvi 36–40 / obvod lýtka : 23–36 cm<br>
+        <strong>L/XL</strong> : velikost obuvi 40–44 / obvod lýtka : 36–45 cm<br>
+        <strong>2XL</strong> : velikost obuvi 44–48 / obvod lýtka : 45–56 cm<br><br>
+        Změřte prosím obvod lýtka v nejširším místě, abyste zjistili svou velikost.<br><br>
+        Doporučujeme vybrat velikost podle obvodu lýtka, nikoli podle běžné velikosti obuvi.
+      </div>
+
       <?php elseif ( has_term( array( 'ponozky', 'zimske-carape	' ), 'product_cat', get_the_ID() ) ): ?>
       
       

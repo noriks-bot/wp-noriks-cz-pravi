@@ -667,6 +667,16 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
           
           
         
+        <?php elseif( noriks_is_type( 'kompresijske-nogavice', $current_product_id ) ): ?>
+
+          <div style="line-height:1.9;">
+            <strong>S/M</strong> : velikost obuvi 36–40 / obvod lýtka : 23–36 cm<br>
+            <strong>L/XL</strong> : velikost obuvi 40–44 / obvod lýtka : 36–45 cm<br>
+            <strong>2XL</strong> : velikost obuvi 44–48 / obvod lýtka : 45–56 cm<br><br>
+            Změřte prosím obvod lýtka v nejširším místě, abyste zjistili svou velikost.<br><br>
+            Doporučujeme vybrat velikost podle obvodu lýtka, nikoli podle běžné velikosti obuvi.
+          </div>
+
         <?php elseif(  $is_carape ): ?>
         
         
