@@ -23,7 +23,7 @@ $kn = get_template_directory_uri() . '/img/kidsnest/';
 <!-- ============ 2) Začněte již dnes večer — obrázek VLEVO, text VPRAVO ============ -->
 <section class="kn-sec">
   <div class="kn-wrap kn-row2">
-    <div class="kn-media"><img src="<?php echo esc_url( $kn.'01-poravnan.webp' ); ?>" alt="Dokonale zarovnáno — hlava, krk a páteř během spánku" loading="lazy" onerror="this.style.display='none'"></div>
+    <div class="kn-media"><img src="<?php echo esc_url( $kn.'01-poravnan-cz.webp' ); ?>" alt="Dokonale zarovnáno — hlava, krk a páteř během spánku" loading="lazy" onerror="this.style.display='none'"></div>
     <div class="kn-copy">
       <p class="kn-eyebrow">Vyvinuto se stomatology pro dětské dýchací cesty</p>
       <h2 class="kn-h2 kn-h2-blue">Začněte již dnes večer napravovat skryté škody.</h2>
