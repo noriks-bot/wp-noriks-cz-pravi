@@ -667,11 +667,6 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
           
           
         
-        <?php // KOMZIPS: vlastna lokalizirana tabela velikosti (sicer pade v else = tabela za majice).
-        elseif ( function_exists('noriks_is_type') && noriks_is_type('kompresijske-nogavice', $current_product_id) ): ?>
-
-                  <img class="js-open-size-chart" style="cursor:pointer;" src="<?php echo get_template_directory_uri(); ?>/img/kompresijske-tabela-cz.webp" alt="Tabulka velikostí — kompresní ponožky">
-
         <?php elseif(  $is_carape ): ?>
         
         
