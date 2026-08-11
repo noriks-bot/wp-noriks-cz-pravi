@@ -472,8 +472,8 @@ function gck_render_bundle_selector() {
     // Special orto products that don't use the standard colour + size selectors:
     //  - orto-bunion / orto-fisiorest : quantity-only bundle, NO colour and NO size selectors.
     //  - orto-ortopas / orto-kidsnest : single "Velikost" attribute, no colour (size selector only).
-    $gck_no_attrs    = has_term( array( 'orto-kneefix', 'orto-bunion', 'orto-fisiorest', 'orto-norikshers', 'orto-noriks-hers', 'orto-ortopedski-jastuk' ), 'product_cat', $product_id );
-    $gck_single_size = has_term( array( 'orto-ortopas', 'orto-kneefix', 'orto-kidsnest' ), 'product_cat', $product_id );
+    $gck_no_attrs    = has_term( array( 'orto-bunion', 'orto-fisiorest', 'orto-norikshers', 'orto-noriks-hers', 'orto-ortopedski-jastuk' ), 'product_cat', $product_id );
+    $gck_single_size = has_term( array( 'orto-ortopas', 'orto-kidsnest' ), 'product_cat', $product_id );
 
     // SHGIFTS (orto-majica-darila): the SAME split-garment selector as SHBOX,
     // extended to 3 garment groups (4 trička + 1 boxerky + 1 pár ponožek). Gated
