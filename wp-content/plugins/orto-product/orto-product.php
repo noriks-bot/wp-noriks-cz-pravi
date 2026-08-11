@@ -472,8 +472,8 @@ function gck_render_bundle_selector() {
     // Special orto products that don't use the standard colour + size selectors:
     //  - orto-bunion / orto-fisiorest : quantity-only bundle, NO colour and NO size selectors.
     //  - orto-ortopas / orto-kidsnest : single "Velikost" attribute, no colour (size selector only).
-    $gck_no_attrs    = has_term( array( 'orto-bunion', 'orto-fisiorest', 'orto-norikshers', 'orto-noriks-hers', 'orto-ortopedski-jastuk' ), 'product_cat', $product_id );
-    $gck_single_size = has_term( array( 'orto-ortopas', 'orto-kidsnest' ), 'product_cat', $product_id );
+    $gck_no_attrs    = has_term( array( 'orto-kneefix', 'orto-bunion', 'orto-fisiorest', 'orto-norikshers', 'orto-noriks-hers', 'orto-ortopedski-jastuk' ), 'product_cat', $product_id );
+    $gck_single_size = has_term( array( 'orto-ortopas', 'orto-kneefix', 'orto-kidsnest' ), 'product_cat', $product_id );
 
     // SHGIFTS (orto-majica-darila): the SAME split-garment selector as SHBOX,
     // extended to 3 garment groups (4 trička + 1 boxerky + 1 pár ponožek). Gated
@@ -483,6 +483,9 @@ function gck_render_bundle_selector() {
     // markup + CSS (see the render branch below). Detected early and bypasses the
     // attribute guards so it always renders regardless of product attributes.
     $gck_shgifts = has_term( 'orto-majica-darila', 'product_cat', $product_id );
+
+    // KneeFix: dva izbornika (Velicina + Stranica) umjesto swatcheva boje.
+    $gck_side_select = has_term( 'orto-kneefix', 'product_cat', $product_id );
 
     if ( ! $gck_no_attrs && ! $gck_single_size && ! $gck_shgifts && count( $custom_attrs ) < 2 ) return;
 
@@ -837,7 +840,7 @@ function gck_render_bundle_selector() {
 
     <?php
     // Your extra conditional style block (kept)
-    if (  !has_term( array( 'orto-starter', 'orto-majice', 'orto-bokserice', 'orto-kompresijske-carape', 'orto-ortopas', 'orto-bunion', 'orto-fisiorest', 'orto-norikshers', 'orto-noriks-hers', 'orto-majica-darila', 'orto-leak-boxers', 'orto-kompresijske-majice', 'orto-ortopedski-jastuk', 'orto-kidsnest' ), 'product_cat', $product_id )  )   :
+    if (  !has_term( array( 'orto-starter', 'orto-majice', 'orto-bokserice', 'orto-kompresijske-carape', 'orto-ortopas', 'orto-kneefix', 'orto-bunion', 'orto-fisiorest', 'orto-norikshers', 'orto-noriks-hers', 'orto-majica-darila', 'orto-leak-boxers', 'orto-kompresijske-majice', 'orto-ortopedski-jastuk', 'orto-kidsnest' ), 'product_cat', $product_id )  )   :
     ?>
         <style>
           .bundle-option { border: 2px solid #ededed; background: #f4f4f4b0  !important; border-radius: 4px; }
@@ -933,7 +936,7 @@ function gck_render_bundle_selector() {
     
 
     <div class="gck-benefits-box">
-        <?php if ( ! has_term( array( 'orto-ortopas', 'orto-bunion', 'orto-fisiorest', 'orto-norikshers', 'orto-noriks-hers', 'orto-leak-boxers', 'orto-kompresijske-majice', 'orto-ortopedski-jastuk', 'orto-kidsnest' ), 'product_cat', $product_id ) ) : // hide benefits list for back belt + bunion + fisiorest + leak boxers + kompresijske majice + orthopedic pillow + kidsnest ?>
+        <?php if ( ! has_term( array( 'orto-ortopas', 'orto-kneefix', 'orto-bunion', 'orto-fisiorest', 'orto-norikshers', 'orto-noriks-hers', 'orto-leak-boxers', 'orto-kompresijske-majice', 'orto-ortopedski-jastuk', 'orto-kidsnest' ), 'product_cat', $product_id ) ) : // hide benefits list for back belt + bunion + fisiorest + leak boxers + kompresijske majice + orthopedic pillow + kidsnest ?>
         <ul class="gck-benefits-list">
             <?php if ( !has_term( array( 'orto-bokserice', 'orto-bokserice2', 'starter-paketi' ), 'product_cat', $product_id ) ) : ?>
                 <li><span class="gck-check">✔</span> <strong>Perfektní padnutí</strong></li>
@@ -1324,6 +1327,56 @@ function gck_render_bundle_selector() {
     })();
     </script>
     <?php endif; ?>
+    <?php if ( $gck_side_select ) : ?>
+    <style>
+      /* KneeFix: Veličina + Stranica jedan uz drugi u istom redu, s brojem komada. */
+      #bundle-selector .bundle-pairs { counter-reset: kfxpair; }
+      #bundle-selector .bundle-pair  { counter-increment: kfxpair; }
+      #bundle-selector .bundle-pair .bundle-attr-row {
+          display: flex !important;
+          flex-wrap: nowrap !important;
+          align-items: center;
+          justify-content: flex-start;
+          gap: 8px;
+          width: 100%;
+      }
+      /* Fiksna sirina broja da se izbornici u svim redovima poravnaju. */
+      #bundle-selector .bundle-pair .bundle-attr-row:before {
+          content: "#" counter(kfxpair);
+          flex: 0 0 24px;
+          text-align: right;
+          font-size: 13px; font-weight: 700; color: #6b6b6b;
+          font-variant-numeric: tabular-nums;
+      }
+      /* Veličina prva, Stranica druga — kao na referenci; oba uska (širina po sadržaju). */
+      #bundle-selector .bundle-pair .gck-size-select {
+          order: 1;
+          flex: 0 1 auto;
+          display: inline-block !important;
+          width: auto !important;
+          max-width: 60% !important;
+          min-width: 0 !important;
+          font-size: 14px;
+          padding: 9px 26px 9px 10px;
+          text-overflow: ellipsis;
+      }
+      #bundle-selector .bundle-pair .gck-side-select {
+          order: 2;
+          flex: 0 0 auto;
+          display: inline-block !important;
+          width: auto !important;
+          max-width: 40% !important;
+          min-width: 0 !important;
+          font-size: 14px;
+          padding: 9px 26px 9px 10px;
+      }
+      @media (max-width: 600px) {
+          #bundle-selector .bundle-pair .bundle-attr-row { gap: 6px; }
+          #bundle-selector .bundle-pair .gck-side-select,
+          #bundle-selector .bundle-pair .gck-size-select { font-size: 13px; padding: 9px 22px 9px 8px; }
+      }
+    </style>
+    <?php endif; ?>
     <div id="bundle-selector" class="bundle-box<?php echo $gck_single_size ? ' is-single-size' : ''; ?><?php echo $gck_no_attrs ? ' is-no-attrs' : ''; ?>" data-split-garments="<?php echo $gck_split_garments ? '1' : '0'; ?>">
         <?php
         $default_index = ( $precheck_second && count( $offers ) > 2 ) ? 2 : 0;
@@ -1622,6 +1675,33 @@ function gck_render_bundle_selector() {
 
                                 <div class="bundle-attr-row">
 
+                                    <?php if ( ! empty($color_values) && $target_color_field_key !== '' && $gck_side_select ) : ?>
+                                        <select class="gck-size-select gck-side-select"
+                                                data-size-key="<?php echo esc_attr($target_color_attr_key); ?>"
+                                                name="pairs[<?php echo esc_attr( $offer_id ); ?>][<?php echo $i; ?>][<?php echo esc_attr( $target_color_field_key ); ?>]">
+                                            <?php foreach ( $color_values as $val ) : ?>
+                                                <option value="<?php echo esc_attr( $val ); ?>"><?php echo esc_html( $val ); ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    <?php elseif ( ! empty($color_values) && $target_color_field_key !== '' ) : ?>
+                                        <div class="color-swatches"
+                                             data-attr-key="<?php echo esc_attr($target_color_attr_key); ?>"
+                                             data-name="pairs[<?php echo esc_attr( $offer_id ); ?>][<?php echo $i; ?>][<?php echo esc_attr( $target_color_field_key ); ?>]">
+
+                                            <?php foreach ( $color_values as $val ) :
+                                                $slug = sanitize_title( $val ); ?>
+                                                <div class="swatch" data-value="<?php echo esc_attr( $val ); ?>" title="<?php echo esc_attr( $val ); ?>">
+                                                    <span class="swatch-circle color-<?php echo esc_attr( $slug ); ?>"></span>
+                                                </div>
+                                            <?php endforeach; ?>
+
+                                            <input type="hidden"
+                                                   class="swatch-input"
+                                                   data-attr-key="<?php echo esc_attr($target_color_attr_key); ?>"
+                                                   name="pairs[<?php echo esc_attr( $offer_id ); ?>][<?php echo $i; ?>][<?php echo esc_attr( $target_color_field_key ); ?>]"
+                                                   value="">
+                                        </div>
+                                    <?php endif; ?>
                                     <?php if ( ! empty($color_values) && $target_color_field_key !== '' ) : ?>
                                         <div class="color-swatches"
                                              data-attr-key="<?php echo esc_attr($target_color_attr_key); ?>"

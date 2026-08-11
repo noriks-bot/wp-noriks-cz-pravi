@@ -15,6 +15,8 @@ if ( function_exists( 'noriks_is_type' ) ) {
         get_template_part( 'template_parts/product-bottom/why-leakboxers' );
     } elseif ( noriks_is_type( 'kompresijske-majice' ) ) {
         get_template_part( 'template_parts/product-bottom/why-kompresijske-majice' );
+    } elseif ( noriks_is_type( 'kneefix' ) ) {
+        get_template_part( 'template_parts/product-bottom/why-kneefix' );
     } elseif ( noriks_is_type( 'kidsnest' ) ) {
         get_template_part( 'template_parts/product-bottom/why-kidsnest' );
     } elseif ( noriks_is_type( 'ortopedski-jastuk' ) ) {
