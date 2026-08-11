@@ -493,6 +493,24 @@ function gck_render_bundle_selector() {
     $colors = $split['colors'];
     $sizes  = $split['sizes'];
 
+    // KneeFix (dva izbornika): ne oslanjaj se na prepoznavanje naziva atributa.
+    // Ako je uključen side-select, a podjela nije uspjela, uzmi redom:
+    // prvi atribut = veličina, drugi = strana. Radi na svim tržištima bez obzira na jezik.
+    if ( $gck_side_select && ( empty($colors) || empty($sizes) ) && count($custom_attrs) >= 2 ) {
+        $vals = array_values( $split['colors'] );
+        $all  = array();
+        foreach ( $custom_attrs as $k => $a ) {
+            $all[] = array(
+                'key'       => $k,
+                'label'     => method_exists($a,'get_name') ? (string) $a->get_name() : (string) $k,
+                'field_key' => 'attribute_' . $k,
+                'values'    => is_array($a->get_options()) ? $a->get_options() : array(),
+            );
+        }
+        $sizes  = array( $all[0] );
+        $colors = array( $all[1] );
+    }
+
     if ( $gck_no_attrs ) {
         $colors = array();
         $sizes  = array();
