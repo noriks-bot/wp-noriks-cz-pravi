@@ -380,6 +380,13 @@ function gck_register_orto_countdown_fields() {
 }
 
 function gck_cz_majice_phrase( int $n, bool $free = false, string $type = 'majica' ) : string {
+    if ( $type === 'steznica' ) {
+        $m100 = $n % 100;
+        if ( $n === 1 ) { $noun = 'ortézu'; }
+        elseif ( in_array( $n % 10, array( 2, 3, 4 ), true ) && ! in_array( $m100, array( 12, 13, 14 ), true ) ) { $noun = 'ortézy'; }
+        else { $noun = 'ortéz'; }
+        return $free ? ( $noun . ' zdarma' ) : $noun;
+    }
     $m100 = $n % 100;
 
     if ( $type === 'bokserica' ) {
@@ -455,6 +462,13 @@ function gck_render_bundle_selector() {
         // Compression SOCKS only. Note: the compression MAJICA (orto-kompresijske-majice)
         // must NOT match here — it keeps the default "majica" noun.
         $gck_garment = 'carapa';
+    } elseif (
+        has_term( array( 'orto-kneefix' ), 'product_cat', $product_id )
+        || ( stripos( (string) $product->get_slug(), 'kneefix' ) !== false )
+        || ( stripos( (string) $product->get_name(), 'kneefix' ) !== false )
+    ) {
+        // KneeFix je steznica za koljeno, ne majica.
+        $gck_garment = 'steznica';
     }
 
     $show_countdown    = (bool) get_field( 'orto_show_countdown', $product_id );
@@ -970,7 +984,7 @@ function gck_render_bundle_selector() {
         </ul>
         <?php endif; ?>
 
-        <?php if ( ! $show_countdown && ! $gck_no_attrs && ! $gck_single_size && ! has_term( array( 'orto-leak-boxers', 'orto-kompresijske-majice' ), 'product_cat', $product_id ) ) : ?>
+        <?php if ( ! $show_countdown && ! $gck_no_attrs && ! $gck_single_size && ! has_term( array( 'orto-kneefix', 'orto-leak-boxers', 'orto-kompresijske-majice' ), 'product_cat', $product_id ) ) : ?>
         <a id="open-size-chartCustom" href="#size-chart" class="gck-size-link">
             <svg style="margin-right: 5px; width: 23px; height: 23px; display: inline-block; vertical-align: middle;" xmlns="http://www.w3.org/2000/svg" width="18" height="19" viewBox="0 0 18 19" fill="none">
                 <path d="M11.4124 2.58464L2.08525 11.9118C1.86558 12.1315 1.86558 12.4876 2.08525 12.7073L5.78977 16.4118C6.00944 16.6315 6.3656 16.6315 6.58527 16.4118L15.9124 7.08466C16.1321 6.86499 16.1321 6.50883 15.9124 6.28916L12.2079 2.58464C11.9883 2.36497 11.6321 2.36497 11.4124 2.58464Z" stroke="#111213" stroke-width="0.84375"></path>
@@ -1116,7 +1130,7 @@ function gck_render_bundle_selector() {
         </script>
     <?php endif; ?>
 
-    <?php if ( $show_countdown && ! $gck_no_attrs && ! $gck_single_size && ! has_term( array( 'orto-leak-boxers', 'orto-kompresijske-majice' ), 'product_cat', $product_id ) ) : ?>
+    <?php if ( $show_countdown && ! $gck_no_attrs && ! $gck_single_size && ! has_term( array( 'orto-kneefix', 'orto-leak-boxers', 'orto-kompresijske-majice' ), 'product_cat', $product_id ) ) : ?>
     <div class="gck-size-link-wrap" style="text-align:right; margin:0 0 8px 0;">
         <a id="open-size-chartCustom" href="#size-chart" class="gck-size-link">
             <svg style="margin-right: 5px; width: 23px; height: 23px; display: inline-block; vertical-align: middle;" xmlns="http://www.w3.org/2000/svg" width="18" height="19" viewBox="0 0 18 19" fill="none">
