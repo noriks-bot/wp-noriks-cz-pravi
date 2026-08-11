@@ -500,7 +500,7 @@ $is_mixed_bundle = has_term( array( 'sady','orto-starter','orto-majica-bokserica
 
 
     <!-- 1 - detajli --> <!-- skryto na norikshers + ortopedicky polstar -->
-    <?php if ( ! ( function_exists('noriks_is_type') && ( noriks_is_type('norikshers', $current_product_id) || noriks_is_type('ortopedski-jastuk', $current_product_id) ) )  && ! ( function_exists('noriks_is_type') && noriks_is_type('kneefix', $current_product_id) )) : ?>
+    <?php if ( ! ( function_exists('noriks_is_type') && ( noriks_is_type('norikshers', $current_product_id) || noriks_is_type('ortopedski-jastuk', $current_product_id) ) ) ) : ?>
     <div class="accordion-item">
       <div class="accordion-header" onclick="toggleAccordion(this)">
         <h3><?php echo get_field("singlepp_acc_h_1","options"); ?></h3>
@@ -573,7 +573,7 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
      <?php endif; // /skryto na norikshers (detajli) ?>
 
      <!-- 2 - slika tablica velicina -->
-     <?php if ( ! ( function_exists('noriks_is_type') && ( noriks_is_type('bunion', $current_product_id) || noriks_is_type('fisiorest', $current_product_id) || noriks_is_type('norikshers', $current_product_id) || noriks_is_type('ortopedski-jastuk', $current_product_id) ) ) ) : // žádná tabulka velikostí pro bunion + fisiorest + norikshers + ortopedicky polstar ?>
+     <?php if ( ! ( function_exists('noriks_is_type') && ( noriks_is_type('bunion', $current_product_id) || noriks_is_type('fisiorest', $current_product_id) || noriks_is_type('norikshers', $current_product_id) || noriks_is_type('ortopedski-jastuk', $current_product_id) ) )  && ! ( function_exists('noriks_is_type') && noriks_is_type('kneefix', $current_product_id) )) : // žádná tabulka velikostí pro bunion + fisiorest + norikshers + ortopedicky polstar ?>
      <div class="accordion-item">
       <div class="accordion-header" onclick="toggleAccordion(this)">
         <h3>Tabulka velikostí</h3>
