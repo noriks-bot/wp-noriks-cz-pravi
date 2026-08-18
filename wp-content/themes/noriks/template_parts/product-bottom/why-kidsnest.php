@@ -43,7 +43,7 @@ $kn = get_template_directory_uri() . '/img/kidsnest/';
       <p>Ergonomický dětský polštář drží <strong>hlavu a krk v přirozeném zarovnání a pomáhá zabránit naklánění hlavy</strong> během noci. Páteř tak zůstává správně zarovnaná — i když se dítě ve spánku hodně vrtí.</p>
       <p><strong>Výsledkem je klidnější spánek a lepší regenerace.</strong></p>
     </div>
-    <div class="kn-media"><img src="<?php echo esc_url( $kn.'02-san.jpg' ); ?>" alt="Dítě klidně spí na polštáři KidsNest" loading="lazy" onerror="this.style.display='none'"></div>
+    <div class="kn-media"><img src="<?php echo esc_url( $kn.'kn-cz-2.webp' ); ?>" alt="Dítě klidně spí na polštáři KidsNest" loading="lazy" onerror="this.style.display='none'"></div>
   </div>
 </section>
 
@@ -92,7 +92,7 @@ $kn = get_template_directory_uri() . '/img/kidsnest/';
 <!-- ============ 6) Kvalita materiálů — obrázek VLEVO, text VPRAVO ============ -->
 <section class="kn-sec">
   <div class="kn-wrap kn-row2">
-    <div class="kn-media"><img src="<?php echo esc_url( $kn.'03-detalj.webp' ); ?>" alt="KidsNest — 3zónová struktura a prodyšná tkanina zblízka" loading="lazy" onerror="this.style.display='none'"></div>
+    <div class="kn-media"><img src="<?php echo esc_url( $kn.'kn-cz-6.webp' ); ?>" alt="KidsNest — 3zónová struktura a prodyšná tkanina zblízka" loading="lazy" onerror="this.style.display='none'"></div>
     <div class="kn-copy">
       <h2 class="kn-h2 kn-h2-blue">Kvalita, kterou pocítíte — noc co noc.</h2>
       <p>Hustá, prodyšná pletenina a pečlivě tvarovaný povrch tu nejsou kvůli vzhledu — <strong>každá zóna má svou úlohu</strong>. Střed jemně přijímá hlavu, okraje podpírají krk a struktura si drží tvar i po měsících každodenního používání.</p>
