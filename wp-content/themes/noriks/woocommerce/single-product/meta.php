@@ -666,7 +666,7 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
         <?php elseif( $is_boxers ): ?>
        
         
-          <img src="https://noriks.com/cz/wp-content/uploads/2026/01/boxers_size_Cz.png">
+          <img class="js-open-size-chart" style="cursor:pointer;" src="https://noriks.com/cz/wp-content/uploads/2026/01/boxers_size_Cz.png">
           
           
           
@@ -684,18 +684,18 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
         <?php elseif(  $is_carape ): ?>
         
         
-                  <img src="https://noriks.com/cz/wp-content/uploads/2026/01/Nogavice_tabela_velikosti_Cz.png">
+                  <img class="js-open-size-chart" style="cursor:pointer;" src="https://noriks.com/cz/wp-content/uploads/2026/01/Nogavice_tabela_velikosti_Cz.png">
                   
     <?php elseif(  $is_mixed_bundle ): ?>
     
-     <img src="<?php echo get_template_directory_uri(); ?>/img/tabela-velikosti-majice.jpg">
+     <img class="js-open-size-chart" style="cursor:pointer;" src="<?php echo get_template_directory_uri(); ?>/img/tabela-velikosti-majice.jpg">
         
-         <img src="https://noriks.com/cz/wp-content/uploads/2026/01/boxers_size_Cz.png">
+         <img class="js-open-size-chart" style="cursor:pointer;" src="https://noriks.com/cz/wp-content/uploads/2026/01/boxers_size_Cz.png">
           
           <?php else: ?>
       
       
-     <img src="<?php echo get_template_directory_uri(); ?>/img/tabela-velikosti-majice.jpg">
+     <img class="js-open-size-chart" style="cursor:pointer;" src="<?php echo get_template_directory_uri(); ?>/img/tabela-velikosti-majice.jpg">
         
         
             
