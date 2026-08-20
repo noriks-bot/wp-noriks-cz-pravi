@@ -735,7 +735,7 @@ Flexibilní střih pro silnější stehna
 
   // Detect if current product belongs to bokserice group
   $current_product_id = (function_exists('is_product') && is_product()) ? get_queried_object_id() : get_the_id();
-  $is_bokserice_page  = has_term( array( 'boxerky','orto-bokserice', 'bokserice-sastavi-paket' ), 'product_cat', $current_product_id );
+  $is_bokserice_page = ( function_exists('noriks_is_type') && noriks_is_type('bokserice') );
 
   // Special orto products: dedicated Czech review pools (text-only, no avatars).
   $is_ortopas_page    = ( function_exists('noriks_is_type') && noriks_is_type('ortopas', $current_product_id) );
@@ -854,7 +854,7 @@ Flexibilní střih pro silnější stehna
       $is_ortopas = false;
       $is_nogavice = false;
       if ( $product_id ) {
-          $is_bokserice = has_term( array( 'bokserice','orto-bokserice', 'bokserice-sastavi-paket' ), 'product_cat', $product_id );
+          $is_bokserice = ( function_exists('noriks_is_type') && noriks_is_type('bokserice', $product_id) );
           $is_norikshers = ( function_exists('noriks_is_type') && noriks_is_type('norikshers', $product_id) );
           $is_kidsnest  = ( function_exists('noriks_is_type') && noriks_is_type('kidsnest', $product_id) );
           $is_jastuk    = ( function_exists('noriks_is_type') && noriks_is_type('ortopedski-jastuk', $product_id) );
