@@ -600,7 +600,37 @@ Flexibilní střih pro silnější stehna
       <!--<h4 style="" class="highlight"><?php echo get_field("singlepp_content_standard_reviews_t1","options"); ?></h4>-->
       <h1 style="color:black;     margin-bottom: 4px;">
           
-          <?php if ( function_exists('noriks_is_type') && noriks_is_type('norikshers') ): ?>
+          <?php if ( function_exists('noriks_is_type') && noriks_is_type('fisiorest') ): ?>
+          
+          
+          
+          Nejsi sám v hledání úlevy od napětí v krku.
+          
+          <?php elseif ( function_exists('noriks_is_type') && noriks_is_type('bunion') ): ?>
+          
+          
+          
+          Nejsi sám v hledání úlevy od vbočeného palce.
+          
+          <?php elseif ( function_exists('noriks_is_type') && noriks_is_type('ortopas') ): ?>
+          
+          
+          
+          Nejsi sám v hledání odlehčení zad.
+          
+          <?php elseif ( function_exists('noriks_is_type') && noriks_is_type('kompresijske-nogavice') ): ?>
+          
+          
+          
+          Nejsi sám v hledání dokonalých kompresních ponožek.
+          
+          <?php elseif ( function_exists('noriks_is_type') && noriks_is_type('bokserice') ): ?>
+          
+          
+          
+          Nejsi sám v hledání dokonalých boxerek.
+          
+          <?php elseif ( function_exists('noriks_is_type') && noriks_is_type('norikshers') ): ?>
 
           Nejste sami v hledání hladké pleti bez vrásek.
 
@@ -636,7 +666,7 @@ Flexibilní střih pro silnější stehna
           
           
           </h1>
-    <p class="note" style="color: black; margin-top: 0px; margin-bottom: 5px;"><?php if ( function_exists('noriks_is_type') && noriks_is_type('norikshers') ): ?>Tisíce žen už používají HERS silikonové kolagenové pásky pro hladší, pevnější a mladší vzhled pleti.<?php elseif ( function_exists('noriks_is_type') && noriks_is_type('leakboxers') ): ?>Tisíce mužů už nosí savé boxerky NORIKS pro sucho a sebevědomí – bez vložek a plen.<?php elseif ( function_exists('noriks_is_type') && noriks_is_type('kompresijske-majice') ): ?>Tisíce mužů už nosí kompresní tričko NORIKS pro vyhlazené břicho, lepší držení těla a více sebevědomí.<?php elseif ( function_exists('noriks_is_type') && noriks_is_type('kidsnest') ): ?>Tisíce rodičů už vyměnily obyčejný polštář za NORIKS KidsNest – tišší noci, dýchání nosem a spánek, který skutečně odpočine.<?php elseif ( function_exists('noriks_is_type') && noriks_is_type('ortopedski-jastuk') ): ?>Tisíce zákazníků už používají ortopedický polštář NORIKS ErgoSit pro sezení bez bolesti kostrče, zad a kyčlí – v autě, v kanceláři i doma.<?php else: ?><?php echo get_field("singlepp_content_standard_reviews_t3","options"); ?><?php endif; ?></p>
+    <p class="note" style="color: black; margin-top: 0px; margin-bottom: 5px;"><?php if ( function_exists('noriks_is_type') && noriks_is_type('fisiorest') ): ?>Tisíce lidí už používá NORIKS FisioRest pro menší bolest a napětí v krku – trakce, vibrace a teplo v jednom přístroji.<?php elseif ( function_exists('noriks_is_type') && noriks_is_type('bunion') ): ?>Tisíce lidí už nosí korektor NORIKS pro menší bolest a rovnější postavení palce – doma, u televize nebo během spánku.<?php elseif ( function_exists('noriks_is_type') && noriks_is_type('ortopas') ): ?>Tisíce lidí už nosí ortopedický pás NORIKS pro menší bolest a stabilnější záda – v práci, při zvedání a dlouhém sezení.<?php elseif ( function_exists('noriks_is_type') && noriks_is_type('kompresijske-nogavice') ): ?>Tisíce mužů už nosí kompresní ponožky NORIKS pro lehčí a méně unavené nohy – v práci, na cestách i při tréninku.<?php elseif ( function_exists('noriks_is_type') && noriks_is_type('bokserice') ): ?>Tisíce mužů už nosí boxerky NORIKS – pohodlí, které vydrží celý den.<?php elseif ( function_exists('noriks_is_type') && noriks_is_type('norikshers') ): ?>Tisíce žen už používají HERS silikonové kolagenové pásky pro hladší, pevnější a mladší vzhled pleti.<?php elseif ( function_exists('noriks_is_type') && noriks_is_type('leakboxers') ): ?>Tisíce mužů už nosí savé boxerky NORIKS pro sucho a sebevědomí – bez vložek a plen.<?php elseif ( function_exists('noriks_is_type') && noriks_is_type('kompresijske-majice') ): ?>Tisíce mužů už nosí kompresní tričko NORIKS pro vyhlazené břicho, lepší držení těla a více sebevědomí.<?php elseif ( function_exists('noriks_is_type') && noriks_is_type('kidsnest') ): ?>Tisíce rodičů už vyměnily obyčejný polštář za NORIKS KidsNest – tišší noci, dýchání nosem a spánek, který skutečně odpočine.<?php elseif ( function_exists('noriks_is_type') && noriks_is_type('ortopedski-jastuk') ): ?>Tisíce zákazníků už používají ortopedický polštář NORIKS ErgoSit pro sezení bez bolesti kostrče, zad a kyčlí – v autě, v kanceláři i doma.<?php else: ?><?php echo get_field("singlepp_content_standard_reviews_t3","options"); ?><?php endif; ?></p>
     </div>
   </section>
   </div>
@@ -813,14 +843,22 @@ Flexibilní střih pro silnější stehna
       $is_norikshers = false;
       $is_kidsnest  = false;
       $is_jastuk    = false;
+      $is_fisiorest = false;
+      $is_bunion = false;
+      $is_ortopas = false;
+      $is_nogavice = false;
       if ( $product_id ) {
           $is_bokserice = has_term( array( 'bokserice','orto-bokserice', 'bokserice-sastavi-paket' ), 'product_cat', $product_id );
           $is_norikshers = ( function_exists('noriks_is_type') && noriks_is_type('norikshers', $product_id) );
           $is_kidsnest  = ( function_exists('noriks_is_type') && noriks_is_type('kidsnest', $product_id) );
           $is_jastuk    = ( function_exists('noriks_is_type') && noriks_is_type('ortopedski-jastuk', $product_id) );
+          $is_fisiorest = ( function_exists('noriks_is_type') && noriks_is_type('fisiorest', $product_id) );
+          $is_bunion = ( function_exists('noriks_is_type') && noriks_is_type('bunion', $product_id) );
+          $is_ortopas = ( function_exists('noriks_is_type') && noriks_is_type('ortopas', $product_id) );
+          $is_nogavice = ( function_exists('noriks_is_type') && noriks_is_type('kompresijske-nogavice', $product_id) );
       }
 
-      $cache_key = $transient_key . ( $is_kidsnest ? '_kidsnest' : ( $is_jastuk ? '_jastuk' : ( $is_norikshers ? '_norikshers' : ( $is_bokserice ? '_bokserice' : '_all' ) ) ) );
+      $cache_key = $transient_key . ( $is_kidsnest ? '_kidsnest' : ( $is_jastuk ? '_jastuk' : ( $is_norikshers ? '_norikshers' : ( $is_bokserice ? '_bokserice' : ( $is_fisiorest ? '_fisiorest' : ( $is_bunion ? '_bunion' : ( $is_ortopas ? '_ortopas' : ( $is_nogavice ? '_nogavice' : '_all' ) ) ) ) ) ) ) );
 
       if ( function_exists( 'get_transient' ) ) {
           $cached = get_transient( $cache_key );
@@ -845,7 +883,15 @@ Flexibilní střih pro silnější stehna
           $args['category'] = [ 'orto-norikshers', 'orto-noriks-hers' ];
       } elseif ( $is_bokserice ) {
           $args['category'] = [ 'boxerky' ];
-      } else {
+      } elseif ( $is_fisiorest ) {
+        $args['category'] = [ 'orto-fisiorest', 'fisiorest' ];
+    } elseif ( $is_bunion ) {
+        $args['category'] = [ 'orto-bunion', 'bunion' ];
+    } elseif ( $is_ortopas ) {
+        $args['category'] = [ 'orto-ortopas', 'ortopas' ];
+    } elseif ( $is_nogavice ) {
+        $args['category'] = [ 'ponozky', 'orto-kompresijske-carape' ];
+    } else {
           // Stranice majica: bazen SAMO iz kategorije majica (s podkategorijama).
           // Prije je uzimao sve osim bokserica, pa su recenzije o majicama
           // zavrsavale pod orto proizvodima (Cloth XXL, Cool Curl…).
