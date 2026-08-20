@@ -749,12 +749,16 @@ Flexibilní střih pro silnější stehna
   $is_jastuk_page     = ( function_exists('noriks_is_type') && noriks_is_type('ortopedski-jastuk', $current_product_id) );
 
   // Fallback product name shown in review cards.
-  $rv_fallback_title = $is_kneefix_page ? 'NORIKS KneeFix kolenní ortéza'
+  $rv_fallback_title = ( function_exists('noriks_is_type') && noriks_is_type('kompresijske-nogavice') ) ? 'Kompresní ponožky NORIKS'
+                     : ( $is_ortopas_page ? 'Ortopedický pás NORIKS'
+                     : ( $is_bunion_page ? 'Korektor palce NORIKS'
+                     : ( $is_fisiorest_page ? 'NORIKS FisioRest'
+                     : ( $is_kneefix_page ? 'NORIKS KneeFix kolenní ortéza'
                      : ( $is_kidsnest_page ? 'NORIKS KidsNest polštář'
                      : ( $is_jastuk_page ? 'NORIKS ErgoSit ortopedický polštář'
                      : ( $is_leakboxers_page ? 'NORIKS savé boxerky'
                      : ( $is_kompmajice_page ? 'NORIKS FIT kompresní tričko'
-                     : ( $is_norikshers_review_page ? 'NORIKS HERS' : 'Jedna Siva Majica' ) ) ) ) );
+                     : ( $is_norikshers_review_page ? 'NORIKS HERS' : 'Jedna Siva Majica' ) ) ) ) ) ) ) ) );
 
   // Include review pools
   if ( $is_kneefix_page ) {
