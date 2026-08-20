@@ -775,6 +775,8 @@ Flexibilní střih pro silnější stehna
     include get_stylesheet_directory() . '/auto_reviews/CZ_bunion.php';
   } elseif ( $is_ortopas_page ) {
     include get_stylesheet_directory() . '/auto_reviews/CZ_ortopas.php';
+  } elseif ( ( function_exists('noriks_is_type') && noriks_is_type('kompresijske-nogavice') ) ) {
+      include get_stylesheet_directory() . '/auto_reviews/CZ_nogavice.php';
   } elseif ( ! $is_bokserice_page )  {
     include get_stylesheet_directory() . '/auto_reviews/'.$reviews_language.'.php';
   } else {
@@ -1131,7 +1133,8 @@ function assign_unique_avatars_first_n(array $reviews, array $avatar_pool, strin
   // Avatar pools based on page category
   $avatar_type = $is_bokserice_page ? 'bokserice' : 'majice';
   // Belt + bunion + fisiorest + norikshers + leak boxers + kompresni tricka + kidsnest + ortopedicky polstar: text-only reviews (no avatar images).
-  $avatar_pool = ( ( function_exists('noriks_is_type') && noriks_is_type('kompresijske-nogavice') ) || $is_ortopas_page || $is_bunion_page || $is_fisiorest_page || $is_norikshers_review_page || $is_leakboxers_page || $is_kompmajice_page || $is_kidsnest_page || $is_jastuk_page || $is_kneefix_page ) ? array() : get_review_avatar_pool($avatar_type);
+  $avatar_pool = ( $is_bokserice_page || ( function_exists('noriks_is_type') && ( noriks_is_type('majice') || noriks_is_type('majica-darila') || noriks_is_type('starter') ) ) )
+      ? get_review_avatar_pool($avatar_type) : array();  // fotografije samo na majicama i boksericama
 
   // On single-product landing pages (leak boxers / kompresni tricka) the cards should
   // reference THIS product (via $rv_fallback_title), not random pool products.
