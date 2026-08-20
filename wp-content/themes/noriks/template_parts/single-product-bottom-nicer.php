@@ -833,7 +833,7 @@ Flexibilní střih pro silnější stehna
    * Build/caches a pool of products: [['title'=>..., 'url'=>...], ...]
    */
   function get_wc_product_pool(
-      $transient_key = 'reviews_product_pool_cache_v3',
+      $transient_key = 'reviews_product_pool_cache_v4',
       $ttl = 12 * HOUR_IN_SECONDS
   ) {
       if ( ! function_exists( 'wc_get_products' ) ) {
@@ -864,7 +864,15 @@ Flexibilní střih pro silnější stehna
           $is_nogavice = ( function_exists('noriks_is_type') && noriks_is_type('kompresijske-nogavice', $product_id) );
       }
 
-      $cache_key = $transient_key . ( $is_kidsnest ? '_kidsnest' : ( $is_jastuk ? '_jastuk' : ( $is_norikshers ? '_norikshers' : ( $is_bokserice ? '_bokserice' : ( $is_fisiorest ? '_fisiorest' : ( $is_bunion ? '_bunion' : ( $is_ortopas ? '_ortopas' : ( $is_nogavice ? '_nogavice' : '_all' ) ) ) ) ) ) ) );
+      /* Kljuc se izpelje iz tipa izdelka — rocni seznam zastavic je zaostajal
+         za vejami in je npr. KneeFixu stregel predpomnjeni bazen majic. */
+      $noriks_key_type = 'all';
+      if ( function_exists( 'noriks_is_type' ) ) {
+          foreach ( array( 'kneefix', 'kidsnest', 'ortopedski-jastuk', 'leakboxers', 'kompresijske-majice', 'norikshers', 'fisiorest', 'bunion', 'ortopas', 'kompresijske-nogavice', 'nosilka', 'controlpro', 'dental', 'hairmagic', 'norikshersbrush', 'noriks-cards', 'cloath', 'bra', 'hyd', 'snore', 'cloud', 'bokserice' ) as $t ) {
+              if ( noriks_is_type( $t, $product_id ) ) { $noriks_key_type = $t; break; }
+          }
+      }
+      $cache_key = $transient_key . '_' . $noriks_key_type;
 
       if ( function_exists( 'get_transient' ) ) {
           $cached = get_transient( $cache_key );
