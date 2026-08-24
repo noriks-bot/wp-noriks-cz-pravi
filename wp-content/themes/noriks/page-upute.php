@@ -66,7 +66,12 @@ $dir_path = get_template_directory() . '/manuals/';
   .nmn-search { position: relative; display: flex; align-items: center; gap: 9px; background: #fff;
                 border: 1px solid #e3e7ec; border-radius: 9px; padding: 0 13px; margin: 0 0 18px; max-width: 420px; }
   .nmn-search svg { color: #8a94a2; flex: 0 0 auto; }
-  .nmn-search input { border: 0; outline: 0; padding: 12px 0; width: 100%; font-size: 15px; background: transparent; }
+  .nmn-search input, .nmn-search input[type="search"] {
+    border: 0 !important; border-radius: 0 !important; outline: 0 !important; box-shadow: none !important;
+    background: transparent !important; padding: 12px 0 !important; margin: 0 !important; width: 100%;
+    font-size: 15px; line-height: 1.4; -webkit-appearance: none; appearance: none; min-height: 0; }
+  .nmn-search input:focus { border: 0 !important; box-shadow: none !important; outline: 0 !important; }
+  .nmn-search input::-webkit-search-cancel-button { -webkit-appearance: none; }
   .nmn-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
   .nmn-card { display: flex; gap: 14px; height: 100%; background: #fff; border-radius: 9px; padding: 18px;
               box-shadow: 0 1px 2px rgba(0,0,0,.06); box-sizing: border-box; }
