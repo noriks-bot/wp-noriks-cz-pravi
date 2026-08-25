@@ -25,7 +25,7 @@ $bun_results = array(
 
 // Proč si vybrat nás — porovnání (stejný styl jako knc-table na ponožkách se zipem)
 $bun_cmp = array(
-    '90denní záruka vrácení peněz',
+    '30denní záruka vrácení peněz',
     'Zmírňuje nepohodlí',
     'Zabraňuje růstu vbočeného palce',
     'Postupem času zlepšuje stav vbočeného palce',
@@ -116,7 +116,7 @@ $bun_steps = array(
         <li><strong>Nastavitelná</strong> intenzita protažení</li>
         <li>Navržen a doporučen <strong>lékařskými odborníky</strong></li>
         <li><strong>Snadné použití</strong> a přenosný</li>
-        <li><strong>90denní záruka vrácení peněz</strong> („výsledky nebo plné vrácení peněz"), protože jsme si svým produktem tak jistí a víme, že vám pomůže</li>
+        <li><strong>30denní záruka vrácení peněz</strong> („výsledky nebo plné vrácení peněz"), protože jsme si svým produktem tak jistí a víme, že vám pomůže</li>
       </ul>
     </div>
     <div class="bun-col bun-media">

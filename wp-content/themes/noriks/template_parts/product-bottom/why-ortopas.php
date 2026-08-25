@@ -46,7 +46,7 @@ $opz_cmp_rows = array(
     array( 'Výhodná cena',                    true,  false ),
     array( 'Okamžité uvolnění',               true,  false ),
     array( 'Bez čekání',                      true,  false ),
-    array( '60denní záruka vrácení peněz',    true,  false ),
+    array( '30denní záruka vrácení peněz',    true,  false ),
     array( 'Dlouhodobé náklady',              false, true  ),
 );
 /* Recenze s obrázkem — 8) sekce */

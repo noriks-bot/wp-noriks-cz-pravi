@@ -19,5 +19,5 @@ $auto_reviews_en = array(
     array("name" => "Zuzana P.",   "text" => "Bolest při stání celý den v práci se výrazně zmírnila. Konečně úleva."),
     array("name" => "Ondřej M.",   "text" => "Používám ho i v noci, jak jsem si zvykl. Ráno je noha odpočatá a bez bolesti."),
     array("name" => "Lenka V.",    "text" => "Materiál je příjemný na kůži a nedře. Cítím, jak palec pomalu narovnává."),
-    array("name" => "Filip R.",    "text" => "90denní záruka mě přesvědčila to zkusit. Nelituji, výsledky se dostavily."),
+    array("name" => "Filip R.",    "text" => "30denní záruka mě přesvědčila to zkusit. Nelituji, výsledky se dostavily."),
 );

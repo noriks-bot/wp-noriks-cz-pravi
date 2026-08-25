@@ -60,7 +60,7 @@ $knv = get_template_directory_uri() . '/img/kompresijske-videos/';
           <tr><td>Zesílený zip, nikdy se nezasekne</td><td class="mid">—</td><td class="no">✕</td><td class="us ok">✓</td></tr>
           <tr><td>Prodyšná tkanina</td><td class="mid">~</td><td class="no">✕</td><td class="us ok">✓</td></tr>
           <tr><td>Pohodlí celý den (+12 hodin)</td><td class="mid">~</td><td class="no">✕</td><td class="us ok">✓</td></tr>
-          <tr><td>Záruka vrácení peněz 60 dní</td><td class="no">✕</td><td class="no">✕</td><td class="us ok">✓</td></tr>
+          <tr><td>Záruka vrácení peněz 30 dní</td><td class="no">✕</td><td class="no">✕</td><td class="us ok">✓</td></tr>
           <tr class="knc-price"><td>Cena za pár</td><td>od 2 056 Kč</td><td>~363 Kč</td><td class="us">od 564 Kč</td></tr>
         </tbody>
       </table>

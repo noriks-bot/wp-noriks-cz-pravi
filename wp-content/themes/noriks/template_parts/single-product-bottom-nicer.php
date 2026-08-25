@@ -1752,7 +1752,7 @@ $jastuk_faq = array(
   array( 'questioon' => 'Dá se potah prát?', 'answer' => 'Ano. Potah se sundává a lze ho prát v pračce, takže polštář zůstává svěží a čistý. Tkanina je prodyšná, hypoalergenní a certifikovaná OEKO-TEX®.' ),
   array( 'questioon' => 'Sedne na moji židli nebo sedadlo?', 'answer' => 'ErgoSit má univerzální tvar a sedne na většinu autosedadel, kancelářských a kuchyňských židlí i invalidních vozíků. Žádné velikosti — jeden model padne všem.' ),
   array( 'questioon' => 'Za jak dlouho pocítím rozdíl?', 'answer' => 'Většina uživatelů pocítí menší tlak na kostrč a pohodlnější sezení už od prvního dne. Lepší držení těla a méně bolesti zad se dále buduje pravidelným používáním.' ),
-  array( 'questioon' => 'Existuje záruka vrácení peněz?', 'answer' => 'Ano, každý NORIKS ErgoSit přichází se zárukou pohodlí na 60 dní. Pokud nepocítíte méně bolesti a více pohodlí, kontaktujte nás a vyřešíme to.' ),
+  array( 'questioon' => 'Existuje záruka vrácení peněz?', 'answer' => 'Ano, každý NORIKS ErgoSit přichází se zárukou pohodlí na 30 dní. Pokud nepocítíte méně bolesti a více pohodlí, kontaktujte nás a vyřešíme to.' ),
 );
 
 // Korektor vbočeného palce — FAQ o produktu (překlad, NORIKS).

@@ -83,7 +83,7 @@ $oj_img = function( $file, $alt ) use ( $oj ) {
 <section class="oj-sec oj-stills-sec">
   <div class="oj-trustbar" aria-hidden="true">
     <div class="oj-trustbar-track">
-      <?php $oj_trust = array('120 000+ ZÁKAZNÍKŮ','HODNOCENÍ 4,8/5','OEKO-TEX®','DOPORUČENÍ LÉKAŘŮ','60 DNÍ ZÁRUKY','ORTOPEDICKÝ DESIGN');
+      <?php $oj_trust = array('120 000+ ZÁKAZNÍKŮ','HODNOCENÍ 4,8/5','OEKO-TEX®','DOPORUČENÍ LÉKAŘŮ','30 DNÍ ZÁRUKY','ORTOPEDICKÝ DESIGN');
       for ( $r = 0; $r < 2; $r++ ) { foreach ( $oj_trust as $t ) { echo '<span class="oj-trust-item">'.esc_html($t).'</span><span class="oj-trust-dot">•</span>'; } } ?>
     </div>
   </div>
@@ -177,10 +177,10 @@ $oj_img = function( $file, $alt ) use ( $oj ) {
 <section class="oj-sec oj-guar-sec">
   <div class="oj-wrap">
   <div class="oj-guarantee oj-row2">
-    <div class="oj-guar-badge"><?php echo $oj_img('15_znacka_60_dana_HR.png','60denní záruka vrácení peněz'); ?></div>
+    <div class="oj-guar-badge"><?php echo $oj_img('15_znacka_30_dana.png','30denní záruka vrácení peněz'); ?></div>
     <div class="oj-guar-copy">
       <h2 class="oj-h2 oj-h2-light">Vyzkoušejte <em class="oj-pink-i">60 dní</em>, bez obav</h2>
-      <p>Najít správný polštář není snadné — mnohé se proleží nebo jednoduše nepřinesou skutečnou úlevu. Proto každý NORIKS <strong>ErgoSit</strong> přichází s naší <strong>zárukou pohodlí na 60 dní</strong>.</p>
+      <p>Najít správný polštář není snadné — mnohé se proleží nebo jednoduše nepřinesou skutečnou úlevu. Proto každý NORIKS <strong>ErgoSit</strong> přichází s naší <strong>zárukou pohodlí na 30 dní</strong>.</p>
       <p>Vezměte si ho do kanceláře, do auta nebo na dlouhé hodiny doma. Pokud nepocítíte méně bolesti a více pohodlí při každodenním sezení, náš tým se postará, aby vše bylo, jak má být.</p>
       <p>Protože když jde o vaše zdraví a pohodlí, věříme, že rozdíl máte <strong>cítit</strong>, ne si ho jen přát.</p>
     </div>
