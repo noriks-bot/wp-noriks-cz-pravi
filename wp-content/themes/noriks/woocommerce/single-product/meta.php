@@ -460,7 +460,7 @@ $is_mixed_bundle = has_term( array( 'sady','orto-starter','orto-majica-bokserica
       <div class="accordion-content">
         <p>Rada, kterou jste slyšeli, je pravdivá jen napůl. Ano, horní patro se zpevní kolem 9. roku. Ale obličej se vyvíjí do 20 let, dolní čelist roste do 17 a dýchací cesty se neustále přizpůsobují.</p>
         <p>Proto každá noc dýchání ústy po 9. roce vrší nové škody na staré: skřípání zubů, bolesti hlavy, spánek, který neodpočine, pokles koncentrace — a únavu, kterou si všichni pletou s leností. Váš teenager není líný. Každou noc šest hodin sotva dýchá.</p>
-        <p>KidsNest ve velikosti <strong>9–18 let</strong> je vyroben pro starší hlavu, krk a ramena. Jiná kontura, jiná výška, jiná opora. Stejný základní mechanismus: správné zarovnání hlavy, krku a čelisti, celou noc, na těle, které ještě roste.</p>
+        <p>KidsNest ve velikosti <strong>9–14 let</strong> je vyroben pro starší hlavu, krk a ramena. Jiná kontura, jiná výška, jiná opora. Stejný základní mechanismus: správné zarovnání hlavy, krku a čelisti, celou noc, na těle, které ještě roste.</p>
         <p>Co rodiče pozorují: chrápání se zklidní za 7 až 14 nocí, vrací se skutečná ranní energie, bolesti hlavy slábnou, soustředění se vrací.</p>
         <p>Nejlepší okno je stále od 3 do 9 let. Silné okno je od 8 do 18. Žádné není úplně zavřené — ale každá noc čekání přidává tlak tělu, které se snaží zotavit.</p>
         <p><strong>Včerejšek je pryč. Dnešní večer je stále váš.</strong></p>
@@ -533,7 +533,7 @@ $is_mixed_bundle = has_term( array( 'sady','orto-starter','orto-majica-bokserica
 
         <?php elseif( function_exists('noriks_is_type') && noriks_is_type('kidsnest', $current_product_id) ): ?>
 
-                NORIKS KidsNest je vyroben z hypoalergenní paměťové pěny s certifikací OEKO-TEX® — bez formaldehydu, těžkých kovů a BPA — s prodyšným, pratelným potahem, který se jednoduše sundává.<br><br>Jeho 3zónová ergonomická struktura jemně přijímá hlavu, podpírá krk a pomáhá udržet páteř v přirozeném zarovnání — i když se dítě během noci hodně otáčí. Podporuje tak dýchání nosem a klidnější, hlubší spánek.<br><br>Je k dispozici ve třech velikostech (1–3, 3–9 a 9–18 let), roste s vaším dítětem a poskytuje správnou výšku opory v každé fázi vývoje.
+                NORIKS KidsNest je vyroben z hypoalergenní paměťové pěny s certifikací OEKO-TEX® — bez formaldehydu, těžkých kovů a BPA — s prodyšným, pratelným potahem, který se jednoduše sundává.<br><br>Jeho 3zónová ergonomická struktura jemně přijímá hlavu, podpírá krk a pomáhá udržet páteř v přirozeném zarovnání — i když se dítě během noci hodně otáčí. Podporuje tak dýchání nosem a klidnější, hlubší spánek.<br><br>Je k dispozici ve třech velikostech (1–3, 3–9 a 9–14 let), roste s vaším dítětem a poskytuje správnou výšku opory v každé fázi vývoje.
 
         <?php elseif( function_exists('noriks_is_type') && noriks_is_type('leakboxers', $current_product_id) ): ?>
 
