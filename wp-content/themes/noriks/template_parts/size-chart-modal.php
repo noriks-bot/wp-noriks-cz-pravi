@@ -739,7 +739,7 @@
 
         <div class="noriks-sc-guarantee">
           <span class="noriks-sc-check">&#10003;</span>
-          <span>Nejsi si jistý? Bezplatná výměna velikosti do 90 dní.</span>
+          <span>Nejsi si jistý? Výměna velikosti do 30 dní.</span>
         </div>
       </div>
 

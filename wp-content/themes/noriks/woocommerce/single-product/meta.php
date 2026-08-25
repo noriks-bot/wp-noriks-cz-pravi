@@ -749,7 +749,7 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
       </div>
     <div class="accordion-content">
   <p></p>
-  Věříme natolik, že se ti NORIKS bude líbit, že máš <b data-stringify-type="bold">30 dní</b> na vrácení nebo bezplatnou výměnu.
+  Věříme natolik, že se ti NORIKS bude líbit, že máš <b data-stringify-type="bold">30 dní</b> na vrácení nebo výměnu.
   Bez papírování, bez stresu – vyřešíme to na pár kliknutí.
   </p>
 

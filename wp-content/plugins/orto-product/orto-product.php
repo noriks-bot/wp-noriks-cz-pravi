@@ -1757,7 +1757,7 @@ function gck_render_bundle_selector() {
                     <?php endif; /* $gck_shgifts vs SHBOX/normal render */ ?>
 
                     <?php if ( ! $gck_no_attrs ) : ?>
-                    <small style="display: block; line-height: 1;"><?php esc_html_e( 'Nabízíme 30 dní na vrácení peněz nebo bezplatnou výměnu produktu – nákup bez starostí!
+                    <small style="display: block; line-height: 1;"><?php esc_html_e( 'Nabízíme 30 dní na vrácení peněz nebo výměnu produktu – nákup bez starostí!
 ', 'gift-card-kompetentnost' ); ?></small>
                     <?php endif; ?>
                 </div>
