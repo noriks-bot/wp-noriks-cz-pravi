@@ -80,7 +80,7 @@ global $product;
         
         <div class="feature">
       <img src="https://noriks.com/hr/wp-content/uploads/2025/07/footer_icon1-1.png" alt="Shirt Icon" class="feature__icon info-icon">
-          <p class="feature__text">Vyzkoušejte 30 dní, bez rizika</p>
+          <p class="feature__text">Vyzkoušejte 14 dní, bez rizika</p>
         </div>
         
         
@@ -749,7 +749,7 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
       </div>
     <div class="accordion-content">
   <p></p>
-  Věříme natolik, že se ti NORIKS bude líbit, že máš <b data-stringify-type="bold">30 dní</b> na vrácení nebo bezplatnou výměnu.
+  Věříme natolik, že se ti NORIKS bude líbit, že máš <b data-stringify-type="bold">14 dní</b> na vrácení nebo bezplatnou výměnu.
   Bez papírování, bez stresu – vyřešíme to na pár kliknutí.
   </p>
 
