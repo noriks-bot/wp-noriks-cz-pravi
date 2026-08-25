@@ -114,9 +114,17 @@
 					<?php if ( $nf_col2_h || $nf_col2_l ) : ?>
 						<div class="nf-link-col">
 							<h4 class="nf-link-h"><?php echo esc_html( $nf_col2_h ); ?></h4>
-							<?php if ( $nf_col2_l ) : foreach ( $nf_col2_l as $item ) : ?>
+							<?php
+							$nf_has_upute = false;
+							if ( $nf_col2_l ) :
+								foreach ( $nf_col2_l as $item ) :
+									if ( false !== strpos( (string) $item['link'], '/navody' ) ) { $nf_has_upute = true; }
+									?>
 								<a href="<?php echo esc_url( $item['link'] ); ?>"><?php echo esc_html( $item['text'] ); ?></a>
 							<?php endforeach; endif; ?>
+							<?php if ( ! $nf_has_upute ) : ?>
+								<a href="/cz/navody/">Návod k použití</a>
+							<?php endif; ?>
 						</div>
 					<?php endif; ?>
 
