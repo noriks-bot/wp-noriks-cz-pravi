@@ -1741,7 +1741,7 @@ $kidsnest_faq = array(
   array( 'questioon' => 'Je bezpečný? Co je uvnitř?', 'answer' => 'KidsNest je vyroben z hypoalergenní paměťové pěny s certifikací OEKO-TEX® — bez formaldehydu, těžkých kovů a BPA. Je odolný vůči roztočům a prodyšný a potah se dá sundat a vyprat v pračce.' ),
   array( 'questioon' => 'Bude ho mé dítě opravdu používat?', 'answer' => 'Ano. Ergonomický tvar působí jako opora, ne jako něco zvláštního — většina dětí si zvykne za 1–2 noci. Rodiče často hlásí, že děti po prvním týdnu nechtějí spát bez něj. 3zónová struktura přirozeně přijímá hlavu — neexistuje „správný způsob“, žádné boje před spaním.' ),
   array( 'questioon' => 'Funguje, i když mé dítě už dýchá ústy?', 'answer' => 'Ano — právě pro takové děti je navržen. 3zónová struktura pomáhá zabránit zaklánění hlavy, kvůli kterému se ústa ve spánku otevírají. U většiny dětí se během 7–14 nocí rty přirozeně zavřou a dýchání nosem se vrátí.' ),
-  array( 'questioon' => 'Co když mému dítěti nepomůže?', 'answer' => 'Nechte dítě spát na KidsNestu 14 nocí. Pokud nevidíte rozdíl — méně dýchání ústy, tišší noci, klidnější spánek — ozvěte se nám a vrátíme vám peníze. Bez otázek a bez drobného písma.' ),
+  array( 'questioon' => 'Co když mému dítěti nepomůže?', 'answer' => 'Nechte dítě spát na KidsNestu 30 nocí. Pokud nevidíte rozdíl — méně dýchání ústy, tišší noci, klidnější spánek — ozvěte se nám a vrátíme vám peníze. Bez otázek a bez drobného písma.' ),
 );
 
 // ErgoSit ortopedický polštář — FAQ o produktu (NORIKS).
@@ -1774,7 +1774,7 @@ $ortopas_faq = array(
   array( 'questioon' => 'Můžu pás nosit i během spánku?', 'answer' => 'Ano, pás lze nosit i v noci. Doba nošení není omezena a delší nošení nemá negativní účinky.' ),
   array( 'questioon' => 'Jak pevně ho mám nasadit?', 'answer' => 'Pás by měl těsně přiléhat, ale ne příliš, abyste se vyhnuli nepohodlí. Měli byste se bez problémů pohybovat, aniž by se pás zařezával nebo sklouzával. Napětí se snadno nastavuje elastickými pásky.' ),
   array( 'questioon' => 'Komu ho doporučujete?', 'answer' => 'Všem, kdo se potýkají s bolestmi v kříži, ischiasem, svalovým napětím, výhřezem meziobratlové ploténky, bolestmi kyčlí nebo pánve a potížemi se SI kloubem. Bez ohledu na věk, pohlaví, výšku a váhu.' ),
-  array( 'questioon' => 'Existuje záruka vrácení peněz?', 'answer' => 'Nabízíme záruku spokojenosti! Pokud nejste s pásem NORIKS spokojeni, kontaktujte nás na info@noriks.com pro vrácení a proplacení do 14 dnů. Lhůta se počítá od převzetí pásu.' ),
+  array( 'questioon' => 'Existuje záruka vrácení peněz?', 'answer' => 'Nabízíme záruku spokojenosti! Pokud nejste s pásem NORIKS spokojeni, kontaktujte nás na info@noriks.com pro vrácení a proplacení do 30 dnů. Lhůta se počítá od převzetí pásu.' ),
 );
 
 // FisioRest — FAQ o produktu (překlad, NORIKS).
@@ -1786,7 +1786,7 @@ $fisiorest_faq = array(
   array( 'questioon' => 'Je FisioRest bezdrátový?', 'answer' => 'Ano! NORIKS FisioRest je zcela bezdrátový a dobíjecí pro každodenní použití.' ),
   array( 'questioon' => 'Jak se FisioRest čistí?', 'answer' => 'Látka je odolná vůči olejům a prachu, ale doporučujeme FisioRest po použití otřít dezinfekčním ubrouskem, protože potah polštáře není pratelný.' ),
   array( 'questioon' => 'Je bezpečný pro každého?', 'answer' => 'NORIKS FisioRest je navržen tak, aby vyhovoval všem bez ohledu na věk nebo pohlaví. Každá situace je však jiná. Pro podrobné pokyny přizpůsobené vašim potřebám doporučujeme konzultaci s lékařem.' ),
-  array( 'questioon' => 'Můžu ho vrátit, pokud nevidím výsledky?', 'answer' => 'Samozřejmě! Nabízíme plnou záruku vrácení peněz do 14 dnů od doručení, pokud nejste s produktem spokojeni. Napište nám na info@noriks.com a odpovíme do 12 hodin od přijetí zprávy!' ),
+  array( 'questioon' => 'Můžu ho vrátit, pokud nevidím výsledky?', 'answer' => 'Samozřejmě! Nabízíme plnou záruku vrácení peněz do 30 dnů od doručení, pokud nejste s produktem spokojeni. Napište nám na info@noriks.com a odpovíme do 12 hodin od přijetí zprávy!' ),
 );
 
 // NORIKS HERS (silikonové kolagenové pásky na vrásky) — FAQ o produktu (překlad, NORIKS HERS).

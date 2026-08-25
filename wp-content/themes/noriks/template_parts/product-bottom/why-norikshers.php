@@ -129,7 +129,7 @@ $nh = get_template_directory_uri() . '/img/norikshers/';
   <div class="nhs-wrap nhs-row2">
     <div class="nhs-media"><img src="<?php echo esc_url( $nh.'12.png' ); ?>" alt="NORIKS HERS výsledky" loading="lazy"></div>
     <div class="nhs-res-copy">
-      <h2 class="nhs-h2">Uvidíte výsledky za 14 dní, nebo <em>vrátíme peníze!</em></h2>
+      <h2 class="nhs-h2">Uvidíte výsledky za 30 dní, nebo <em>vrátíme peníze!</em></h2>
       <?php
       $nhs_stats = array(
         array( 'p' => '98', 'dash' => '172.4', 't' => 'Zaznamenalo <strong>hladší pokožku</strong> a méně jemných linií už v <strong>prvním týdnu</strong> používání.' ),
@@ -146,7 +146,7 @@ $nh = get_template_directory_uri() . '/img/norikshers/';
           <p><?php echo wp_kses_post($s['t']); ?></p>
         </div>
       <?php endforeach; ?>
-      <a class="nhs-cta nhs-cta-solid" href="#bundle-selector">Vyzkoušejte bez rizika 14 dní</a>
+      <a class="nhs-cta nhs-cta-solid" href="#bundle-selector">Vyzkoušejte bez rizika 30 dní</a>
       <p class="nhs-cta-note"><em>Nejste nadšené? Plné vrácení peněz!</em></p>
     </div>
   </div>

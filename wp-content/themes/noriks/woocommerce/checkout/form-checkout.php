@@ -91,7 +91,7 @@ if ( WC()->cart->is_empty() ) return;
     <img decoding="async" src="https://images.vigo-shop.com/general/guarantee_money_back/satisfaction_icon_cz.png">
   </div>
   <div class="flex__item--autosize f--m checkout-warranty__text">
-    <strong>Nakupujte bez obav </strong><br>Vrácení peněz je možné do 14 dnů
+    <strong>Nakupujte bez obav </strong><br>Vrácení peněz je možné do 30 dnů
   </div>
 </div>
 
