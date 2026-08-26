@@ -561,6 +561,27 @@ add_filter( 'woocommerce_checkout_fields', function( $fields ) {
 }, 20 );
 
 /**
+ * WooCommerce po nalaganju strani z JS (address-i18n.js) prepise oznake in namige
+ * za address_1/address_2 s svojimi privzetimi. Zato je polje za hisno stevilko
+ * izgledalo kot neobvezno, ceprav je obvezno.
+ * Tu privzete vrednosti nadomestimo z nasimi, da JS ne more nic prepisati.
+ */
+add_filter( 'woocommerce_get_country_locale', function( $locale ) {
+    $a1 = array( 'label' => 'Ulice', 'placeholder' => 'Ulice', 'required' => true );
+    $a2 = array( 'label' => 'Číslo popisné (Č. p. / Č. o.)', 'placeholder' => 'Číslo popisné (Č. p. / Č. o.)', 'required' => true );
+    foreach ( array( 'default', 'CZ' ) as $cc ) {
+        if ( ! isset( $locale[ $cc ] ) || ! is_array( $locale[ $cc ] ) ) {
+            $locale[ $cc ] = array();
+        }
+        $locale[ $cc ]['address_1'] = isset( $locale[ $cc ]['address_1'] ) && is_array( $locale[ $cc ]['address_1'] )
+            ? array_merge( $locale[ $cc ]['address_1'], $a1 ) : $a1;
+        $locale[ $cc ]['address_2'] = isset( $locale[ $cc ]['address_2'] ) && is_array( $locale[ $cc ]['address_2'] )
+            ? array_merge( $locale[ $cc ]['address_2'], $a2 ) : $a2;
+    }
+    return $locale;
+}, 20 );
+
+/**
  * Address hint after last name
  */
 add_filter( 'woocommerce_form_field_text', function( $field, $key ) {
