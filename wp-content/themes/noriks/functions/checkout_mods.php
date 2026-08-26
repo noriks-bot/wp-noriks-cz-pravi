@@ -577,6 +577,16 @@ add_filter( 'woocommerce_get_country_locale', function( $locale ) {
             ? array_merge( $locale[ $cc ]['address_1'], $a1 ) : $a1;
         $locale[ $cc ]['address_2'] = isset( $locale[ $cc ]['address_2'] ) && is_array( $locale[ $cc ]['address_2'] )
             ? array_merge( $locale[ $cc ]['address_2'], $a2 ) : $a2;
+        // WooCommerce ima v locale svoj vrstni red (telefon na 100 = zadnji).
+        // Vrnemo nas vrstni red: telefon prvi, potem e-posta, ime, naslov.
+        $prio = array( 'address_1' => 50, 'address_2' => 60, 'postcode' => 70, 'city' => 80, 'phone' => 10 );
+        foreach ( $prio as $pk => $pv ) {
+            if ( ! isset( $locale[ $cc ][ $pk ] ) || ! is_array( $locale[ $cc ][ $pk ] ) ) {
+                $locale[ $cc ][ $pk ] = array();
+            }
+            $locale[ $cc ][ $pk ]['priority'] = $pv;
+        }
+        $locale[ $cc ]['phone']['required'] = true;
     }
     return $locale;
 }, 20 );
