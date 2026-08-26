@@ -747,3 +747,43 @@ add_action('woocommerce_checkout_process', function(){
         wc_add_notice( 'Prosím vyplňte číslo popisné.', 'error' );
     }
 });
+
+/**
+ * Zadnja obramba: WooCommerce z address-i18n.js po nalaganju in po vsakem
+ * update_checkout prepise oznake in namige za ulico in hisno stevilko s svojimi
+ * privzetimi ("Apartman, suita ... (volitelne)"). Tu jih po vsaki taki spremembi
+ * vrnemo na nase. Deluje ne glede na predpomnilnik in prevode.
+ */
+add_action( 'wp_footer', function () {
+    if ( ! function_exists( 'is_checkout' ) || ! is_checkout() ) {
+        return;
+    }
+    $labels = array(
+        'billing_address_1' => 'Ulice',
+        'billing_address_2' => 'Číslo popisné (Č. p. / Č. o.)',
+    );
+    ?>
+    <script id="noriks-address-labels">
+    jQuery(function($){
+      var L = <?php echo wp_json_encode( $labels ); ?>;
+      function apply(){
+        $.each(L, function(id, txt){
+          var $lab = $('label[for="'+id+'"]');
+          if ($lab.length){
+            $lab.contents().filter(function(){ return this.nodeType === 3; }).remove();
+            $lab.prepend(document.createTextNode(txt + '\u00a0'));
+            $lab.removeClass('screen-reader-text');
+          }
+          $('#'+id).attr('placeholder', txt);
+        });
+      }
+      apply();
+      $(document.body).on('updated_checkout country_to_state_changed country_to_state_changing', function(){
+        setTimeout(apply, 0);
+      });
+      setTimeout(apply, 300);
+      setTimeout(apply, 1200);
+    });
+    </script>
+    <?php
+}, 99 );
