@@ -759,8 +759,12 @@ add_action( 'wp_footer', function () {
         return;
     }
     $labels = array(
+        'billing_first_name' => 'Jméno',
+        'billing_last_name' => 'Příjmení',
         'billing_address_1' => 'Ulice',
         'billing_address_2' => 'Číslo popisné (Č. p. / Č. o.)',
+        'billing_postcode' => 'PSČ',
+        'billing_city' => 'Město',
     );
     ?>
     <script id="noriks-address-labels">
