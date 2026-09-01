@@ -783,6 +783,66 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
     </div>
     
     
+        <!-- 6 - navodila za uporabo (PDF) -->
+    <?php
+    $noriks_manuals = array(
+        'kidsnest' => array( 'noriks-kidsnest.pdf', 'NORIKS KidsNest — dětský ortopedický polštář' ),
+        'kneefix' => array( 'noriks-kneefix.pdf', 'NORIKS KneeFix — ortopedická kolenní ortéza' ),
+        'ortopedski-jastuk' => array( 'noriks-ergosit.pdf', 'NORIKS ErgoSit — ortopedický sedací polštář' ),
+        'fisiorest' => array( 'noriks-fisiorest.pdf', 'NORIKS FisioRest — přístroj na krk' ),
+        'bunion' => array( 'noriks-bunion-fix.pdf', 'NORIKS Bunion Fix — korektor vbočeného palce' ),
+        'ortopas' => array( 'noriks-ortopas.pdf', 'NORIKS ortopedický pás na záda' ),
+    );
+    $noriks_manual = null;
+    if ( function_exists('noriks_is_type') ) {
+        foreach ( $noriks_manuals as $noriks_t => $noriks_m ) {
+            if ( noriks_is_type( $noriks_t, $current_product_id ) ) { $noriks_manual = $noriks_m; break; }
+        }
+    }
+    if ( $noriks_manual && file_exists( get_template_directory() . '/manuals/' . $noriks_manual[0] ) ) : ?>
+    <div class="accordion-item noriks-manual-acc">
+      <div class="accordion-header" onclick="toggleAccordion(this)">
+        <h3>Návod k použití</h3>
+        <div class="toggle">+</div>
+      </div>
+      <div class="accordion-content">
+        <a class="noriks-manual-link" href="<?php echo esc_url( get_template_directory_uri() . '/manuals/' . $noriks_manual[0] ); ?>" target="_blank" rel="noopener">
+          <span class="noriks-manual-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7l-5-5z" fill="#e53935"/>
+              <path d="M14 2v5h5" fill="#b71c1c"/>
+              <text x="12" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="6.5" font-weight="700" fill="#fff">PDF</text>
+            </svg>
+          </span>
+          <span class="noriks-manual-txt">
+            <strong><?php echo esc_html( $noriks_manual[1] ); ?></strong>
+            <small>PDF · otevře se na nové kartě</small>
+          </span>
+          <span class="noriks-manual-dl" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+          </span>
+        </a>
+        <style>
+        .noriks-manual-acc { border-bottom: none !important; }
+        .noriks-manual-acc .accordion-content { padding-bottom: 0 !important; }
+        .noriks-manual-link { display:flex; align-items:center; gap:12px; padding:10px 12px; margin:0 0 2px;
+          border:1px solid #e5e7eb; border-radius:8px; text-decoration:none; background:#fafafa; color:#12233b;
+          cursor:pointer; transition:background .15s ease, border-color .15s ease, transform .15s ease; }
+        .noriks-manual-link:hover { background:#eef2f7; border-color:#c2cddd; transform:translateY(-1px); }
+        .noriks-manual-link:active { transform:none; }
+        .noriks-manual-ico { flex:0 0 auto; display:flex; }
+        .noriks-manual-txt { display:flex; flex-direction:column; gap:1px; min-width:0; }
+        .noriks-manual-txt strong { font-size:14px; line-height:1.25; font-weight:600; }
+        .noriks-manual-txt small { color:#6b7280; font-size:12px; }
+        .noriks-manual-dl { margin-left:auto; flex:0 0 auto; display:flex; color:#6b7280; transition:color .15s ease; }
+        .noriks-manual-link:hover .noriks-manual-dl { color:#12233b; }
+        </style>
+      </div>
+    </div>
+    <?php endif; ?>
+
     <!-- konec 5 acrodinov -->
 
   </div>
