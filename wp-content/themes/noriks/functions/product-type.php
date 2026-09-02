@@ -32,6 +32,8 @@ function noriks_product_type_map() : array {
         'ortopas'                 => array( 'orto-ortopas', 'ortopas' ),
         // KneeFix ortopedska steznica za koljeno.
         'kneefix'                 => array( 'orto-kneefix' ),
+        // ControlPro trener dna zdjelice (bez atributa).
+        'controlpro'              => array( 'orto-controlpro', 'controlpro' ),
         'bunion'                  => array( 'orto-bunion', 'bunion' ),
         'fisiorest'               => array( 'orto-fisiorest', 'fisiorest' ),
         'norikshers'              => array( 'orto-norikshers', 'orto-noriks-hers', 'norikshers' ),
