@@ -17,6 +17,8 @@ if ( function_exists( 'noriks_is_type' ) ) {
         get_template_part( 'template_parts/product-bottom/why-kompresijske-majice' );
     } elseif ( noriks_is_type( 'kneefix' ) ) {
         get_template_part( 'template_parts/product-bottom/why-kneefix' );
+    } elseif ( noriks_is_type( 'controlpro' ) ) {
+        get_template_part( 'template_parts/product-bottom/why-controlpro' );
     } elseif ( noriks_is_type( 'kidsnest' ) ) {
         get_template_part( 'template_parts/product-bottom/why-kidsnest' );
     } elseif ( noriks_is_type( 'ortopedski-jastuk' ) ) {
@@ -642,10 +644,12 @@ Flexibilní střih pro silnější stehna
 
           Nejste sami v hledání ostřejší siluety a lepšího držení těla.
 
+          <?php elseif ( function_exists('noriks_is_type') && noriks_is_type('controlpro') ): ?>Nejste jediný, komu Kegelovy cviky nepřinesly výsledek.
           <?php elseif ( function_exists('noriks_is_type') && noriks_is_type('kneefix') ): ?>
 
            Nejste jediní, kdo hledá stabilnější koleno.
 
+          <?php elseif ( function_exists('noriks_is_type') && noriks_is_type('controlpro') ): ?>Tisíce mužů už používají NORIKS ControlPro — skutečný odpor místo stlačování naprázdno.
           <?php elseif ( function_exists('noriks_is_type') && noriks_is_type('kneefix') ): ?>Tisíce zákazníků už nosí ortézu NORIKS KneeFix pro stabilnější koleno – na schodech, na procházce i při dlouhém stání.<?php elseif ( function_exists('noriks_is_type') && noriks_is_type('kidsnest') ): ?>
 
           Nejste sami v hledání klidného dětského spánku.
@@ -759,9 +763,12 @@ Flexibilní střih pro silnější stehna
                      : ( $is_leakboxers_page ? 'NORIKS savé boxerky'
                      : ( $is_kompmajice_page ? 'NORIKS FIT kompresní tričko'
                      : ( $is_norikshers_review_page ? 'NORIKS HERS' : 'Jedna Siva Majica' ) ) ) ) ) ) ) ) );
+  if ( function_exists('noriks_is_type') && noriks_is_type('controlpro') ) { $rv_fallback_title = 'NORIKS ControlPro trenažér pánevního dna'; }
 
   // Include review pools
-  if ( $is_kneefix_page ) {
+  if ( function_exists('noriks_is_type') && noriks_is_type('controlpro') ) {
+    include get_stylesheet_directory() . '/auto_reviews/CZ_controlpro.php';
+  } elseif ( $is_kneefix_page ) {
     include get_stylesheet_directory() . '/auto_reviews/CZ_kneefix.php';
   } elseif ( $is_kidsnest_page ) {
     include get_stylesheet_directory() . '/auto_reviews/CZ_kidsnest.php';
@@ -907,6 +914,8 @@ Flexibilní střih pro silnější stehna
         $args['category'] = [ 'ponozky', 'orto-kompresijske-carape' ];
     } elseif ( function_exists('noriks_is_type') && noriks_is_type('kneefix', $product_id) ) {
         $args['category'] = [ 'orto-kneefix' ];
+      } elseif ( function_exists('noriks_is_type') && noriks_is_type('controlpro', $product_id) ) {
+        $args['category'] = [ 'orto-controlpro' ];
     } elseif ( function_exists('noriks_is_type') && noriks_is_type('leakboxers', $product_id) ) {
         $args['category'] = [ 'orto-leak-boxers', 'leak-boxers' ];
     } elseif ( function_exists('noriks_is_type') && noriks_is_type('kompresijske-majice', $product_id) ) {
@@ -1803,9 +1812,22 @@ $norikshers_faq = array(
   array( 'questioon' => 'Existuje záruka vrácení peněz?', 'answer' => 'Ano, nabízíme 30denní záruku bez rizika. Pokud nejste spokojeni, jednoduše nás kontaktujte a vyřešíme to.' ),
 );
 
-$faq_pick = function( $title, $list ) use ( $is_ortopas_faq, $ortopas_faq, $is_bunion_faq, $bunion_faq, $is_fisiorest_faq, $fisiorest_faq, $is_norikshers_faq, $norikshers_faq, $is_leakboxers_faq, $leakboxers_faq, $is_kompmajice_faq, $kompmajice_faq, $is_kidsnest_faq, $kidsnest_faq, $is_jastuk_faq, $jastuk_faq, $is_kneefix_faq, $kneefix_faq ) {
+$controlpro_faq = array(
+  array( 'questioon' => 'Jak se používá?', 'answer' => 'Sedněte si na židli, přístroj vložte <strong>mezi kolena</strong> a stlačujte proti odporu. Doporučujeme <strong>3 série po 10 opakováních denně</strong>, což trvá asi pět minut.' ),
+  array( 'questioon' => 'Musí se něco zavádět?', 'answer' => 'Ne. Žádné sondy, žádné zavádění. Přístroj pracuje <strong>mimo tělo</strong>.' ),
+  array( 'questioon' => 'Kdy mohu čekat výsledky?', 'answer' => 'Většina uživatelů hlásí první změny po <strong>3 až 6 týdnech</strong> pravidelného cvičení.' ),
+  array( 'questioon' => 'Potřebuje baterie nebo aplikaci?', 'answer' => 'Ne. Přístroj je plně mechanický — bez baterií, kabelů a aplikace. Má jen <strong>počítadlo opakování</strong>.' ),
+  array( 'questioon' => 'Čím se liší od EMS přístrojů?', 'answer' => 'EMS přístroje stáhnou sval za vás. ControlPro vyžaduje, abyste <strong>práci udělali sami</strong> proti skutečnému odporu.' ),
+  array( 'questioon' => 'Je vhodný po operaci prostaty?', 'answer' => 'Ano, mnozí ho používají právě po operaci prostaty. Pokud jste v rekonvalescenci, poraďte se nejprve s lékařem.' ),
+  array( 'questioon' => 'Jak se čistí?', 'answer' => 'Otřete vlhkým hadříkem s jemným čisticím prostředkem. Neponořujte do vody.' ),
+  array( 'questioon' => 'Jaké je doručení?', 'answer' => 'Doručení je <strong>diskrétní</strong>, v neutrální krabici bez označení obsahu.' ),
+  array( 'questioon' => 'Mohu jej vrátit?', 'answer' => 'Ano, máte <strong>30 dní</strong> na vrácení peněz. Stačí e-mail, bez formulářů.' ),
+);
+
+$faq_pick = function( $title, $list ) use ( $is_controlpro_faq, $controlpro_faq, $is_ortopas_faq, $ortopas_faq, $is_bunion_faq, $bunion_faq, $is_fisiorest_faq, $fisiorest_faq, $is_norikshers_faq, $norikshers_faq, $is_leakboxers_faq, $leakboxers_faq, $is_kompmajice_faq, $kompmajice_faq, $is_kidsnest_faq, $kidsnest_faq, $is_jastuk_faq, $jastuk_faq, $is_kneefix_faq, $kneefix_faq ) {
   $is_info = ( stripos( (string) $title, 'produktu' ) !== false );
   if ( $is_kneefix_faq && $is_info )    { return $kneefix_faq; }
+  if ( $is_controlpro_faq && $is_info ) { return $controlpro_faq; }
   if ( $is_kidsnest_faq && $is_info )  { return $kidsnest_faq; }
   if ( $is_jastuk_faq && $is_info )    { return $jastuk_faq; }
   if ( $is_leakboxers_faq && $is_info ) { return $leakboxers_faq; }

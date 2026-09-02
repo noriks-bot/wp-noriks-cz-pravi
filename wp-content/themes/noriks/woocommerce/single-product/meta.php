@@ -515,7 +515,13 @@ $is_mixed_bundle = has_term( array( 'sady','orto-starter','orto-majica-bokserica
         <?php echo get_field("singlepp_acc_t_1","options"); ?>
 
 
-         <?php elseif( function_exists('noriks_is_type') && noriks_is_type('kneefix', $current_product_id) ): ?>
+         <?php elseif( function_exists('noriks_is_type') && noriks_is_type('controlpro', $current_product_id) ): ?>
+
+                NORIKS ControlPro je mechanický trenažér pánevního dna se skutečným fyzickým odporem. Místo stlačování naprázdno dostanete něco, proti čemu můžete tlačit — stejný princip postupné zátěže, kterým sílí každý jiný sval v těle.<br><br>Používá se vsedě: přístroj vložíte mezi kolena a stlačujete proti odporu — 3 série po 10 opakováních denně, přibližně pět minut. Bez sond a zavádění, bez kabelů, gelu, baterií a aplikací. Vestavěné počítadlo opakování ukazuje, kolik jste odcvičili.<br><br>Konstrukce je pevná, s měkkými podložkami na opěrkách, které netlačí ani po několika sériích. Odpor se postupně zvyšuje, jak svaly sílí.<br><br>Je určen mužům, kteří chtějí získat zpět kontrolu nad měchýřem — po operaci prostaty, při úniku během námahy nebo po dlouhých měsících Kegelových cviků bez výsledku. Doručení je diskrétní, v neutrální krabici bez označení.
+
+
+
+         <?php elseif( function_exists('noriks_is_type') && noriks_is_type('kneefix', $current_product_id) || noriks_is_type('controlpro', $current_product_id) ): ?>
 
                 NORIKS KneeFix je flexibilní ortéza na koleno, která spojuje čtyři funkce v jednom systému opory: nastavitelnou kompresi pomocí přesného kolečka, dvojité boční stabilizátory, gelovou vložku odlehčující čéšku a silikonový protiskluzový okraj, který ortézu udrží na místě.<br><br>Na rozdíl od tuhých ortéz KneeFix koleno neznehybní — podpírá ho během přirozeného pohybu. Kompresi nastavíte během vteřiny: ráno pevněji, odpoledne volněji, podle toho, kolik jste na nohou. Koleno tak získá stabilitu při vstávání, na schodech, při chůzi i při delším stání.<br><br>Látka je lehká, prodyšná a odvádí vlhkost, takže ortézu můžete nosit hodiny bez pocení a bez zařezávání. Je tenká a diskrétní — pod kalhotami ji téměř není vidět.<br><br>K dispozici je ve velikostech od S do 2XL podle tělesné hmotnosti a ve verzi pro levé i pravé koleno, takže sedí přesně.
 
@@ -573,7 +579,7 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
      <?php endif; // /skryto na norikshers (detajli) ?>
 
      <!-- 2 - slika tablica velicina -->
-     <?php if ( ! ( function_exists('noriks_is_type') && ( noriks_is_type('bunion', $current_product_id) || noriks_is_type('fisiorest', $current_product_id) || noriks_is_type('norikshers', $current_product_id) || noriks_is_type('ortopedski-jastuk', $current_product_id) ) )  && ! ( function_exists('noriks_is_type') && noriks_is_type('kneefix', $current_product_id) )) : // žádná tabulka velikostí pro bunion + fisiorest + norikshers + ortopedicky polstar ?>
+     <?php if ( ! ( function_exists('noriks_is_type') && ( noriks_is_type('bunion', $current_product_id) || noriks_is_type('fisiorest', $current_product_id) || noriks_is_type('norikshers', $current_product_id) || noriks_is_type('ortopedski-jastuk', $current_product_id) ) )  && ! ( function_exists('noriks_is_type') && noriks_is_type('kneefix', $current_product_id) || noriks_is_type('controlpro', $current_product_id) )) : // žádná tabulka velikostí pro bunion + fisiorest + norikshers + ortopedicky polstar ?>
      <div class="accordion-item">
       <div class="accordion-header" onclick="toggleAccordion(this)">
         <h3>Tabulka velikostí</h3>
@@ -706,7 +712,7 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
 
 
     <!-- 3 - savjeti za pranje-->
-    <?php if ( ! ( function_exists('noriks_is_type') && ( noriks_is_type('ortopas', $current_product_id) || noriks_is_type('bunion', $current_product_id) || noriks_is_type('fisiorest', $current_product_id) || noriks_is_type('norikshers', $current_product_id) || noriks_is_type('kidsnest', $current_product_id) || noriks_is_type('ortopedski-jastuk', $current_product_id) ) )  && ! ( function_exists('noriks_is_type') && noriks_is_type('kneefix', $current_product_id) )) : // žádné tipy na praní pro pás/bunion/fisiorest + norikshers + kidsnest + ortopedicky polstar ?>
+    <?php if ( ! ( function_exists('noriks_is_type') && ( noriks_is_type('ortopas', $current_product_id) || noriks_is_type('bunion', $current_product_id) || noriks_is_type('fisiorest', $current_product_id) || noriks_is_type('norikshers', $current_product_id) || noriks_is_type('kidsnest', $current_product_id) || noriks_is_type('ortopedski-jastuk', $current_product_id) ) )  && ! ( function_exists('noriks_is_type') && noriks_is_type('kneefix', $current_product_id) || noriks_is_type('controlpro', $current_product_id) )) : // žádné tipy na praní pro pás/bunion/fisiorest + norikshers + kidsnest + ortopedicky polstar ?>
     <div class="accordion-item">
       <div class="accordion-header" onclick="toggleAccordion(this)">
         <h3><?php echo get_field("singlepp_acc_h_2","options"); ?></h3>
