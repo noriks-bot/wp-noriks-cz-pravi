@@ -1651,6 +1651,7 @@ $faq_list3 = get_field('faq_list_3', 'option');
 // Special orto products: swap ONLY the product-info FAQ container ("...o produktu");
 // delivery/returns containers stay untouched.
 $is_ortopas_faq    = ( function_exists('noriks_is_type') && noriks_is_type('ortopas') );
+$is_controlpro_faq = ( function_exists('noriks_is_type') && noriks_is_type('controlpro') );
 $is_bunion_faq     = ( function_exists('noriks_is_type') && noriks_is_type('bunion') );
 $is_fisiorest_faq  = ( function_exists('noriks_is_type') && noriks_is_type('fisiorest') );
 $is_norikshers_faq = ( function_exists('noriks_is_type') && noriks_is_type('norikshers') );
