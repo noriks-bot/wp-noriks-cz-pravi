@@ -1876,8 +1876,82 @@ $cloath_faq = array(
   ),
 );
 
-$faq_pick = function( $title, $list ) use ( $is_cloath_faq, $cloath_faq, $is_controlpro_faq, $controlpro_faq, $is_ortopas_faq, $ortopas_faq, $is_bunion_faq, $bunion_faq, $is_fisiorest_faq, $fisiorest_faq, $is_norikshers_faq, $norikshers_faq, $is_leakboxers_faq, $leakboxers_faq, $is_kompmajice_faq, $kompmajice_faq, $is_kidsnest_faq, $kidsnest_faq, $is_jastuk_faq, $jastuk_faq, $is_kneefix_faq, $kneefix_faq ) {
+$is_cloud_faq = ( function_exists('noriks_is_type') && noriks_is_type('cloud') );
+$cloud_faq = array(
+  array(
+    'questioon' => 'Co když mi polštář nevyhovuje?',
+    'answer'    => 'Máte 60 nocí na vyzkoušení. Pokud nebudete spokojeni, napište naší podpoře a vrátíme vám celou částku — bez podmínek a bez papírování.',
+  ),
+  array(
+    'questioon' => 'Jak se polštář správně používá?',
+    'answer'    => 'Lehněte si na bok, vložte polštář mezi kolena a pásek utáhněte kolem vrchní nohy. Boky, pánev a páteř mají být v přímce. Pásek můžete sundat a polštář používat pod kotníky nebo pod krk.',
+  ),
+  array(
+    'questioon' => 'Opravdu zůstane na místě, když se otočím?',
+    'answer'    => 'Ano. Nastavitelný pásek s patentky jde kolem nohy a drží polštář u kolena, takže nevypadává jako běžný polštář. Pásek má dvě polohy utažení podle obvodu nohy.',
+  ),
+  array(
+    'questioon' => 'Z čeho je polštář vyrobený?',
+    'answer'    => 'Jádro je z paměťové pěny lékařské kvality s perforacemi, které zajišťují proudění vzduchu. Potah je z prodyšné tkaniny, dá se sundat a vyprat. Materiály jsou certifikované podle OEKO-TEX® STANDARD 100 a CertiPUR-EU.',
+  ),
+  array(
+    'questioon' => 'Je příliš tvrdý, nebo příliš měkký?',
+    'answer'    => 'Má střední tuhost — dost na to, aby držel odstup nohou celou noc, ale pod tlakem se přizpůsobí tvaru kolena. Nesplaskne a po vstání se vrátí do tvaru.',
+  ),
+  array(
+    'questioon' => 'Jak se pere?',
+    'answer'    => 'Potah sundejte a perte v pračce na 40 °C, bez aviváže a bez bělidla, sušte na vzduchu. Pěnu neperte v pračce — v případě potřeby ji otřete vlhkým hadříkem a nechte uschnout.',
+  ),
+  array(
+    'questioon' => 'Jak dlouho trvá, než si zvyknu?',
+    'answer'    => 'Většina uživatelů cítí rozdíl už první nebo druhou noc. Pokud jste zvyklí spát se spojenými koleny, prvních pár nocí může být odstup nezvyklý — tělo se obvykle přizpůsobí do týdne.',
+  ),
+  array(
+    'questioon' => 'Je vhodný v těhotenství?',
+    'answer'    => 'Ano. V těhotenství se doporučuje spánek na levém boku a polštář mezi koleny odlehčuje boky a kříž. Při zdravotních komplikacích se před použitím poraďte s lékařem.',
+  ),
+);
+
+$is_hyd_faq = ( function_exists('noriks_is_type') && noriks_is_type('hyd') );
+$hyd_faq = array(
+  array(
+    'questioon' => 'Co je vodíková voda?',
+    'answer'    => 'Je to běžná pitná voda, ve které je rozpuštěný molekulární vodík (H₂). Vodík je nejmenší molekula a výzkumy ho spojují se selektivním antioxidačním účinkem.',
+  ),
+  array(
+    'questioon' => 'Jak dlouho trvá jeden cyklus?',
+    'answer'    => 'Krátký cyklus trvá 3 minuty a dává přibližně 1 600 ppb vodíku, dlouhý 10 minut a až 3 000 ppb. Cyklus si vyberete stisknutím tlačítka.',
+  ),
+  array(
+    'questioon' => 'Přichází voda do styku s plastem?',
+    'answer'    => 'Ne. Láhev je z borosilikátového skla se základnou z nerezové oceli, takže ve vodě není chuť plastu ani částice.',
+  ),
+  array(
+    'questioon' => 'Jakou vodu mohu používat?',
+    'answer'    => 'Jakoukoli pitnou vodu — z vodovodu, filtrovanou, balenou nebo destilovanou. Díky PEM/SPE membráně zařízení nepotřebuje minerály.',
+  ),
+  array(
+    'questioon' => 'Je třeba měnit filtr?',
+    'answer'    => 'Ne. Generátor má trvalý filtr, takže není spotřební materiál ani další náklady.',
+  ),
+  array(
+    'questioon' => 'Jak se nabíjí?',
+    'answer'    => 'USB kabelem; plné nabití trvá 30 až 60 minut a vystačí na více cyklů. Láhev nenabíjejte, dokud je v ní voda.',
+  ),
+  array(
+    'questioon' => 'Kdy vodu vypít?',
+    'answer'    => 'Nejlépe hned po cyklu, do zhruba 30 minut, protože koncentrace vodíku časem klesá.',
+  ),
+  array(
+    'questioon' => 'Co když nebudu spokojený?',
+    'answer'    => 'Máte 30 dní na vrácení peněz. Navíc na zařízení dostáváte 1 rok záruky.',
+  ),
+);
+
+$faq_pick = function( $title, $list ) use ( $is_hyd_faq, $hyd_faq, $is_cloud_faq, $cloud_faq, $is_cloath_faq, $cloath_faq, $is_controlpro_faq, $controlpro_faq, $is_ortopas_faq, $ortopas_faq, $is_bunion_faq, $bunion_faq, $is_fisiorest_faq, $fisiorest_faq, $is_norikshers_faq, $norikshers_faq, $is_leakboxers_faq, $leakboxers_faq, $is_kompmajice_faq, $kompmajice_faq, $is_kidsnest_faq, $kidsnest_faq, $is_jastuk_faq, $jastuk_faq, $is_kneefix_faq, $kneefix_faq ) {
   $is_info = ( stripos( (string) $title, 'produktu' ) !== false );
+  if ( $is_hyd_faq && $is_info ) { return $hyd_faq; }
+  if ( $is_cloud_faq && $is_info ) { return $cloud_faq; }
   if ( $is_cloath_faq && $is_info ) { return $cloath_faq; }
   if ( $is_kneefix_faq && $is_info )    { return $kneefix_faq; }
   if ( $is_controlpro_faq && $is_info ) { return $controlpro_faq; }
