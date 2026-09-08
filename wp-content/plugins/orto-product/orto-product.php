@@ -486,7 +486,7 @@ function gck_render_bundle_selector() {
     // Special orto products that don't use the standard colour + size selectors:
     //  - orto-bunion / orto-fisiorest : quantity-only bundle, NO colour and NO size selectors.
     //  - orto-ortopas / orto-kidsnest : single "Velikost" attribute, no colour (size selector only).
-    $gck_no_attrs    = has_term( array( 'orto-controlpro', 'orto-bunion', 'orto-fisiorest', 'orto-norikshers', 'orto-noriks-hers', 'orto-ortopedski-jastuk' ), 'product_cat', $product_id );
+    $gck_no_attrs    = has_term( array( 'orto-cloath', 'orto-controlpro', 'orto-bunion', 'orto-fisiorest', 'orto-norikshers', 'orto-noriks-hers', 'orto-ortopedski-jastuk' ), 'product_cat', $product_id );
     $gck_single_size = has_term( array( 'orto-ortopas', 'orto-kidsnest' ), 'product_cat', $product_id );
 
     // SHGIFTS (orto-majica-darila): the SAME split-garment selector as SHBOX,
@@ -872,7 +872,7 @@ function gck_render_bundle_selector() {
 
     <?php
     // Your extra conditional style block (kept)
-    if (  !has_term( array( 'orto-starter', 'orto-majice', 'orto-bokserice', 'orto-kompresijske-carape', 'orto-ortopas', 'orto-kneefix', 'orto-controlpro', 'orto-bunion', 'orto-fisiorest', 'orto-norikshers', 'orto-noriks-hers', 'orto-majica-darila', 'orto-leak-boxers', 'orto-kompresijske-majice', 'orto-ortopedski-jastuk', 'orto-kidsnest' ), 'product_cat', $product_id )  )   :
+    if (  !has_term( array( 'orto-cloath', 'orto-starter', 'orto-majice', 'orto-bokserice', 'orto-kompresijske-carape', 'orto-ortopas', 'orto-kneefix', 'orto-controlpro', 'orto-bunion', 'orto-fisiorest', 'orto-norikshers', 'orto-noriks-hers', 'orto-majica-darila', 'orto-leak-boxers', 'orto-kompresijske-majice', 'orto-ortopedski-jastuk', 'orto-kidsnest' ), 'product_cat', $product_id )  )   :
     ?>
         <style>
           .bundle-option { border: 2px solid #ededed; background: #f4f4f4b0  !important; border-radius: 4px; }
@@ -968,7 +968,7 @@ function gck_render_bundle_selector() {
     
 
     <div class="gck-benefits-box">
-        <?php if ( ! has_term( array( 'orto-ortopas', 'orto-kneefix', 'orto-controlpro', 'orto-bunion', 'orto-fisiorest', 'orto-norikshers', 'orto-noriks-hers', 'orto-leak-boxers', 'orto-kompresijske-majice', 'orto-ortopedski-jastuk', 'orto-kidsnest' ), 'product_cat', $product_id ) ) : // hide benefits list for back belt + bunion + fisiorest + leak boxers + kompresijske majice + orthopedic pillow + kidsnest ?>
+        <?php if ( ! has_term( array( 'orto-cloath', 'orto-ortopas', 'orto-kneefix', 'orto-controlpro', 'orto-bunion', 'orto-fisiorest', 'orto-norikshers', 'orto-noriks-hers', 'orto-leak-boxers', 'orto-kompresijske-majice', 'orto-ortopedski-jastuk', 'orto-kidsnest' ), 'product_cat', $product_id ) ) : // hide benefits list for back belt + bunion + fisiorest + leak boxers + kompresijske majice + orthopedic pillow + kidsnest ?>
         <ul class="gck-benefits-list">
             <?php if ( !has_term( array( 'orto-bokserice', 'orto-bokserice2', 'starter-paketi' ), 'product_cat', $product_id ) ) : ?>
                 <li><span class="gck-check">✔</span> <strong>Perfektní padnutí</strong></li>
@@ -1178,6 +1178,53 @@ function gck_render_bundle_selector() {
             Tabulka velikostí
         </a>
     </div>
+    <?php endif; ?>
+    <?php
+    // Polar NORIKS Cloth: kartica ponude kao na referenci — naslov i naziv paketa lijevo,
+    // cijena desno u istom redu, precrtana stara cijena ispod nje.
+    if ( has_term( array( 'orto-cloath' ), 'product_cat', $product_id ) ) :
+    ?>
+        <style>
+          #bundle-selector .bundle-option {
+              display: grid !important;
+              grid-template-columns: auto minmax(0,1fr) auto;
+              grid-template-rows: auto auto;
+              column-gap: 10px;
+              row-gap: 0;
+              align-items: center;
+              padding: 14px 16px !important;
+          }
+          #bundle-selector .bundle-option > input[type="radio"] { grid-column: 1; grid-row: 1 / span 2; }
+          #bundle-selector .bundle-option .gck-offer-head { grid-column: 2; grid-row: 1; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; line-height: 1.15; }
+          #bundle-selector .bundle-option .bundle-option-title { font-size: 17px; font-weight: 800; letter-spacing: -.01em; line-height: 1.15; }
+          #bundle-selector .bundle-option .gck-offer-sub { grid-column: 2; grid-row: 2; margin: 1px 0 0 !important; font-size: 13px; line-height: 1.25; color: #6b6b6b; }
+          #bundle-selector .bundle-option .gck-offer-prices { display: inline-flex; align-items: center; gap: 8px; position: relative; top: -2px; }
+          #bundle-selector .bundle-option .gck-per-chip,
+          #bundle-selector .bundle-option .gck-discount-badge { margin: 0 !important; }
+          #bundle-selector .bundle-option .bundle-total-line {
+              grid-column: 3; grid-row: 1 / span 2;
+              display: flex !important; flex-direction: column; align-items: flex-end; gap: 2px;
+              margin: 0 !important; text-align: right;
+          }
+          #bundle-selector .bundle-option .bundle-total-line .line-total { font-size: 20px; font-weight: 800; color: #141414; order: 1; }
+          #bundle-selector .bundle-option .bundle-total-line .gck-regular-price { font-size: 14px; margin: 0 !important; order: 2; }
+          /* referenca nema "Ukupno:", ni cijene po komadu ni postotka u kartici */
+          #bundle-selector .bundle-option .bundle-total-line > span:not(.line-total):not(.gck-regular-price) { display: none !important; }
+          #bundle-selector .bundle-option br { display: none !important; }
+          #bundle-selector .gck-offer-tag {
+              display: inline-block; margin-left: 8px; background: #ececec; color: #333;
+              font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px; vertical-align: middle;
+          }
+          #bundle-selector .gck-popular-badge { top: -13px; right: 10px; transform: none; border-radius: 8px; font-size: 12px; font-weight: 800; letter-spacing: .02em; padding: 4px 14px; }
+          @media (max-width: 520px) {
+              #bundle-selector .bundle-option { padding: 12px 8px !important; column-gap: 6px; }
+              #bundle-selector .bundle-option .bundle-option-title { font-size: 15.5px; }
+              #bundle-selector .bundle-option .gck-offer-sub { font-size: 12.5px; }
+              #bundle-selector .bundle-option .bundle-total-line .line-total { font-size: 15.5px; }
+              #bundle-selector .bundle-option .bundle-total-line .gck-regular-price { font-size: 12px; margin: 0 !important; }
+              #bundle-selector .gck-popular-badge { right: 8px; font-size: 11px; padding: 2px 10px; }
+          }
+        </style>
     <?php endif; ?>
     <?php // Alternativni izbornici: umjesto trake swatcheva -> DVA prilagodena dropdowna
           // (prvo Velicina, zatim Boja s uzorkom boje), isti stil kao na HairMagic+.

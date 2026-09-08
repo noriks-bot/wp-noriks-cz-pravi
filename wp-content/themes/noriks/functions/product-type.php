@@ -46,6 +46,12 @@ function noriks_product_type_map() : array {
         'majica-darila'           => array( 'orto-majica-darila', 'majica-darila' ),
         'majice-bokserice-paketi' => array( 'sady', 'kompleti', 'majice-i-bokserice-paketi' ),
         'black-friday'            => array( 'black-friday' ),
+        // Polar NORIKS Cloth — krpa za ciscenje (bez atributa)
+        'cloath'                  => array( 'orto-cloath' ),
+        // NORIKS Cloud — ortopedski jastuk za koljena (bez atributa)
+        'cloud'                   => array( 'orto-cloud' ),
+        // NORIKS HYD — boca za vodikovu vodu (bez atributa)
+        'hyd'                     => array( 'orto-hyd' ),
         'orto'                    => array( 'orto' ),
     );
 }

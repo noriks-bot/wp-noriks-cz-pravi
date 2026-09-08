@@ -401,3 +401,34 @@ if ( ! $short_description ) {
 })();
 </script>
 <?php endif; ?>
+
+<?php // Polar NORIKS Cloth: zelena traka povjerenja ispod naslova, iznad kratkog opisa.
+if ( function_exists('noriks_is_type') && noriks_is_type('cloath') ) : ?>
+<div class="ncl-trust">
+  <span>Pro křišťálově čisté sklo a sprchové kouty,</span>
+  <span class="ncl-trust-stars">★★★★★</span>
+  <span>důvěřuje nám 138 452+ domácností</span>
+</div>
+<style>
+  .ncl-trust { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px;
+               background: #eaf3ea; border-radius: 10px; padding: 11px 14px; margin: 10px 0 16px;
+               font-size: 14px; font-weight: 700; color: #2b4636; line-height: 1.35; text-align: center; }
+  .ncl-trust-stars { color: #f5a623; letter-spacing: 1px; }
+  @media (max-width: 480px) { .ncl-trust { font-size: 13px; padding: 10px 12px; } }
+</style>
+<script>
+/* Traka mora stajati ODMAH ispod naslova, iznad kratkog opisa — predlozak se
+   ucitava kasnije u summary bloku, pa je premjestamo iz JS-a. */
+(function(){
+  function move(){
+    var bar = document.querySelector('.ncl-trust');
+    if (!bar) { return; }
+    var title = document.querySelector('.product_title, .entry-title');
+    if (!title || title.nextElementSibling === bar) { return; }
+    title.parentNode.insertBefore(bar, title.nextSibling);
+  }
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', move); } else { move(); }
+  setTimeout(move, 300);
+})();
+</script>
+<?php endif; ?>
