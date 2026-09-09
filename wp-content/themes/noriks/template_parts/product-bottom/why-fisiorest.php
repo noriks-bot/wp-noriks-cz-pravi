@@ -17,13 +17,14 @@ $fis_science = array(
     array( 'title' => 'Uvolnění stresu',     'text' => 'Teplá masáž a protažení <strong>uvolní nahromaděné napětí</strong> pro větší pohodlí.' ),
 );
 $fis_v = get_template_directory_uri() . '/img/fisiorest-videos/';
+$fis_i = get_template_directory_uri() . '/img/fisiorest/';
 $fis_hero_video = $fis_v . 'hero.mp4';
 
 // 3) Doporučují odborníci
 $fis_experts = array(
-    array( 'vid' => $fis_v.'v01.mp4', 'name' => 'Marina Nováková', 'role' => 'Certifikovaná masérka',     'org' => '' ),
-    array( 'vid' => $fis_v.'v08.mp4', 'name' => 'Dr. Anna Kovářová', 'role' => 'Doktorka fyzioterapie',    'org' => '' ),
-    array( 'vid' => $fis_v.'v03.mp4', 'name' => 'Dr. Ivan Novotný', 'role' => 'Doktor chiropraxe',         'org' => '' ),
+    array( 'img' => $fis_i.'fis-strucnjak-1.jpg', 'name' => 'Marina Nováková', 'role' => 'Certifikovaná masérka', 'org' => '' ),
+    array( 'img' => $fis_i.'fis-strucnjak-2.jpg', 'name' => 'Anna Kovářová', 'role' => 'Fyzioterapeutka', 'org' => '' ),
+    array( 'img' => $fis_i.'fis-strucnjak-3.jpg', 'name' => 'Ivana Novotná', 'role' => 'Chiropraktička', 'org' => '' ),
 );
 // 4) Zkušenosti uživatelů
 $fis_ugc = array(
@@ -85,7 +86,7 @@ $fis_upgrades = array(
     <div class="fis-exp-cards">
       <?php foreach ( $fis_experts as $e ) : ?>
         <div class="fis-exp-card">
-          <video src="<?php echo esc_url( $e['vid'] ); ?>" muted autoplay loop playsinline preload="metadata"></video>
+          <img src="<?php echo esc_url( $e['img'] ); ?>" alt="<?php echo esc_attr( $e['name'] . ' — ' . $e['role'] ); ?>" loading="lazy">
           <div class="fis-exp-cap">
             <div class="fis-exp-name"><?php echo esc_html( $e['name'] ); ?></div>
             <div class="fis-exp-role"><?php echo esc_html( $e['role'] ); ?></div>
@@ -157,7 +158,7 @@ $fis_upgrades = array(
 <!-- ============ 8) 14x levnější ============ -->
 <section class="fis-cheaper">
   <div class="fis-wrap fis-row2">
-    <div class="fis-row2-media"><video src="<?php echo esc_url( $fis_v.'v08.mp4' ); ?>" muted autoplay loop playsinline preload="metadata"></video></div>
+    <div class="fis-row2-media"><img src="<?php echo esc_url( $fis_i.'fis-produkt-kvadrat.jpg' ); ?>" alt="NORIKS FisioRest" loading="lazy"></div>
     <div class="fis-row2-copy">
       <p class="fis-eyebrow">BEZPEČNÁ A UVOLŇUJÍCÍ TERAPIE</p>
       <h2 class="fis-h2">14× levnější než týdenní návštěvy</h2>
@@ -187,7 +188,8 @@ $fis_upgrades = array(
   .fis-exp-author { color: #1c1c1c; }
   .fis-exp-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
   .fis-exp-card { position: relative; border-radius: 14px; overflow: hidden; aspect-ratio: 3/4; background: #222; }
-  .fis-exp-card video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .fis-exp-card video,
+  .fis-exp-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .fis-exp-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 14px; color: #fff; background: linear-gradient(0deg, rgba(0,0,0,.75), rgba(0,0,0,0)); }
   .fis-exp-name { font-weight: 800; font-size: 18px; }
   .fis-exp-role { font-size: 13px; }
@@ -220,9 +222,11 @@ $fis_upgrades = array(
   .fis-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; align-items: center; }
   .fis-row2-copy p { font-size: 15.5px; line-height: 1.65; color: #333; }
   .fis-row2-media { border-radius: 16px; overflow: hidden; }
-  .fis-row2-media video { width: 100%; height: auto; display: block; }
-  .fis-cheaper .fis-row2-media { aspect-ratio: 16 / 10; }
-  .fis-cheaper .fis-row2-media video { height: 100%; object-fit: cover; }
+  .fis-row2-media video,
+  .fis-row2-media img { width: 100%; height: auto; display: block; }
+  .fis-cheaper .fis-row2-media { aspect-ratio: 1 / 1; }
+  .fis-cheaper .fis-row2-media video,
+  .fis-cheaper .fis-row2-media img { height: 100%; object-fit: cover; }
 
   @media (max-width: 900px) {
     .fis-exp-grid { grid-template-columns: 1fr; gap: 24px; }
