@@ -30,8 +30,8 @@ $fis_experts = array(
 $fis_ugc = array(
     array( 'img' => $fis_i.'fis-uporaba-1.jpg', 'cap' => '„Poprvé po dlouhé době jsem konečně bez bolesti…"' ),
     array( 'img' => $fis_i.'fis-uporaba-2.jpg', 'cap' => '„Polštář NORIKS je moje nová každodenní nezbytnost…"' ),
-    array( 'img' => $fis_i.'fis-uporaba-3.jpg', 'cap' => '„Velmi mi pomáhá při uvolňování napětí v krku a ramenou."' ),
-    array( 'img' => $fis_i.'fis-uporaba-4.jpg', 'cap' => '„Pokud jste se právě stala maminkou, tohle by mohlo být přesně to, co potřebujete…"' ),
+    array( 'img' => $fis_i.'fis-uporaba-3.jpg', 'cap' => '„Pokud jste se právě stala maminkou, tohle by mohlo být přesně to, co potřebujete…"' ),
+    array( 'img' => $fis_i.'fis-uporaba-4.jpg', 'cap' => '„Velmi mi pomáhá při uvolňování napětí v krku a ramenou."' ),
 );
 // 5) ThermoTrac 3v1
 $fis_thermo = array(
