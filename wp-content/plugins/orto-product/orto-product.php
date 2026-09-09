@@ -1177,6 +1177,9 @@ function gck_render_bundle_selector() {
     <?php if ( $gck_no_attrs ) : ?>
     <style>
       #bundle-selector.is-no-attrs .bundle-pairs { border-top: 0 !important; padding-top: 0 !important; margin-top: 0 !important; }
+      /* Brez atributov v .bundle-pairs ni kaj prikazati — prazne vrstice so samo
+         dvigale visino izbrane kartice. */
+      #bundle-selector.is-no-attrs .bundle-pairs { display: none !important; }
     </style>
     <?php endif; ?>
     <?php // Leak boxers + kompresijske majice: size-chart link top-right, directly above the bundle buttons.
