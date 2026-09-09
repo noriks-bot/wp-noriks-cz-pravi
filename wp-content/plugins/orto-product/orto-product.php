@@ -486,6 +486,15 @@ function gck_render_bundle_selector() {
     // Special orto products that don't use the standard colour + size selectors:
     //  - orto-bunion / orto-fisiorest : quantity-only bundle, NO colour and NO size selectors.
     //  - orto-ortopas / orto-kidsnest : single "Velikost" attribute, no colour (size selector only).
+    // Podnaslov ponudbe in kartus nad kartico — samo Polar NORIKS Cloth in Cloud.
+    if ( has_term( array( 'orto-cloath' ), 'product_cat', $product_id ) ) {
+        $gck_offer_subs = array( 'Set do koupelny', 'Balíček pro celý dům', 'Balíček pro rodinu a přátele' );
+    } else {
+        $gck_offer_subs = array();
+    }
+    $gck_offer_badges = has_term( array( 'orto-cloath', 'orto-cloud' ), 'product_cat', $product_id )
+        ? array( 1 => 'NEJPRODÁVANĚJŠÍ', 2 => 'NEJLEPŠÍ CENA' )
+        : array();
     $gck_no_attrs    = has_term( array( 'orto-cloath', 'orto-hyd', 'orto-cloud', 'orto-controlpro', 'orto-bunion', 'orto-fisiorest', 'orto-norikshers', 'orto-noriks-hers', 'orto-ortopedski-jastuk' ), 'product_cat', $product_id );
     $gck_single_size = has_term( array( 'orto-ortopas', 'orto-kidsnest' ), 'product_cat', $product_id );
 
@@ -1215,6 +1224,7 @@ function gck_render_bundle_selector() {
               display: inline-block; margin-left: 8px; background: #ececec; color: #333;
               font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px; vertical-align: middle;
           }
+          #bundle-selector .gck-popular-badge--offer { display: inline-block !important; }
           #bundle-selector .gck-popular-badge { top: -13px; right: 10px; transform: none; border-radius: 8px; font-size: 12px; font-weight: 800; letter-spacing: .02em; padding: 4px 14px; }
           @media (max-width: 520px) {
               #bundle-selector .bundle-option { padding: 12px 8px !important; column-gap: 6px; }
@@ -1610,8 +1620,12 @@ function gck_render_bundle_selector() {
                 ? (int) round( ( ( (float) $data['regular'] - (float) $data['total'] ) / (float) $data['regular'] ) * 100 )
                 : 0;
         ?>
-            <label style="position: relative; <?php if ( ($loop_index == 1 ||  $loop_index == 3) && ! $show_group_titles) : ?> margin-top: 25px;  <?php endif; ?>"
+            <label style="position: relative; <?php if ( ( ( $loop_index == 1 || $loop_index == 3 ) && ! $show_group_titles ) || ( ! empty( $gck_offer_badges ) && isset( $gck_offer_badges[ $loop_index ] ) ) ) : ?> margin-top: 25px;  <?php endif; ?>"
                    class="bundle-option<?php echo $is_default ? ' active' : ''; ?>">
+
+                <?php if ( ! empty( $gck_offer_badges ) && isset( $gck_offer_badges[ $loop_index ] ) ) : ?>
+                    <div class="gck-popular-badge gck-popular-badge--offer"><?php echo esc_html( $gck_offer_badges[ $loop_index ] ); ?></div>
+                <?php endif; ?>
 
                 <?php if ( ! $show_group_titles ) : ?>
                     <?php if ( $loop_index == 1 ) : ?>
@@ -1664,6 +1678,10 @@ function gck_render_bundle_selector() {
                 
                 <?php endif; ?>
                 </span><!-- /.gck-offer-head -->
+
+                <?php if ( ! empty( $gck_offer_subs ) && isset( $gck_offer_subs[ $loop_index ] ) ) : ?>
+                  <span class="gck-offer-sub"><?php echo esc_html( $gck_offer_subs[ $loop_index ] ); ?></span>
+                <?php endif; ?>
                 
 
                 <br/>
