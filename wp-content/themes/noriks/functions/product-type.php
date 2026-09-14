@@ -50,6 +50,10 @@ function noriks_product_type_map() : array {
         'cloath'                  => array( 'orto-cloath' ),
         // NORIKS Cloud — ortopedski jastuk za koljena (bez atributa)
         'cloud'                   => array( 'orto-cloud' ),
+        'red'                     => array( 'orto-red' ),
+        'pal'                     => array( 'orto-pal' ),
+        'kompwom'                 => array( 'orto-kompwom' ),
+        'snug'                    => array( 'orto-snug' ),
         // NORIKS HYD — boca za vodikovu vodu (bez atributa)
         'hyd'                     => array( 'orto-hyd' ),
         'orto'                    => array( 'orto' ),
