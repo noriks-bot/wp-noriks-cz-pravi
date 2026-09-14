@@ -508,7 +508,23 @@ $is_mixed_bundle = has_term( array( 'sady','orto-starter','orto-majica-bokserica
       </div>
       <div class="accordion-content">
           
-         <?php if( !$is_boxers &&  !$is_carape &&   !$is_mixed_bundle && ! ( function_exists('noriks_is_type') && ( noriks_is_type('fisiorest', $current_product_id) || noriks_is_type('bunion', $current_product_id) || noriks_is_type('ortopas', $current_product_id) || noriks_is_type('kidsnest', $current_product_id) || noriks_is_type('leakboxers', $current_product_id) || noriks_is_type('kompresijske-majice', $current_product_id) ) ) ): ?>
+                  <?php if( function_exists('noriks_is_type') && noriks_is_type('snug', $current_product_id) ): ?>
+
+                <strong>NORIKS Snug</strong> je polštář na celé tělo ve tvaru písmene S. Většina tělových polštářů je rovná — vaše tělo není. Proto Snug kopíruje linii těla a podpírá ramena, boky i kolena zároveň.<br><br>Když spíte na boku bez opory, rameno nese celou váhu, bok klesá a páteř se kroutí. Tři body opory váhu rozloží, takže žádné místo nenese celé zatížení.<br><br>Rozměry jsou 105 cm délky a 30 cm šířky — dost na to, aby vás podpíral od ramene po kolena, a přitom nezabere celou postel. Výplň tvoří tisíce jemných pružných vláken, která se vracejí do tvaru a neslehnou se ani po měsících používání.<br><br>Chladivý povlak se dá sundat a vyprat v pračce na 40 °C a látka propouští vzduch celou noc. K dispozici je v šesti barvách: modrá, růžová, šedá, zelená, fialová a tmavě modrá.
+
+         <?php elseif( function_exists('noriks_is_type') && noriks_is_type('kompwom', $current_product_id) ): ?>
+
+                <strong>NORIKS FIT Woman</strong> je tvarující tričko, ve kterém je reliéf vetkaný přímo do látky, ne na ni potištěný. Široký pás vede přes břicho a boky, druhý přes záda.<br><br>Komprese je rozložená do šířky, ne stlačená do jednoho bodu, takže nic nezařezává. Břicho zůstává vyhlazené, pas užší a záda dostávají oporu, která pomáhá stát vzpřímeněji.<br><br>Úplet je bezešvý, tenký a matný — zmizí pod košilí, sakem nebo přiléhavými šaty. Během dne se neroluje a nerýsuje se pod oblečením.<br><br>Perte v pračce na 30 °C, bez bělidel, žehlení a sušičky. K dispozici je ve třech barvách (černá, tmavě šedá, růžová) a ve velikostech od S do 3XL. Jste-li mezi dvěma velikostmi, vezměte větší.
+
+         <?php elseif( function_exists('noriks_is_type') && noriks_is_type('pal', $current_product_id) ): ?>
+
+                <strong>NORIKS Pal</strong> je vycházková hůl navržená kolem jednoho problému: vstávání. Kromě horní rukojeti má i druhou, níže, které se chytíte, když vstáváte z křesla, z postele nebo z nízké židle — bez předklánění a bez cizí pomoci.<br><br>Čtyři gumové nožky drží hůl vzpřímeně, když ji pustíte. Nespadne na zem, takže se pro ni nemusíte shýbat. Základna je protiskluzová a zůstává stabilní na dlažbě, parketách i na nerovném terénu.<br><br>V rukojeti je zabudované světlo, které osvětlí cestu před vámi — na cestu do koupelny v noci nebo na procházku za soumraku. Vedle něj je i zvukový alarm, který upozorní domácí, pokud upadnete nebo budete potřebovat pomoc.<br><br>Hůl je skládací a vejde se do tašky nebo do přihrádky v autě, výška se nastaví během pár sekund, bez nářadí, pro každou postavu.
+
+         <?php elseif( function_exists('noriks_is_type') && noriks_is_type('red', $current_product_id) ): ?>
+
+                <strong>NORIKS RedRelief</strong> je pás na zápěstí, který spojuje dvě nejprozkoumanější vlnové délky v terapii červeným světlem: červené světlo 660 nm zklidňuje povrchový zánět a infračervené 850 nm proniká hlouběji, k tkáni okolo středového nervu.<br><br>Světlo se v tkáni mění na buněčnou energii (ATP) a podněcuje místní prokrvení — dva procesy, které jsou součástí přirozené regenerace těla. Proto se používá u syndromu karpálního tunelu, zánětu šlach, artritidy a bolestí ruky a zápěstí.<br><br>V pásu je zabudováno 48 dvojitých LED diod rozložených po celé vnitřní straně, takže světlo pokryje celé zápěstí, ne jen jeden bod. K dispozici jsou 4 režimy a 3 úrovně výkonu.<br><br>Přístroj je bezdrátový a nabíjí se přes kabel USB-C — jedno nabití stačí na až 4 ošetření. Váží jen 126 g, má otvor na palec a nastavitelný popruh, takže sedne na levou i pravou ruku. Doporučuje se jedno 15minutové ošetření denně; přístroj se na konci sám vypne.
+
+         <?php elseif( !$is_boxers &&  !$is_carape &&   !$is_mixed_bundle && ! ( function_exists('noriks_is_type') && ( noriks_is_type('fisiorest', $current_product_id) || noriks_is_type('bunion', $current_product_id) || noriks_is_type('ortopas', $current_product_id) || noriks_is_type('kidsnest', $current_product_id) || noriks_is_type('leakboxers', $current_product_id) || noriks_is_type('kompresijske-majice', $current_product_id) ) ) ): ?>
 
 
 
@@ -579,7 +595,7 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
      <?php endif; // /skryto na norikshers (detajli) ?>
 
      <!-- 2 - slika tablica velicina -->
-     <?php if ( ! ( function_exists('noriks_is_type') && ( noriks_is_type('bunion', $current_product_id) || noriks_is_type('fisiorest', $current_product_id) || noriks_is_type('norikshers', $current_product_id) || noriks_is_type('ortopedski-jastuk', $current_product_id) ) )  && ! ( function_exists('noriks_is_type') && noriks_is_type('kneefix', $current_product_id) || noriks_is_type('controlpro', $current_product_id) )) : // žádná tabulka velikostí pro bunion + fisiorest + norikshers + ortopedicky polstar ?>
+     <?php if ( ! ( function_exists('noriks_is_type') && ( noriks_is_type('bunion', $current_product_id) || noriks_is_type('fisiorest', $current_product_id) || noriks_is_type('norikshers', $current_product_id) || noriks_is_type('ortopedski-jastuk', $current_product_id) ) )  && ! ( function_exists('noriks_is_type') && noriks_is_type('kneefix', $current_product_id) || noriks_is_type('controlpro', $current_product_id) ) && ! ( function_exists('noriks_is_type') && noriks_is_type('snug', $current_product_id) ) && ! ( function_exists('noriks_is_type') && noriks_is_type('pal', $current_product_id) ) && ! ( function_exists('noriks_is_type') && noriks_is_type('red', $current_product_id) )) : // žádná tabulka velikostí pro bunion + fisiorest + norikshers + ortopedicky polstar ?>
      <div class="accordion-item">
       <div class="accordion-header" onclick="toggleAccordion(this)">
         <h3>Tabulka velikostí</h3>
@@ -692,7 +708,55 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
         
                   <img class="js-open-size-chart" style="cursor:pointer;" src="https://noriks.com/cz/wp-content/uploads/2026/01/Nogavice_tabela_velikosti_Cz.png">
                   
-    <?php elseif(  $is_mixed_bundle ): ?>
+    <?php elseif( function_exists('noriks_is_type') && noriks_is_type('kompwom', $current_product_id) ): ?>
+
+          <div class="kwm-size">
+            <p style="margin:0 0 14px;line-height:1.6;">Velikost vybírejte podle <strong>obvodu hrudníku</strong> — ten určuje, jak tričko sedne na prsa a ramena. Jste-li mezi dvěma velikostmi, vezměte <strong>větší</strong>.</p>
+            <table style="width:100%;border-collapse:collapse;font-size:14px;">
+              <thead>
+                <tr style="background:#a8536b;color:#fff;">
+                  <th style="padding:9px 10px;text-align:left;">Velikost</th>
+                  <th style="padding:9px 10px;text-align:left;">Obvod hrudníku</th>
+                  <th style="padding:9px 10px;text-align:left;">Obvod pasu</th>
+                </tr>
+              </thead>
+              <tbody>
+                  <tr style="background:#fff;border-bottom:1px solid #f0e6ea;">
+                    <td style="padding:9px 10px;font-weight:700;">S<span style="display:block;font-size:11.5px;font-weight:600;color:#a08d95;">US 0–4</span></td>
+                    <td style="padding:9px 10px;">78 – 83 cm</td>
+                    <td style="padding:9px 10px;">65 – 71 cm</td>
+                  </tr>
+                  <tr style="background:#fbf7f8;border-bottom:1px solid #f0e6ea;">
+                    <td style="padding:9px 10px;font-weight:700;">M<span style="display:block;font-size:11.5px;font-weight:600;color:#a08d95;">US 6–8</span></td>
+                    <td style="padding:9px 10px;">83 – 89 cm</td>
+                    <td style="padding:9px 10px;">71 – 77 cm</td>
+                  </tr>
+                  <tr style="background:#fff;border-bottom:1px solid #f0e6ea;">
+                    <td style="padding:9px 10px;font-weight:700;">L<span style="display:block;font-size:11.5px;font-weight:600;color:#a08d95;">US 10–12</span></td>
+                    <td style="padding:9px 10px;">89 – 95 cm</td>
+                    <td style="padding:9px 10px;">77 – 83 cm</td>
+                  </tr>
+                  <tr style="background:#fbf7f8;border-bottom:1px solid #f0e6ea;">
+                    <td style="padding:9px 10px;font-weight:700;">XL<span style="display:block;font-size:11.5px;font-weight:600;color:#a08d95;">US 14</span></td>
+                    <td style="padding:9px 10px;">95 – 102 cm</td>
+                    <td style="padding:9px 10px;">83 – 88 cm</td>
+                  </tr>
+                  <tr style="background:#fff;border-bottom:1px solid #f0e6ea;">
+                    <td style="padding:9px 10px;font-weight:700;">2XL<span style="display:block;font-size:11.5px;font-weight:600;color:#a08d95;">US 16–18</span></td>
+                    <td style="padding:9px 10px;">102 – 108 cm</td>
+                    <td style="padding:9px 10px;">88 – 94 cm</td>
+                  </tr>
+                  <tr style="background:#fbf7f8;border-bottom:1px solid #f0e6ea;">
+                    <td style="padding:9px 10px;font-weight:700;">3XL<span style="display:block;font-size:11.5px;font-weight:600;color:#a08d95;">US 20</span></td>
+                    <td style="padding:9px 10px;">108 – 115 cm</td>
+                    <td style="padding:9px 10px;">94 – 100 cm</td>
+                  </tr>
+              </tbody>
+            </table>
+            <p style="margin:14px 0 0;line-height:1.6;"><strong>Jak měřit:</strong> hrudník přes nejširší místo, pas v nejužším místě. Měřte přes spodní prádlo, páska přiléhavá, ale ne stažená.</p>
+          </div>
+
+        <?php elseif(  $is_mixed_bundle ): ?>
     
      <img class="js-open-size-chart" style="cursor:pointer;" src="<?php echo get_template_directory_uri(); ?>/img/tabela-velikosti-majice.jpg">
         

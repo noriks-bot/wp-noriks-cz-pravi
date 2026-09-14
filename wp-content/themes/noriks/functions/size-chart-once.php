@@ -14,6 +14,11 @@ if ( ! function_exists( 'noriks_size_chart_once' ) ) {
         static $done = false;
         if ( $done ) { return; }
         $done = true;
+        // NORIKS FIT Woman: zenska tablica po opsegu grudi i struka, ne muska po visini i tezini.
+        if ( function_exists( 'noriks_is_type' ) && noriks_is_type( 'kompwom' ) ) {
+            get_template_part( 'template_parts/size-chart-kompwom' );
+            return;
+        }
         get_template_part( 'template_parts/size-chart-modal' );
     }
 }
