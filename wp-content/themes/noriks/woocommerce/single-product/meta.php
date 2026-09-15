@@ -555,7 +555,7 @@ $is_mixed_bundle = has_term( array( 'sady','orto-starter','orto-majica-bokserica
 
         <?php elseif( function_exists('noriks_is_type') && noriks_is_type('kidsnest', $current_product_id) ): ?>
 
-                NORIKS KidsNest je vyroben z hypoalergenní paměťové pěny s certifikací OEKO-TEX® — bez formaldehydu, těžkých kovů a BPA — s prodyšným, pratelným potahem, který se jednoduše sundává.<br><br>Jeho 3zónová ergonomická struktura jemně přijímá hlavu, podpírá krk a pomáhá udržet páteř v přirozeném zarovnání — i když se dítě během noci hodně otáčí. Podporuje tak dýchání nosem a klidnější, hlubší spánek.<br><br>Je k dispozici ve třech velikostech (1–3, 3–9 a 9–14 let), roste s vaším dítětem a poskytuje správnou výšku opory v každé fázi vývoje.
+                NORIKS KidsNest je vyroben z hypoalergenní paměťové pěny s certifikací OEKO-TEX® — bez formaldehydu, těžkých kovů a BPA — s prodyšným pleteným potahem.<br><br>Jeho 3zónová ergonomická struktura jemně přijímá hlavu, podpírá krk a pomáhá udržet páteř v přirozeném zarovnání — i když se dítě během noci hodně otáčí. Podporuje tak dýchání nosem a klidnější, hlubší spánek.<br><br>Je k dispozici ve třech velikostech (1–3, 3–9 a 9–14 let), roste s vaším dítětem a poskytuje správnou výšku opory v každé fázi vývoje.
 
         <?php elseif( function_exists('noriks_is_type') && noriks_is_type('leakboxers', $current_product_id) ): ?>
 

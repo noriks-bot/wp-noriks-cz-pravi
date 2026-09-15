@@ -15,7 +15,7 @@ $kn = get_template_directory_uri() . '/img/kidsnest/';
 <!-- ============ 1) Trust marquee (modrá lišta, roluje) ============ -->
 <div class="kn-marquee" aria-hidden="true">
   <div class="kn-marquee-track">
-    <?php $kn_ticker = array('DOPORUČENÍ PEDIATRŮ','OEKO-TEX® PAMĚŤOVÁ PĚNA','3ZÓNOVÁ STRUKTURA','90 NOCÍ NA VYZKOUŠENÍ','HYPOALERGENNÍ','PRATELNÝ POTAH');
+    <?php $kn_ticker = array('DOPORUČENÍ PEDIATRŮ','OEKO-TEX® PAMĚŤOVÁ PĚNA','3ZÓNOVÁ STRUKTURA','90 NOCÍ NA VYZKOUŠENÍ','HYPOALERGENNÍ','PRODYŠNÁ PLETENINA');
     for ( $r = 0; $r < 2; $r++ ) { foreach ( $kn_ticker as $t ) { echo '<span class="kn-tick">'.esc_html($t).'</span><span class="kn-dot">•</span>'; } } ?>
   </div>
 </div>
@@ -96,7 +96,7 @@ $kn = get_template_directory_uri() . '/img/kidsnest/';
     <div class="kn-copy">
       <h2 class="kn-h2 kn-h2-blue">Kvalita, kterou pocítíte — noc co noc.</h2>
       <p>Hustá, prodyšná pletenina a pečlivě tvarovaný povrch tu nejsou kvůli vzhledu — <strong>každá zóna má svou úlohu</strong>. Střed jemně přijímá hlavu, okraje podpírají krk a struktura si drží tvar i po měsících každodenního používání.</p>
-      <p>Potah se dá sundat a vyprat v pračce, pěna je <strong>hypoalergenní a odolná vůči roztočům</strong> — polštář tak zůstává svěží, čistý a připravený na každou noc. Bez prohlubní, bez zplošťování, bez kompromisů.</p>
+      <p>Pletenina je prodyšná a pěna je <strong>hypoalergenní a odolná vůči roztočům</strong> — polštář tak zůstává svěží, čistý a připravený na každou noc. Bez prohlubní, bez zplošťování, bez kompromisů.</p>
       <p><strong>Polštář, který i po roce vypadá — a podpírá — jako první den.</strong></p>
     </div>
   </div>
