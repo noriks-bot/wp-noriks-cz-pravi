@@ -2065,7 +2065,14 @@ function gck_render_bundle_selector() {
     </div>
 
     <?php
-    get_template_part( 'template_parts/size-chart-modal' );
+    // Tablica velicina smije se izrisati SAMO jednom po stranici — inace nastanu
+    // dupli ID-jevi #custom-size-chart-modal i klik otvori obje tablice.
+    // noriks_size_chart_once() ujedno bira zensku tablicu za NORIKS FIT Woman.
+    if ( function_exists( 'noriks_size_chart_once' ) ) {
+        noriks_size_chart_once();
+    } else {
+        get_template_part( 'template_parts/size-chart-modal' );
+    }
 }
 
 // ============================================================
