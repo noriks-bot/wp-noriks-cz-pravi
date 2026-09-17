@@ -51,6 +51,7 @@ function noriks_product_type_map() : array {
         // NORIKS Cloud — ortopedski jastuk za koljena (bez atributa)
         'cloud'                   => array( 'orto-cloud' ),
         'red'                     => array( 'orto-red' ),
+        'kneeheat'                => array( 'orto-kneeheat' ),
         'pal'                     => array( 'orto-pal' ),
         'kompwom'                 => array( 'orto-kompwom' ),
         'snug'                    => array( 'orto-snug' ),
