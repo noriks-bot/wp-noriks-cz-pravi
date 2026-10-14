@@ -778,7 +778,7 @@ Flexibilní střih pro silnější stehna
                      : ( $is_jastuk_page ? 'NORIKS ErgoSit ortopedický polštář'
                      : ( $is_leakboxers_page ? 'NORIKS savé boxerky'
                      : ( $is_kompmajice_page ? 'NORIKS FIT kompresní tričko'
-                     : ( $is_norikshers_review_page ? 'NORIKS HERS' : 'Jedna Siva Majica' ) ) ) ) ) ) ) ) );
+                     : ( $is_norikshers_review_page ? 'NORIKS HERS' : 'Jedno šedé tričko' ) ) ) ) ) ) ) ) );
   if ( function_exists('noriks_is_type') && noriks_is_type('controlpro') ) { $rv_fallback_title = 'NORIKS ControlPro trenažér pánevního dna'; }
   if ( function_exists('noriks_is_type') && noriks_is_type('hyd') ) { $rv_fallback_title = 'NORIKS HYD'; }
   if ( function_exists('noriks_is_type') && noriks_is_type('cloud') ) { $rv_fallback_title = 'NORIKS Cloud'; }
@@ -1340,7 +1340,7 @@ $auto_reviews_ship = assign_unique_avatars_first_n($auto_reviews_ship, $avatar_p
       <?php if (!empty($initial_ship)) : foreach ($initial_ship as $review) :
         $name  = $review['name'] ?? 'Anonymní';
         $text  = $review['text'] ?? '';
-        $title = !empty($review['product_title']) ? $review['product_title'] : 'Jedna Siva Majica';
+        $title = !empty($review['product_title']) ? $review['product_title'] : $rv_fallback_title;
         $url   = !empty($review['product_url'])   ? $review['product_url']   : '#';
         $stars = '★★★★★';
         $date_display = $review['assigned_date'] ?? '';
