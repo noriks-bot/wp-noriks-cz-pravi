@@ -19,6 +19,8 @@ if ( ! function_exists( 'noriks_size_chart_once' ) ) {
             get_template_part( 'template_parts/size-chart-kompwom' );
             return;
         }
+        // Cloud / Cloth / HYD nemaju velicina — modal s tablicom majica se ne ispisuje.
+        if ( function_exists( 'noriks_is_type' ) && ( noriks_is_type( 'cloud' ) || noriks_is_type( 'cloath' ) || noriks_is_type( 'hyd' ) ) ) { return; }
         get_template_part( 'template_parts/size-chart-modal' );
     }
 }
