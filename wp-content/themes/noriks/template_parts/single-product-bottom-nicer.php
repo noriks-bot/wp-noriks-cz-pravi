@@ -1234,7 +1234,14 @@ function assign_unique_avatars_first_n(array $reviews, array $avatar_pool, strin
 
   // On single-product landing pages (leak boxers / kompresni tricka) the cards should
   // reference THIS product (via $rv_fallback_title), not random pool products.
-  $product_pool = ( $is_leakboxers_page || $is_kompmajice_page || $is_kneefix_page ) ? array() : get_wc_product_pool();
+    // Izdelki z lastnim imenom v karticah mnenj ne smejo dobiti nakljucnega izdelka iz kataloga.
+  $rv_own_name = ( function_exists('noriks_is_type') && (
+      noriks_is_type('cloud') || noriks_is_type('cloath') || noriks_is_type('hyd') || noriks_is_type('snug')
+   || noriks_is_type('kompwom') || noriks_is_type('pal') || noriks_is_type('red') || noriks_is_type('kneeheat')
+   || noriks_is_type('controlpro') || noriks_is_type('kidsnest') || noriks_is_type('ortopedski-jastuk')
+   || noriks_is_type('bunion') || noriks_is_type('fisiorest') || noriks_is_type('ortopas')
+   || noriks_is_type('norikshers') || noriks_is_type('kompresijske-nogavice') ) );
+  $product_pool = ( $is_leakboxers_page || $is_kompmajice_page || $is_kneefix_page || $rv_own_name ) ? array() : get_wc_product_pool();
 
   // 1) Stable daily shuffle of review pools
   $auto_reviews_en   = shuffle_with_seed($auto_reviews_en,   'pool-en:'   . $daily_seed);
