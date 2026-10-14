@@ -30,7 +30,8 @@ $cd_vid = function( $mp4, $fallback, $alt ) use ( $cd, $cd_path ) {
 };
 $cd_img = function( $file, $alt ) use ( $cd, $cd_path ) {
   if ( file_exists( $cd_path . $file ) ) {
-    return '<img src="'.esc_url($cd.$file).'" alt="'.esc_attr($alt).'" loading="lazy">';
+    // ?v=<cas spremembe> prisili Cloudflare/brskalnik, da ob zamenjavi slike potegne novo datoteko
+    return '<img src="'.esc_url($cd.$file.'?v='.filemtime($cd_path.$file)).'" alt="'.esc_attr($alt).'" loading="lazy">';
   }
   return '<div class="ncd-ph" role="img" aria-label="'.esc_attr($alt).'"><span>'.esc_html($alt).'</span></div>';
 };
