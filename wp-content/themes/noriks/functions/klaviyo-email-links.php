@@ -2,8 +2,8 @@
 /**
  * Povezave iz Klaviyo mailov
  *
- * 1) Obnova košarice (?wck_rebuild_cart=): Klaviyo vtičnik obnovi košarico le, če se celoten URL (https + gostitelj)
- *    ujema s cart URL. Za Cloudflarom/LiteSpeedom se ne ujema, zato obnova nikoli ne steče. Tu košarico obnovimo
+ * 1) Obnova košarice (?wck_rebuild_cart=): Klaviyo vtičnik obnovi košarico le, če se URL ujema z wc_get_cart_url();
+ *    ta na Noriks trgih vrne domačo stran (stran košarice v WooCommerce ni izbrana), zato obnova nikoli ne steče. Tu košarico obnovimo
  *    sami, PRED Klaviyem, in primerjamo samo pot (/xx/cart/). Nato preusmerimo na čisto košarico (Klaviyo ne teče).
  * 2) Samodejni kupon (?coupon=KODA): koda se shrani v sejo in uveljavi, ko je v košarici vsaj en izdelek.
  */
@@ -15,7 +15,13 @@ function noriks_email_cart_rebuild() {
 	if ( is_admin() || wp_doing_ajax() || empty( $_GET['wck_rebuild_cart'] ) || ! function_exists( 'WC' ) || ! WC()->cart || ! WC()->session ) {
 		return;
 	}
-	$cart_path = untrailingslashit( (string) wp_parse_url( wc_get_cart_url(), PHP_URL_PATH ) );
+	// V WooCommerce ni izbrane strani košarice (wc_get_cart_url() vrne domačo stran), tema uporablja /xx/cart/.
+	$cart_url  = home_url( '/cart/' );
+	$wc_cart   = wc_get_cart_url();
+	if ( untrailingslashit( $wc_cart ) !== untrailingslashit( home_url() ) ) {
+		$cart_url = $wc_cart; // če bo stran košarice kdaj nastavljena, velja ta
+	}
+	$cart_path = untrailingslashit( (string) wp_parse_url( $cart_url, PHP_URL_PATH ) );
 	$req_path  = untrailingslashit( (string) wp_parse_url( isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '', PHP_URL_PATH ) );
 	if ( '' === $cart_path || $cart_path !== $req_path ) {
 		return;
@@ -43,7 +49,7 @@ function noriks_email_cart_rebuild() {
 		);
 	}
 	noriks_email_coupon_apply();
-	wp_safe_redirect( wc_get_cart_url() );
+	wp_safe_redirect( $cart_url );
 	exit;
 }
 
