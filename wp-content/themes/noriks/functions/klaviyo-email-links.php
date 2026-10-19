@@ -2,24 +2,52 @@
 /**
  * Povezave iz Klaviyo mailov
  *
- * 1) Obnova košarice (?wck_rebuild_cart=): Klaviyo vtičnik obnovi košarico le, če trenutni URL zazna kot
- *    https. Za Cloudflarom $_SERVER['HTTPS'] ni nastavljen, zato se obnova nikoli ne sproži. Nastavimo ga
- *    samo za take zahteve (koda teče ob nalaganju teme, pred Klaviyo kljuko na wp_loaded).
- * 2) Samodejni kupon (?coupon=KODA): koda se shrani v sejo in uveljavi, ko je v košarici vsaj en izdelek
- *    (takoj, če košarica ni prazna; sicer ob prvem dodanem izdelku).
+ * 1) Obnova košarice (?wck_rebuild_cart=): Klaviyo vtičnik obnovi košarico le, če se celoten URL (https + gostitelj)
+ *    ujema s cart URL. Za Cloudflarom/LiteSpeedom se ne ujema, zato obnova nikoli ne steče. Tu košarico obnovimo
+ *    sami, PRED Klaviyem, in primerjamo samo pot (/xx/cart/). Nato preusmerimo na čisto košarico (Klaviyo ne teče).
+ * 2) Samodejni kupon (?coupon=KODA): koda se shrani v sejo in uveljavi, ko je v košarici vsaj en izdelek.
  */
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! empty( $_GET['wck_rebuild_cart'] ) && empty( $_SERVER['HTTPS'] ) ) {
-	$noriks_proto = isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) ? strtolower( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) : '';
-	$noriks_cf    = isset( $_SERVER['HTTP_CF_VISITOR'] ) ? $_SERVER['HTTP_CF_VISITOR'] : '';
-	if ( 'https' === $noriks_proto || false !== strpos( $noriks_cf, '"https"' ) ) {
-		$_SERVER['HTTPS'] = 'on';
+add_action( 'wp_loaded', 'noriks_email_cart_rebuild', 5 ); // pred Klaviyo wck_rebuild_cart (prioriteta 10)
+function noriks_email_cart_rebuild() {
+	if ( is_admin() || wp_doing_ajax() || empty( $_GET['wck_rebuild_cart'] ) || ! function_exists( 'WC' ) || ! WC()->cart || ! WC()->session ) {
+		return;
 	}
+	$cart_path = untrailingslashit( (string) wp_parse_url( wc_get_cart_url(), PHP_URL_PATH ) );
+	$req_path  = untrailingslashit( (string) wp_parse_url( isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '', PHP_URL_PATH ) );
+	if ( '' === $cart_path || $cart_path !== $req_path ) {
+		return;
+	}
+	$data = json_decode( base64_decode( sanitize_text_field( wp_unslash( $_GET['wck_rebuild_cart'] ) ) ), true );
+	if ( ! is_array( $data ) || empty( $data['normal_products'] ) || ! is_array( $data['normal_products'] ) ) {
+		return;
+	}
+	if ( ! WC()->session->has_session() ) {
+		WC()->session->set_customer_session_cookie( true );
+	}
+	if ( ! empty( $_GET['coupon'] ) ) { // kupon najprej v sejo, uveljavi se ob dodajanju izdelkov
+		WC()->session->set( 'noriks_email_coupon', wc_format_coupon_code( wp_unslash( $_GET['coupon'] ) ) );
+	}
+	WC()->cart->empty_cart( true );
+	foreach ( $data['normal_products'] as $p ) {
+		if ( empty( $p['product_id'] ) ) {
+			continue;
+		}
+		WC()->cart->add_to_cart(
+			absint( $p['product_id'] ),
+			max( 1, absint( isset( $p['quantity'] ) ? $p['quantity'] : 1 ) ),
+			absint( isset( $p['variation_id'] ) ? $p['variation_id'] : 0 ),
+			isset( $p['variation'] ) && is_array( $p['variation'] ) ? $p['variation'] : array()
+		);
+	}
+	noriks_email_coupon_apply();
+	wp_safe_redirect( wc_get_cart_url() );
+	exit;
 }
 
-add_action( 'wp_loaded', 'noriks_email_coupon_capture', 20 ); // po Klaviyo obnovi košarice (prioriteta 10)
+add_action( 'wp_loaded', 'noriks_email_coupon_capture', 20 );
 function noriks_email_coupon_capture() {
 	if ( is_admin() || wp_doing_ajax() || empty( $_GET['coupon'] ) || ! function_exists( 'WC' ) || ! WC()->session || ! WC()->cart ) {
 		return;
