@@ -36,6 +36,7 @@ function noriks_email_cart_rebuild() {
 	if ( ! empty( $_GET['coupon'] ) ) { // kupon najprej v sejo, uveljavi se ob dodajanju izdelkov
 		WC()->session->set( 'noriks_email_coupon', wc_format_coupon_code( wp_unslash( $_GET['coupon'] ) ) );
 	}
+	$GLOBALS['noriks_email_rebuilding'] = true; // kupon se uveljavi šele na naslednji strani (ko je košarica naložena iz seje)
 	WC()->cart->empty_cart( true );
 	foreach ( $data['normal_products'] as $p ) {
 		if ( empty( $p['product_id'] ) ) {
@@ -48,7 +49,6 @@ function noriks_email_cart_rebuild() {
 			isset( $p['variation'] ) && is_array( $p['variation'] ) ? $p['variation'] : array()
 		);
 	}
-	noriks_email_coupon_apply();
 	wp_safe_redirect( $cart_url );
 	exit;
 }
@@ -69,11 +69,15 @@ function noriks_email_coupon_capture() {
 	noriks_email_coupon_apply();
 }
 
+add_action( 'wp_loaded', 'noriks_email_coupon_apply', 30 ); // po preusmeritvi iz obnove košarice
 add_action( 'woocommerce_add_to_cart', 'noriks_email_coupon_apply', 20 );
 add_action( 'woocommerce_before_cart', 'noriks_email_coupon_apply', 5 );
 add_action( 'woocommerce_before_checkout_form', 'noriks_email_coupon_apply', 5 );
 function noriks_email_coupon_apply() {
 	if ( ! function_exists( 'WC' ) || ! WC()->session || ! WC()->cart ) {
+		return;
+	}
+	if ( ! empty( $GLOBALS['noriks_email_rebuilding'] ) || is_admin() || wp_doing_ajax() ) {
 		return;
 	}
 	$code = WC()->session->get( 'noriks_email_coupon' );
