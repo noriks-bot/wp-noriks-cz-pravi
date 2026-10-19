@@ -53,6 +53,7 @@ function noriks_product_type_map() : array {
         'red'                     => array( 'orto-red' ),
         'kneeheat'                => array( 'orto-kneeheat' ),
         'pal'                     => array( 'orto-pal' ),
+        'bowl'                     => array( 'orto-bowl' ),
         'kompwom'                 => array( 'orto-kompwom' ),
         'snug'                    => array( 'orto-snug' ),
         // NORIKS HYD — boca za vodikovu vodu (bez atributa)
