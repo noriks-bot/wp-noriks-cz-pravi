@@ -49,7 +49,14 @@ function noriks_email_cart_rebuild() {
 		);
 	}
 	noriks_email_coupon_apply();
-	wp_safe_redirect( $cart_url );
+	// UTM iz maila ohrani, da WooCommerce (in dash Origin) naročilo pripiše e-pošti, ne "Direct".
+	$utm = array();
+	foreach ( array( 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term' ) as $k ) {
+		if ( isset( $_GET[ $k ] ) && '' !== $_GET[ $k ] ) {
+			$utm[ $k ] = rawurlencode( sanitize_text_field( wp_unslash( $_GET[ $k ] ) ) );
+		}
+	}
+	wp_safe_redirect( $utm ? add_query_arg( $utm, $cart_url ) : $cart_url );
 	exit;
 }
 
