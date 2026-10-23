@@ -60,6 +60,24 @@ function noriks_email_cart_rebuild() {
 	exit;
 }
 
+// Stran košarice (/xx/cart/) se NIKOLI ne predpomni. V WooCommerce ni izbrane strani košarice, zato je LiteSpeed ne
+// prepozna kot košarico in jo je shranjeval javno – obiskovalci so videli tujo (ali prazno) košarico.
+add_action( 'wp_loaded', 'noriks_cart_nocache', 1 );
+function noriks_cart_nocache() {
+	if ( is_admin() || wp_doing_ajax() ) {
+		return;
+	}
+	$req_path = untrailingslashit( (string) wp_parse_url( isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '', PHP_URL_PATH ) );
+	if ( untrailingslashit( (string) wp_parse_url( home_url( '/cart/' ), PHP_URL_PATH ) ) !== $req_path ) {
+		return;
+	}
+	do_action( 'litespeed_control_set_nocache', 'noriks: stran košarice' );
+	if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+		define( 'DONOTCACHEPAGE', true );
+	}
+	nocache_headers();
+}
+
 add_action( 'wp_loaded', 'noriks_email_coupon_capture', 20 );
 function noriks_email_coupon_capture() {
 	if ( is_admin() || wp_doing_ajax() || empty( $_GET['coupon'] ) || ! function_exists( 'WC' ) || ! WC()->session || ! WC()->cart ) {
