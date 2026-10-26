@@ -4,13 +4,13 @@
  * Sekcije i redoslijed preslikani s referentne stranice, tekst na HR,
  * slike su NORIKS kreative iz img/kneefix/. Svaka sekcija ima sliku s jedne
  * i tekst s druge strane (naizmjenično) — nema sekcija koje su samo slika.
- *   1. Když se každý krok stane nepříjemným   slika lijevo   13_stepenice
+ *   1. Když se každý krok stane nepříjemným   slika lijevo   kf-cz-3
  *   2. Možná nejde jen o opotřebení   slika desno    14_zglob
  *   3. Podpora pro aktivní kolena         slika lijevo   08_aktivno
  *   4. 4 funkce. Stabilnější pocit.    slika desno    03_funkcije
  *   5. Pohodlná opora ve 3 krocích          slika lijevo   04_koraki
- *   6. Více pohodlí v běžném dni      slika desno    05_lifestyle
- *   7. Preporučeno za potporu koljena     slika lijevo   06_zdravnik
+ *   6. Více pohodlí v běžném dni      slika desno    kf-cz-1
+ *   7. Preporučeno za potporu koljena     slika lijevo   kf-cz-2
  *   8. Rozdíl je cítit                  slika desno    07_vs
  *   9. Co říkají naši zákazníci                3 kartice      10/11/12
  * Recenzije i FAQ renderira zajednički reviews.php (ne ovdje).
