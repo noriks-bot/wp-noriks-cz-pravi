@@ -14,26 +14,28 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
  *       potřeba CZ (české) obrázky.
  * ------------------------------------------------------------------ */
 $opz_vid_dir      = get_template_directory_uri() . '/img/ortopas-videos/';
+// Videi se zamenjajo pod istim imenom, zato jim dodamo verzijo - brez tega brskalnik vrti staro datoteko iz predpomnilnika.
+$opz_vid_v        = '?v=20261026';
 $opz_img_collage  = 'https://noriks.com/hr/wp-content/uploads/2026/10/ortopas-hr-9.webp'; // 1) spokojené zákaznice (obrázek) — TODO CZ image
-$opz_video_relief = $opz_vid_dir . 'relief.mp4';                                          // 2) přirozená úleva (video)
-$opz_video_cause  = $opz_vid_dir . 'cause.mp4';                                           // 3) skutečná příčina (video)
+$opz_video_relief = $opz_vid_dir . 'relief.mp4' . $opz_vid_v;                                          // 2) přirozená úleva (video)
+$opz_video_cause  = $opz_vid_dir . 'cause.mp4' . $opz_vid_v;                                           // 3) skutečná příčina (video)
 $opz_img_indik    = get_template_directory_uri() . '/img/ortopas/ortopas-indikacije.png'; // lokalizirana grafika indikacij // lokalizirana grafika indikacij // 5) jak funguje (obrázek) — TODO CZ image
-$opz_video_feat   = $opz_vid_dir . 'features.mp4';                                        // 6) inovativní vlastnosti (video)
+$opz_video_feat   = $opz_vid_dir . 'features.mp4' . $opz_vid_v;                                        // 6) inovativní vlastnosti (video)
 
 /* Karty (kruhová videa) — 4) sekce se 3 kartami */
 $opz_cards = array(
     array(
-        'video' => $opz_vid_dir . 'card-1.mp4',
+        'video' => $opz_vid_dir . 'card-1.mp4' . $opz_vid_v,
         'title' => 'Zmírňuje potíže',
         'text'  => 'Může poskytnout rychlou úlevu při ischiasu a bolestech zad',
     ),
     array(
-        'video' => $opz_vid_dir . 'card-2.mp4',
+        'video' => $opz_vid_dir . 'card-2.mp4' . $opz_vid_v,
         'title' => 'Odlehčení bederní páteře',
         'text'  => 'Stabilizuje a srovnává spodní část zad',
     ),
     array(
-        'video' => $opz_vid_dir . 'card-3.mp4',
+        'video' => $opz_vid_dir . 'card-3.mp4' . $opz_vid_v,
         'title' => 'Ověřená metoda',
         'text'  => 'Založeno na cílené kompresní technologii',
     ),
