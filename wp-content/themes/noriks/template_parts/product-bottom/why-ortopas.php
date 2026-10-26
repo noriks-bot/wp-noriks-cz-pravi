@@ -54,19 +54,19 @@ $opz_cmp_rows = array(
 /* Recenze s obrázkem — 8) sekce */
 $opz_reviews = array(
     array(
-        'img'   => get_template_directory_uri() . '/img/ortopas-reviews/review-1.webp',
+        'img'   => get_template_directory_uri() . '/img/ortopas-reviews/review-1.webp?v=20261026',
         'title' => 'Velká pomoc proti bolestem v spodní části zad',
         'text'  => 'Pás NORIKS mi skutečně velmi usnadnil život. Funguje přesně tak, jak slibuje. Můžu se opět předklonit bez bolesti.',
         'name'  => 'Alžběta M.',
     ),
     array(
-        'img'   => get_template_directory_uri() . '/img/ortopas-reviews/review-2.jpg',
+        'img'   => get_template_directory_uri() . '/img/ortopas-reviews/review-2.webp?v=20261026',
         'title' => 'Měkký a pohodlný',
         'text'  => 'Můj fyzioterapeut mi doporučil pás proti bolestem zad. Předtím jsem vyzkoušel i jiné pásy, ale tenhle je mnohem pohodlnější na sezení a předklánění. Přesto nabízí skvělou oporu!',
         'name'  => 'Julie U.',
     ),
     array(
-        'img'   => get_template_directory_uri() . '/img/ortopas-reviews/review-3.webp',
+        'img'   => get_template_directory_uri() . '/img/ortopas-reviews/review-3.webp?v=20261026',
         'title' => 'Vynikající!',
         'text'  => 'Pomáhá mi sedět vzpřímeně a mám pocit, že chodím vzpřímeněji. Bolesti se výrazně zmírnily a konečně mohu bez bolesti vstát i po delším sezení. Pás nosím zhruba 2–3 hodiny denně – většinou v práci.',
         'name'  => 'Ivan D.',
@@ -187,7 +187,7 @@ $opz_no  = '<svg class="opz-no" viewBox="0 0 24 24" width="20" height="20" aria-
           <tr>
             <th class="opz-th-feat"></th>
             <th class="opz-th-brand">NORIKS</th>
-            <th class="opz-th-alt">Fyzio</th>
+            <th class="opz-th-alt">Fyzioterapie</th>
           </tr>
         </thead>
         <tbody>
