@@ -22,7 +22,7 @@ $kf_path = get_template_directory() . '/img/kneefix/';
 /* Ako slika nije na serveru, prikaže se neutralni sivi placeholder. */
 $kf_img = function( $file, $alt ) use ( $kf, $kf_path ) {
   if ( file_exists( $kf_path . $file ) ) {
-    return '<img src="'.esc_url($kf.$file).'" alt="'.esc_attr($alt).'" loading="lazy">';
+    return '<img src="'.esc_url($kf.$file.'?v=20261026').'" alt="'.esc_attr($alt).'" loading="lazy">';
   }
   return '<div class="kfx-ph" role="img" aria-label="'.esc_attr($alt).'"><span>'.esc_html($alt).'</span></div>';
 };
