@@ -11,6 +11,7 @@ include(get_template_directory() . '/functions/flash-deals-banner.php'); // trak
 include(get_template_directory() . '/functions/size-chart-once.php'); // tabela velikosti samo enkrat
 include(get_template_directory() . '/functions/checkout_mods.php');
 include(get_template_directory() . '/functions/klaviyo-email-links.php'); // Klaviyo maili: obnova kosarice + samodejni kupon
+include(get_template_directory() . '/functions/cart-choice-guard.php'); // izdelek s ponudbami ne sme v blagajno brez izbire
 include(get_template_directory() . '/functions/acf-text-fix.php'); // popravki besedil iz ACF nastavitev
 include(get_template_directory() . '/functions/out-of-stock-notice.php'); // obvestilo ni na zalogi
 include(get_template_directory() . '/functions/phone-validate.php');
