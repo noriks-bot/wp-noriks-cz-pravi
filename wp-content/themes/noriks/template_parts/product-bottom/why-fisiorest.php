@@ -18,7 +18,8 @@ $fis_science = array(
 );
 $fis_v = get_template_directory_uri() . '/img/fisiorest-videos/';
 $fis_i = get_template_directory_uri() . '/img/fisiorest/';
-$fis_hero_video = $fis_v . 'hero-v2.mp4';
+$fis_ver = '?v=20261027';
+$fis_hero_video = $fis_v . 'hero-v2.mp4' . $fis_ver;
 
 // 3) Doporučují odborníci
 $fis_experts = array(
@@ -35,16 +36,16 @@ $fis_ugc = array(
 );
 // 5) ThermoTrac 3v1
 $fis_thermo = array(
-    array( 'vid' => $fis_v.'v10.mp4', 'title' => 'Terapie trakcí' ),
-    array( 'vid' => $fis_v.'v07.mp4', 'title' => 'Terapie vibracemi' ),
-    array( 'vid' => $fis_v.'v05.mp4', 'title' => 'Terapie teplem' ),
+    array( 'vid' => $fis_v.'v10.mp4' . $fis_ver, 'title' => 'Terapie trakcí' ),
+    array( 'vid' => $fis_v.'v07.mp4' . $fis_ver, 'title' => 'Terapie vibracemi' ),
+    array( 'vid' => $fis_v.'v05.mp4' . $fis_ver, 'title' => 'Terapie teplem' ),
 );
 // 6) Čtyři vylepšení
 $fis_upgrades = array(
-    array( 't' => 'Dobíjecí baterie',          'd' => 'Vezměte si ho kamkoli — baterie 2500 mAh vydrží až 2 hodiny.' , 'ico' => 'battery-v2.png' ),
-    array( 't' => 'Potah z morušového hedvábí', 'd' => 'Obalený chladivým hedvábím pro měkký, luxusní pocit.' , 'ico' => 'silk-v2.png' ),
-    array( 't' => 'Vypnutí po 30 min',         'd' => 'Čtyři 30minutové relace na jedno nabití, bez starostí.' , 'ico' => 'timer-v2.png' ),
-    array( 't' => 'Regulované teplo',          'd' => 'Zahřívání na 50 °C pomocí pokročilé technologie ThermoTrac.' , 'ico' => 'heat-v2.png' ),
+    array( 't' => 'Dobíjecí baterie',          'd' => 'Vezměte si ho kamkoli — baterie 2500 mAh vydrží až 2 hodiny.' , 'ico' => 'battery-v2.png?v=20261027' ),
+    array( 't' => 'Potah z morušového hedvábí', 'd' => 'Obalený chladivým hedvábím pro měkký, luxusní pocit.' , 'ico' => 'silk-v2.png?v=20261027' ),
+    array( 't' => 'Vypnutí po 30 min',         'd' => 'Čtyři 30minutové relace na jedno nabití, bez starostí.' , 'ico' => 'timer-v2.png?v=20261027' ),
+    array( 't' => 'Regulované teplo',          'd' => 'Zahřívání na 50 °C pomocí pokročilé technologie ThermoTrac.' , 'ico' => 'heat-v2.png?v=20261027' ),
 );
 ?>
 
@@ -151,14 +152,14 @@ $fis_upgrades = array(
       <h2 class="fis-h2">Navrženo inženýry. Vyrobeno podle standardů fyzioterapie</h2>
       <p>Investovali jsme více než 50 000 € a 2 roky vývoje, aby NORIKS nebyl jen masážní přístroj na krk. Je to komplexní přístroj pro terapii krku, který skutečně léčí příčinu. Každá objednávka prochází pečlivou kontrolou kvality, aby dorazila v dokonalém stavu.</p>
     </div>
-    <div class="fis-row2-media"><video src="<?php echo esc_url( $fis_v.'hero-v2.mp4' ); ?>" muted autoplay loop playsinline preload="metadata"></video></div>
+    <div class="fis-row2-media"><video src="<?php echo esc_url( $fis_v.'hero-v2.mp4' . $fis_ver ); ?>" muted autoplay loop playsinline preload="metadata"></video></div>
   </div>
 </section>
 
 <!-- ============ 8) 14x levnější ============ -->
 <section class="fis-cheaper">
   <div class="fis-wrap fis-row2">
-    <div class="fis-row2-media"><img src="<?php echo esc_url( $fis_i.'fis-produkt-kvadrat.jpg' ); ?>" alt="NORIKS FisioRest" loading="lazy"></div>
+    <div class="fis-row2-media"><img src="<?php echo esc_url( $fis_i.'fis-produkt-kvadrat.jpg' . $fis_ver ); ?>" alt="NORIKS FisioRest" loading="lazy"></div>
     <div class="fis-row2-copy">
       <p class="fis-eyebrow">BEZPEČNÁ A UVOLŇUJÍCÍ TERAPIE</p>
       <h2 class="fis-h2">14× levnější než týdenní návštěvy</h2>
