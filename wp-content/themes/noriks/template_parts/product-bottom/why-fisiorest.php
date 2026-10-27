@@ -18,7 +18,7 @@ $fis_science = array(
 );
 $fis_v = get_template_directory_uri() . '/img/fisiorest-videos/';
 $fis_i = get_template_directory_uri() . '/img/fisiorest/';
-$fis_ver = '?v=20261027b';
+$fis_ver = '?v=20261027c';
 $fis_hero_video = $fis_v . 'hero-v2.mp4' . $fis_ver;
 
 // 3) Doporučují odborníci
