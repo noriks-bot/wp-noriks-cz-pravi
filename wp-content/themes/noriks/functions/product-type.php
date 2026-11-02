@@ -142,23 +142,23 @@ function noriks_is_mixed_bundle( $product_id = null ) : bool {
 endif;
 
 if ( ! function_exists( 'noriks_slabproof_sizes' ) ) {
-    /** NORIKS SlabProof: velicina, EU broj obuce, US muski broj (original). */
+    /** NORIKS SlabProof: velicine samo po EU broju obuce, brez crk (Dejan 2.11., isto kot Tradesman). */
     function noriks_slabproof_sizes() {
         return array(
-            array( 'M',  '39 – 42', '6 – 9' ),
-            array( 'L',  '43 – 45', '9,5 – 12' ),
-            array( 'XL', '46 – 49', '12,5 – 15' ),
+            array( '39–42' ),
+            array( '43–45' ),
+            array( '46–49' ),
         );
     }
 }
 
 if ( ! function_exists( 'noriks_tradesman_sizes' ) ) {
-    /** NORIKS Tradesman: velicina po broju cipele (EU), muski / zenski (kot HR). */
+    /** NORIKS Tradesman: velicine samo po EU broju obuce, brez crk (Dejan 2.11., isto kot SlabProof). */
     function noriks_tradesman_sizes() {
         return array(
-            array( 'M',  '39 – 42', '37,5 – 40,5' ),
-            array( 'L',  '42,5 – 46', '41 – 44' ),
-            array( 'XL', '46,5 – 49,5', '–' ),
+            array( '39–42' ),
+            array( '43–45' ),
+            array( '46–49' ),
         );
     }
 }

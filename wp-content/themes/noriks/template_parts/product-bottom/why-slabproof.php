@@ -15,7 +15,7 @@ $wdir = get_template_directory_uri() . '/img/slabproof/';
         <h2 class="wslabproof__h2">Pracovní ponožka s polštářkem, <em>střižená pod kotník</em></h2>
         <p class="wslabproof__p">NORIKS SlabProof je pracovní ponožka s polštářkem na beton, střižená pod kotník. Je udělaná do pracovní obuvi, ochranných tenisek s ocelovou špičkou a na horké dny v kraťasech, kdy vysoká ponožka jen překáží.</p>
         <p class="wslabproof__p">Pod chodidlem je stejný polštář jako u vyššího modelu: hustý pod patou a přední částí chodidla, kde beton tluče nejvíc. Přes nárt vede síťovaná část, pata a prsty jsou zesílené a zvýšený jazýček na patě brání tomu, aby zadní část boty dřela kůži.</p>
-        <p class="wslabproof__p">Ponožka je černá a dodává se ve třech velikostech: M, L a XL. Pere se v pračce na studeno a suší v sušičce na nízkou teplotu, spolu s pracovním oblečením — bez ručního praní a speciálního prášku.</p>
+        <p class="wslabproof__p">Ponožka je černá a dodává se ve třech velikostech: 39–42, 43–45 a 46–49. Pere se v pračce na studeno a suší v sušičce na nízkou teplotu, spolu s pracovním oblečením — bez ručního praní a speciálního prášku.</p>
         <p class="wslabproof__zak">Polštář na beton ve střihu do nízké pracovní obuvi.</p>
       </div>
     </div>

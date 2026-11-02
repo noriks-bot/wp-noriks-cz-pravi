@@ -522,7 +522,7 @@ $is_mixed_bundle = has_term( array( 'sady','orto-starter','orto-majica-bokserica
 
          <?php elseif( function_exists('noriks_is_type') && noriks_is_type('tradesman', $current_product_id) ): ?>
 
-                NORIKS Tradesman jsou silné pracovní ponožky z bambusu pro všechny, kdo celý den stojí a chodí v pracovních botách – na stavbě, ve skladu, v dílně nebo venku v zimě. Měkký polštář tlumí každý krok na betonu i zmrzlé zemi, zesílená pata a prsty vydrží tuhé boty a pásek pod klenbou s dvojitou manžetou drží ponožku na místě celou směnu.<br><br><strong>Složení:</strong> 56 % bambusového lyocelu, 38 % nylonu, 6 % elastanu – přirozeně odolné vůči nepříjemnému zápachu, odvádějí vlhkost a jsou velmi měkké na kůži. <strong>Provedení:</strong> 360° opora kotníku, pásek pod klenbou, polštář, síťované větrání, dvojitá manžeta s poutkem, zesílená pata. Výška: klasická (crew), asi 18 cm od paty k okraji.<br><br><strong>Velikosti (velikost obuvi EU):</strong> M 39–42, L 42,5–46, XL 46,5–49,5. Barvy: černá a bílá. <strong>Údržba:</strong> perte na studeno, sušte na vzduchu.<br><br>S NORIKS máte 30 dní na vrácení peněz, dopravu zdarma nad 1700 Kč a platbu na dobírku.
+                NORIKS Tradesman jsou silné pracovní ponožky z bambusu pro všechny, kdo celý den stojí a chodí v pracovních botách – na stavbě, ve skladu, v dílně nebo venku v zimě. Měkký polštář tlumí každý krok na betonu i zmrzlé zemi, zesílená pata a prsty vydrží tuhé boty a pásek pod klenbou s dvojitou manžetou drží ponožku na místě celou směnu.<br><br><strong>Složení:</strong> 56 % bambusového lyocelu, 38 % nylonu, 6 % elastanu – přirozeně odolné vůči nepříjemnému zápachu, odvádějí vlhkost a jsou velmi měkké na kůži. <strong>Provedení:</strong> 360° opora kotníku, pásek pod klenbou, polštář, síťované větrání, dvojitá manžeta s poutkem, zesílená pata. Výška: klasická (crew), asi 18 cm od paty k okraji.<br><br><strong>Velikosti (velikost obuvi EU):</strong> 39–42, 43–45, 46–49. Barva: černá. <strong>Údržba:</strong> perte na studeno, sušte na vzduchu.<br><br>S NORIKS máte 30 dní na vrácení peněz, dopravu zdarma nad 1700 Kč a platbu na dobírku.
 
          <?php elseif( function_exists('noriks_is_type') && noriks_is_type('slabproof', $current_product_id) ): ?>
 
@@ -767,9 +767,7 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
             <table style="width:100%;border-collapse:collapse;font-size:14px;">
               <thead>
                 <tr style="background:#a9683f;color:#fff;">
-                  <th style="padding:9px 8px;text-align:left;">Velikost</th>
-                  <th style="padding:9px 8px;text-align:left;">Velikost obuvi (EU) – pánská</th>
-                  <th style="padding:9px 8px;text-align:left;">Velikost obuvi (EU) – dámská</th>
+                  <th style="padding:9px 8px;text-align:left;">Velikost obuvi (EU)</th>
                 </tr>
               </thead>
               <tbody>
@@ -795,7 +793,6 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
             <table style="width:100%;border-collapse:collapse;font-size:14px;">
               <thead>
                 <tr style="background:#d2632e;color:#fff;">
-                  <th style="padding:9px 10px;text-align:left;">Velikost</th>
                   <th style="padding:9px 10px;text-align:left;">EU velikost bot</th>
                 </tr>
               </thead>
@@ -805,7 +802,6 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
                   $bg = ( $i % 2 ) ? '#faf7f0' : '#fff'; ?>
                   <tr style="background:<?php echo $bg; ?>;border-bottom:1px solid #eee;">
                     <td style="padding:9px 10px;font-weight:700;"><?php echo esc_html( $r[0] ); ?></td>
-                    <td style="padding:9px 10px;"><?php echo esc_html( $r[1] ); ?></td>
                   </tr>
                 <?php endforeach; ?>
               </tbody>

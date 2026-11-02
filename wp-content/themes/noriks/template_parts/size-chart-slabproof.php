@@ -21,12 +21,11 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
     <div class="kwsc-scroll">
       <table class="kwsc-table">
         <thead>
-          <tr><th scope="col">Velikost</th><th scope="col">EU velikost bot</th></tr>
+          <tr><th scope="col">EU velikost bot</th></tr>
         </thead>
         <tbody>
           <?php foreach ( noriks_slabproof_sizes() as $r ) : ?>
-          <tr><th scope="row"><?php echo esc_html( $r[0] ); ?></th>
-              <td><?php echo esc_html( $r[1] ); ?></td></tr>
+          <tr><th scope="row"><?php echo esc_html( $r[0] ); ?></th></tr>
           <?php endforeach; ?>
         </tbody>
       </table>
