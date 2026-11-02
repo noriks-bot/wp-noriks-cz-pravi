@@ -1,7 +1,7 @@
 <?php
 // NORIKS Tradesman — mnenja kupcev (CZ), prevod HR_tradesman.php.
 $auto_reviews_en = array(
-    array("name" => "Jiří P.", "text" => "Dělám na stavbě po 10 hodinách. Poprvé mám po směně odpočatá chodidla, i když nosím tvrdé boty."),
+    array("name" => "Jiří P.", "text" => "Na stavbě dělám po 10 hodin. Poprvé mám po směně odpočatá chodidla, i když nosím tvrdé boty."),
     array("name" => "David M.", "text" => "Polštář na patě je silný, a ponožka se přesto pěkně vejde do boty. Neklouže a neshrnuje se."),
     array("name" => "Stanislav K.", "text" => "Vzal jsem černé i bílé. Po zhruba deseti vypráních jsou pořád měkké a drží tvar."),
     array("name" => "Miroslav R.", "text" => "Nohy se mi v pracovní obuvi hodně potí. S těmihle jsou na konci dne mnohem sušší a nic nesmrdí."),

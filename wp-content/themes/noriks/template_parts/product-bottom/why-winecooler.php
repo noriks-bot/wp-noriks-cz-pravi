@@ -33,7 +33,7 @@ $nwc_video = function( $n, $label ) use ( $nwc, $nwc_path ) {
 
 /* 2) prednosti — 1:1 z originala (harmonike) */
 $nwc_feat = array(
-  array( 'Vysoká kvalita', 'Vyrobený z vysoce kvalitní nerezové oceli vhodné pro styk s potravinami, tento výrobek nabízí trvalou kvalitu a spolehlivost při každodenním používání.' ),
+  array( 'Vysoká kvalita', 'Je vyrobený z vysoce kvalitní nerezové oceli vhodné pro styk s potravinami a nabízí trvalou kvalitu a spolehlivost při každodenním používání.' ),
   array( 'Okamžitý požitek', 'Snadno se používá, rychle se nasadí a je neuvěřitelně praktický — jednoduché řešení, jak si vychutnat víno bez jakékoli námahy.' ),
   array( 'Dokonalé nalévání', 'Rozlučte se s rozlitým vínem. Toto nalévátko pokaždé zajistí rovnoměrné nalévání bez kapání a udrží vaše víno i stůl dokonale čisté.' ),
   array( 'Odemkněte plnou chuť', 'Zabudované provzdušnění umožní, aby se vůně vína plně rozvinuly, čímž se zlepší chuť a zážitek z vína je bohatší.' ),
