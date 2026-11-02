@@ -56,6 +56,8 @@ function noriks_product_type_map() : array {
         'bowl'                     => array( 'orto-bowl' ),
         // NORIKS SlabProof — radne carape s jastucenjem za beton (boja + velicina).
         'slabproof'                => array( 'orto-slabproof', 'slabproof' ),
+        // NORIKS Tradesman — radne carape s jastucenjem (boja + velicina).
+        'tradesman'                => array( 'orto-tradesman' ),
         'kompwom'                 => array( 'orto-kompwom' ),
         'snug'                    => array( 'orto-snug' ),
         // NORIKS HYD — boca za vodikovu vodu (bez atributa)
@@ -143,6 +145,17 @@ if ( ! function_exists( 'noriks_slabproof_sizes' ) ) {
             array( 'M',  '39 – 42', '6 – 9' ),
             array( 'L',  '43 – 45', '9,5 – 12' ),
             array( 'XL', '46 – 49', '12,5 – 15' ),
+        );
+    }
+}
+
+if ( ! function_exists( 'noriks_tradesman_sizes' ) ) {
+    /** NORIKS Tradesman: velicina po broju cipele (EU), muski / zenski (kot HR). */
+    function noriks_tradesman_sizes() {
+        return array(
+            array( 'M',  '39 – 42', '37,5 – 40,5' ),
+            array( 'L',  '42,5 – 46', '41 – 44' ),
+            array( 'XL', '46,5 – 49,5', '–' ),
         );
     }
 }

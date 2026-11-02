@@ -901,7 +901,7 @@ function gck_render_bundle_selector() {
 
     <?php
     // Your extra conditional style block (kept)
-    if (  !has_term( array( 'orto-red', 'orto-kneeheat', 'orto-pal', 'orto-bowl', 'orto-slabproof', 'orto-kompwom', 'orto-snug', 'orto-cloath', 'orto-hyd', 'orto-cloud', 'orto-starter', 'orto-majice', 'orto-bokserice', 'orto-kompresijske-carape', 'orto-ortopas', 'orto-kneefix', 'orto-controlpro', 'orto-bunion', 'orto-fisiorest', 'orto-norikshers', 'orto-noriks-hers', 'orto-majica-darila', 'orto-leak-boxers', 'orto-kompresijske-majice', 'orto-ortopedski-jastuk', 'orto-kidsnest' ), 'product_cat', $product_id )  )   :
+    if (  !has_term( array( 'orto-red', 'orto-kneeheat', 'orto-pal', 'orto-bowl', 'orto-slabproof', 'orto-tradesman', 'orto-kompwom', 'orto-snug', 'orto-cloath', 'orto-hyd', 'orto-cloud', 'orto-starter', 'orto-majice', 'orto-bokserice', 'orto-kompresijske-carape', 'orto-ortopas', 'orto-kneefix', 'orto-controlpro', 'orto-bunion', 'orto-fisiorest', 'orto-norikshers', 'orto-noriks-hers', 'orto-majica-darila', 'orto-leak-boxers', 'orto-kompresijske-majice', 'orto-ortopedski-jastuk', 'orto-kidsnest' ), 'product_cat', $product_id )  )   :
     ?>
         <style>
           .bundle-option { border: 2px solid #ededed; background: #f4f4f4b0  !important; border-radius: 4px; }
@@ -997,7 +997,7 @@ function gck_render_bundle_selector() {
     
 
     <div class="gck-benefits-box">
-        <?php if ( ! has_term( array( 'orto-red', 'orto-kneeheat', 'orto-pal', 'orto-bowl', 'orto-slabproof', 'orto-kompwom', 'orto-snug', 'orto-cloath', 'orto-hyd', 'orto-cloud', 'orto-ortopas', 'orto-kneefix', 'orto-controlpro', 'orto-bunion', 'orto-fisiorest', 'orto-norikshers', 'orto-noriks-hers', 'orto-leak-boxers', 'orto-kompresijske-majice', 'orto-ortopedski-jastuk', 'orto-kidsnest' ), 'product_cat', $product_id ) ) : // hide benefits list for back belt + bunion + fisiorest + leak boxers + kompresijske majice + orthopedic pillow + kidsnest ?>
+        <?php if ( ! has_term( array( 'orto-red', 'orto-kneeheat', 'orto-pal', 'orto-bowl', 'orto-slabproof', 'orto-tradesman', 'orto-kompwom', 'orto-snug', 'orto-cloath', 'orto-hyd', 'orto-cloud', 'orto-ortopas', 'orto-kneefix', 'orto-controlpro', 'orto-bunion', 'orto-fisiorest', 'orto-norikshers', 'orto-noriks-hers', 'orto-leak-boxers', 'orto-kompresijske-majice', 'orto-ortopedski-jastuk', 'orto-kidsnest' ), 'product_cat', $product_id ) ) : // hide benefits list for back belt + bunion + fisiorest + leak boxers + kompresijske majice + orthopedic pillow + kidsnest ?>
         <ul class="gck-benefits-list">
             <?php if ( !has_term( array( 'orto-bokserice', 'orto-bokserice2', 'starter-paketi' ), 'product_cat', $product_id ) ) : ?>
                 <li><span class="gck-check">✔</span> <strong>Perfektní padnutí</strong></li>
@@ -1348,7 +1348,7 @@ function gck_render_bundle_selector() {
         </style>
     <?php endif; ?>
 
-    <?php if ( has_term( array( 'orto-red', 'orto-slabproof' ), 'product_cat', $product_id ) ) : ?>
+    <?php if ( has_term( array( 'orto-red', 'orto-slabproof', 'orto-tradesman' ), 'product_cat', $product_id ) ) : ?>
     <style>
       /* NORIKS RedRelief: razmak izmedu kartica mora biti jednak izmedu svih ponuda.
          Inline margin-top: 25px na drugoj kartici radio je veci razmak 1-2 nego 2-3. */
@@ -1357,7 +1357,7 @@ function gck_render_bundle_selector() {
     </style>
     <?php endif; ?>
 
-    <?php if ( has_term( array( 'orto-snug', 'orto-kompwom', 'orto-pal', 'orto-bowl', 'orto-slabproof' ), 'product_cat', $product_id ) ) :
+    <?php if ( has_term( array( 'orto-snug', 'orto-kompwom', 'orto-pal', 'orto-bowl', 'orto-slabproof', 'orto-tradesman' ), 'product_cat', $product_id ) ) :
     ?>
     <style>
       /* rijec "Ukupno:" ne treba — cijena govori sama za sebe */
@@ -1400,6 +1400,14 @@ function gck_render_bundle_selector() {
         #bundle-selector .color-swatches .swatch { width: 42px !important; height: 42px !important; }
         #bundle-selector .color-swatches .swatch-circle { width: 30px !important; height: 30px !important; }
       }
+    </style>
+    <?php endif; ?>
+
+    <?php if ( has_term( array( 'orto-tradesman' ), 'product_cat', $product_id ) ) : ?>
+    <style>
+      /* NORIKS Tradesman: barva crna/bela (barve originala) kot krogci + velikost (M-XL po stevilki cevlja). */
+      .swatch-circle.color-bila, #bundle-selector .swatch-circle.color-bila { background: #f4f4f2 !important; border: 1px solid #cfcfcf !important; }
+      .swatch-circle.color-cerna, #bundle-selector .swatch-circle.color-cerna { background: #1c1c1e !important; }
     </style>
     <?php endif; ?>
 

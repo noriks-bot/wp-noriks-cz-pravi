@@ -516,6 +516,10 @@ $is_mixed_bundle = has_term( array( 'sady','orto-starter','orto-majica-bokserica
 
                 <strong>NORIKS FIT Woman</strong> je tvarující tričko, ve kterém je reliéf vetkaný přímo do látky, ne na ni potištěný. Široký pás vede přes břicho a boky, druhý přes záda.<br><br>Komprese je rozložená do šířky, ne stlačená do jednoho bodu, takže nic nezařezává. Břicho zůstává vyhlazené, pas užší a záda dostávají oporu, která pomáhá stát vzpřímeněji.<br><br>Úplet je bezešvý, tenký a matný — zmizí pod košilí, sakem nebo přiléhavými šaty. Během dne se neroluje a nerýsuje se pod oblečením.<br><br>Perte v pračce na 30 °C, bez bělidel, žehlení a sušičky. K dispozici je ve třech barvách (černá, tmavě šedá, růžová) a ve velikostech od S do 3XL. Jste-li mezi dvěma velikostmi, vezměte větší.
 
+         <?php elseif( function_exists('noriks_is_type') && noriks_is_type('tradesman', $current_product_id) ): ?>
+
+                NORIKS Tradesman jsou silné pracovní ponožky z bambusu pro všechny, kdo celý den stojí a chodí v pracovních botách – na stavbě, ve skladu, v dílně nebo venku v zimě. Měkký polštář tlumí každý krok na betonu i zmrzlé zemi, zesílená pata a prsty vydrží tuhé boty a pásek pod klenbou s dvojitou manžetou drží ponožku na místě celou směnu.<br><br><strong>Složení:</strong> 56 % bambusového lyocelu, 38 % nylonu, 6 % elastanu – přirozeně odolné vůči nepříjemnému zápachu, odvádějí vlhkost a jsou velmi měkké na kůži. <strong>Provedení:</strong> 360° opora kotníku, pásek pod klenbou, polštář, síťované větrání, dvojitá manžeta s poutkem, zesílená pata. Výška: klasická (crew), asi 18 cm od paty k okraji.<br><br><strong>Velikosti (velikost obuvi EU):</strong> M 39–42, L 42,5–46, XL 46,5–49,5. Barvy: černá a bílá. <strong>Údržba:</strong> perte na studeno, sušte na vzduchu.<br><br>S NORIKS máte 30 dní na vrácení peněz, dopravu zdarma nad 1700 Kč a platbu na dobírku.
+
          <?php elseif( function_exists('noriks_is_type') && noriks_is_type('slabproof', $current_product_id) ): ?>
 
                 <strong>NORIKS SlabProof</strong> jsou pracovní ponožky udělané pro lidi, kteří celý den stojí na betonu. Pracovní boty chodidlo chrání, ale netlumí ho — beton nic nevrací, takže každý krok jde do pat, kolen a zad. Jediné, co ten náraz dokáže ztlumit, je ponožka.<br><br>Proto mají <strong>zónové polštářování</strong>: husté polštářky pod patou a přední částí chodidla, přesně tam, kde beton tluče, a tenký úplet všude jinde, takže bota nezačne být těsná. Pata a prsty jsou zesílené dvojitě pleteným nylonem, na dvou místech, kde ponožky povolí jako první.<br><br>Vzdušná síťka přes nárt a úplet, který odvádí pot, drží chodidla suchá celou směnu. Směs je bez vlny, takže nic nekouše a noha se nepřehřívá.<br><br>Široký žebrovaný lem drží ponožku nahoře, aniž by škrtil lýtko, hluboká kapsa na patu s jazýčkem nedovolí, aby sjížděla do boty, a pásek kolem klenby drží chodidlo, aby neklouzalo.<br><br>Jsou k dostání v černé barvě, ve velikostech M (EU 39–42), L (EU 43–45) a XL (EU 46–49). Platí <strong>30 dní na vrácení peněz</strong> a doprava je zdarma u objednávek nad 1700 Kč.
@@ -720,6 +724,35 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
         
                   <img class="js-open-size-chart" style="cursor:pointer;" src="https://noriks.com/cz/wp-content/uploads/2026/01/Nogavice_tabela_velikosti_Cz.png">
                   
+    <?php elseif( function_exists('noriks_is_type') && noriks_is_type('tradesman', $current_product_id) ): ?>
+
+          <div class="noriks-size">
+            <p style="margin:0 0 14px;line-height:1.6;">Velikost vyberte podle své <strong>velikosti obuvi (EU)</strong>.</p>
+            <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+            <table style="width:100%;border-collapse:collapse;font-size:14px;">
+              <thead>
+                <tr style="background:#a9683f;color:#fff;">
+                  <th style="padding:9px 8px;text-align:left;">Velikost</th>
+                  <th style="padding:9px 8px;text-align:left;">Velikost obuvi (EU) – pánská</th>
+                  <th style="padding:9px 8px;text-align:left;">Velikost obuvi (EU) – dámská</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ( noriks_tradesman_sizes() as $i => $r ) :
+                  $bg = ( $i % 2 ) ? '#fdf8f5' : '#fff'; ?>
+                  <tr style="background:<?php echo $bg; ?>;border-bottom:1px solid #eee;">
+                    <?php foreach ( $r as $j => $c ) : ?>
+                    <td style="padding:9px 8px;<?php echo $j ? '' : 'font-weight:700;white-space:nowrap;'; ?>"><?php echo esc_html( $c ); ?></td>
+                    <?php endforeach; ?>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+            </div>
+            <p style="margin:12px 0 0;line-height:1.6;">Jste mezi dvěma velikostmi? Vezměte větší.</p>
+            <p style="margin:14px 0 0;line-height:1.6;">Pokud vám velikost nesedí, máte 30 dní na vrácení nebo výměnu.</p>
+          </div>
+
     <?php elseif( function_exists('noriks_is_type') && noriks_is_type('slabproof', $current_product_id) ): ?>
 
           <div class="noriks-size">
@@ -813,7 +846,7 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
 
 
     <!-- 3 - savjeti za pranje-->
-    <?php if ( ! ( function_exists('noriks_is_type') && ( noriks_is_type('ortopas', $current_product_id) || noriks_is_type('bunion', $current_product_id) || noriks_is_type('fisiorest', $current_product_id) || noriks_is_type('norikshers', $current_product_id) || noriks_is_type('kidsnest', $current_product_id) || noriks_is_type('ortopedski-jastuk', $current_product_id) ) )  && ! ( function_exists('noriks_is_type') && noriks_is_type('kneefix', $current_product_id) || noriks_is_type('controlpro', $current_product_id) )) : // žádné tipy na praní pro pás/bunion/fisiorest + norikshers + kidsnest + ortopedicky polstar ?>
+    <?php if ( ( ! ( function_exists('noriks_is_type') && ( noriks_is_type('ortopas', $current_product_id) || noriks_is_type('bunion', $current_product_id) || noriks_is_type('fisiorest', $current_product_id) || noriks_is_type('norikshers', $current_product_id) || noriks_is_type('kidsnest', $current_product_id) || noriks_is_type('ortopedski-jastuk', $current_product_id) ) )  && ! ( function_exists('noriks_is_type') && noriks_is_type('kneefix', $current_product_id) || noriks_is_type('controlpro', $current_product_id) ) ) && ! ( function_exists('noriks_is_type') && noriks_is_type('tradesman', $current_product_id) ) ) : // žádné tipy na praní pro pás/bunion/fisiorest + norikshers + kidsnest + ortopedicky polstar ?>
     <div class="accordion-item">
       <div class="accordion-header" onclick="toggleAccordion(this)">
         <h3><?php echo get_field("singlepp_acc_h_2","options"); ?></h3>
