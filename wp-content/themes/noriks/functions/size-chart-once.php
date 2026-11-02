@@ -19,6 +19,11 @@ if ( ! function_exists( 'noriks_size_chart_once' ) ) {
             get_template_part( 'template_parts/size-chart-kompwom' );
             return;
         }
+        // NORIKS Slim: tablica po opsegu struka.
+        if ( function_exists( 'noriks_is_type' ) && noriks_is_type( 'slim' ) ) {
+            get_template_part( 'template_parts/size-chart-slim' );
+            return;
+        }
         // NORIKS Tradesman: tablica po broju cipele (EU), muski / zenski.
         if ( function_exists( 'noriks_is_type' ) && noriks_is_type( 'tradesman' ) ) {
             get_template_part( 'template_parts/size-chart-tradesman' );

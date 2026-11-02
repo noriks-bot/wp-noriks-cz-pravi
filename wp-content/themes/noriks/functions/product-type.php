@@ -58,6 +58,8 @@ function noriks_product_type_map() : array {
         'slabproof'                => array( 'orto-slabproof', 'slabproof' ),
         // NORIKS Tradesman — radne carape s jastucenjem (boja + velicina).
         'tradesman'                => array( 'orto-tradesman' ),
+        // NORIKS Slim — oblikujuce gacice visokog struka (boja + velicina).
+        'slim'                     => array( 'orto-slim', 'slim' ),
         'kompwom'                 => array( 'orto-kompwom' ),
         'snug'                    => array( 'orto-snug' ),
         // NORIKS HYD — boca za vodikovu vodu (bez atributa)
@@ -156,6 +158,23 @@ if ( ! function_exists( 'noriks_tradesman_sizes' ) ) {
             array( 'M',  '39 – 42', '37,5 – 40,5' ),
             array( 'L',  '42,5 – 46', '41 – 44' ),
             array( 'XL', '46,5 – 49,5', '–' ),
+        );
+    }
+}
+
+if ( ! function_exists( 'noriks_slim_sizes' ) ) {
+    /** NORIKS Slim: velicina, EU velicina, opseg struka — ena tabela za akordeon in modal. */
+    function noriks_slim_sizes() {
+        return array(
+            array( 'XS',  '32 – 34', '64 – 69 cm' ),
+            array( 'S',   '36',      '71 – 74 cm' ),
+            array( 'M',   '38 – 40', '76 – 81 cm' ),
+            array( 'L',   '42 – 44', '86 – 94 cm' ),
+            array( 'XL',  '46 – 48', '99 – 104 cm' ),
+            array( '2XL', '50 – 52', '107 – 112 cm' ),
+            array( '3XL', '54 – 56', '114 – 118 cm' ),
+            array( '4XL', '58 – 60', '119 – 122 cm' ),
+            array( '5XL', '62 – 64', '124 – 127 cm' ),
         );
     }
 }

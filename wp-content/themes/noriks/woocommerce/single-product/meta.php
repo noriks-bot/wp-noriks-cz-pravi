@@ -516,6 +516,10 @@ $is_mixed_bundle = has_term( array( 'sady','orto-starter','orto-majica-bokserica
 
                 <strong>NORIKS FIT Woman</strong> je tvarující tričko, ve kterém je reliéf vetkaný přímo do látky, ne na ni potištěný. Široký pás vede přes břicho a boky, druhý přes záda.<br><br>Komprese je rozložená do šířky, ne stlačená do jednoho bodu, takže nic nezařezává. Břicho zůstává vyhlazené, pas užší a záda dostávají oporu, která pomáhá stát vzpřímeněji.<br><br>Úplet je bezešvý, tenký a matný — zmizí pod košilí, sakem nebo přiléhavými šaty. Během dne se neroluje a nerýsuje se pod oblečením.<br><br>Perte v pračce na 30 °C, bez bělidel, žehlení a sušičky. K dispozici je ve třech barvách (černá, tmavě šedá, růžová) a ve velikostech od S do 3XL. Jste-li mezi dvěma velikostmi, vezměte větší.
 
+         <?php elseif( function_exists('noriks_is_type') && noriks_is_type('slim', $current_product_id) ): ?>
+
+                <strong>NORIKS Slim</strong> jsou tvarující kalhotky s vysokým pasem. Široký pás přechází křížem přes břicho a pokračuje na boky a záda, takže komprese je rozložená kolem celého pasu, a ne stlačená do jedné linie.<br><br>Břicho je vyhlazené, pas vypadá užší a oblečení padne rovněji — bez záhybů nad kalhotami a bez okraje, který je vidět pod šaty.<br><br>Úplet je tenký, měkký a prodyšný, s elastickými síťovanými vsadkami a bavlněnou vložkou. Kalhotky se nerolují dolů a během dne nekloužou, takže si je ráno obléknete a do večera na ně zapomenete.<br><br>K dispozici jsou v šesti barvách (černá, tělová, tmavě modrá, fialová, fuchsiová a švestková) a ve velikostech od XS do 5XL. Velikost vybírejte podle obvodu pasu; pokud jste mezi dvěma velikostmi, vezměte si větší.
+
          <?php elseif( function_exists('noriks_is_type') && noriks_is_type('tradesman', $current_product_id) ): ?>
 
                 NORIKS Tradesman jsou silné pracovní ponožky z bambusu pro všechny, kdo celý den stojí a chodí v pracovních botách – na stavbě, ve skladu, v dílně nebo venku v zimě. Měkký polštář tlumí každý krok na betonu i zmrzlé zemi, zesílená pata a prsty vydrží tuhé boty a pásek pod klenbou s dvojitou manžetou drží ponožku na místě celou směnu.<br><br><strong>Složení:</strong> 56 % bambusového lyocelu, 38 % nylonu, 6 % elastanu – přirozeně odolné vůči nepříjemnému zápachu, odvádějí vlhkost a jsou velmi měkké na kůži. <strong>Provedení:</strong> 360° opora kotníku, pásek pod klenbou, polštář, síťované větrání, dvojitá manžeta s poutkem, zesílená pata. Výška: klasická (crew), asi 18 cm od paty k okraji.<br><br><strong>Velikosti (velikost obuvi EU):</strong> M 39–42, L 42,5–46, XL 46,5–49,5. Barvy: černá a bílá. <strong>Údržba:</strong> perte na studeno, sušte na vzduchu.<br><br>S NORIKS máte 30 dní na vrácení peněz, dopravu zdarma nad 1700 Kč a platbu na dobírku.
@@ -724,6 +728,33 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
         
                   <img class="js-open-size-chart" style="cursor:pointer;" src="https://noriks.com/cz/wp-content/uploads/2026/01/Nogavice_tabela_velikosti_Cz.png">
                   
+    <?php elseif( function_exists('noriks_is_type') && noriks_is_type('slim', $current_product_id) ): ?>
+
+          <div class="slm-size">
+            <p style="margin:0 0 14px;line-height:1.6;">Velikost vybírejte podle <strong>obvodu pasu</strong>, ne podle běžné velikosti oblečení. Pokud jste mezi dvěma velikostmi, vezměte si <strong>větší</strong>.</p>
+            <table style="width:100%;border-collapse:collapse;font-size:14px;">
+              <thead>
+                <tr style="background:#a3336b;color:#fff;">
+                  <th style="padding:9px 10px;text-align:left;">Velikost</th>
+                  <th style="padding:9px 10px;text-align:left;">EU velikost</th>
+                  <th style="padding:9px 10px;text-align:left;">Obvod pasu</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php
+                foreach ( noriks_slim_sizes() as $i => $r ) :
+                  $bg = ( $i % 2 ) ? '#fbf2f6' : '#fff'; ?>
+                  <tr style="background:<?php echo $bg; ?>;border-bottom:1px solid #f1e3ea;">
+                    <td style="padding:9px 10px;font-weight:700;"><?php echo esc_html( $r[0] ); ?></td>
+                    <td style="padding:9px 10px;"><?php echo esc_html( $r[1] ); ?></td>
+                    <td style="padding:9px 10px;"><?php echo esc_html( $r[2] ); ?></td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+            <p style="margin:14px 0 0;line-height:1.6;"><strong>Jak se změřit:</strong> krejčovský metr oviňte kolem nejužšího místa trupu, kousek nad pupíkem. Metr má být vodorovný a přiléhavý, ale ne natěsno.</p>
+          </div>
+
     <?php elseif( function_exists('noriks_is_type') && noriks_is_type('tradesman', $current_product_id) ): ?>
 
           <div class="noriks-size">
