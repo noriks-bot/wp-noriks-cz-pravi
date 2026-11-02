@@ -516,6 +516,10 @@ $is_mixed_bundle = has_term( array( 'sady','orto-starter','orto-majica-bokserica
 
                 <strong>NORIKS FIT Woman</strong> je tvarující tričko, ve kterém je reliéf vetkaný přímo do látky, ne na ni potištěný. Široký pás vede přes břicho a boky, druhý přes záda.<br><br>Komprese je rozložená do šířky, ne stlačená do jednoho bodu, takže nic nezařezává. Břicho zůstává vyhlazené, pas užší a záda dostávají oporu, která pomáhá stát vzpřímeněji.<br><br>Úplet je bezešvý, tenký a matný — zmizí pod košilí, sakem nebo přiléhavými šaty. Během dne se neroluje a nerýsuje se pod oblečením.<br><br>Perte v pračce na 30 °C, bez bělidel, žehlení a sušičky. K dispozici je ve třech barvách (černá, tmavě šedá, růžová) a ve velikostech od S do 3XL. Jste-li mezi dvěma velikostmi, vezměte větší.
 
+         <?php elseif( function_exists('noriks_is_type') && noriks_is_type('slabproof', $current_product_id) ): ?>
+
+                <strong>NORIKS SlabProof</strong> jsou pracovní ponožky udělané pro lidi, kteří celý den stojí na betonu. Pracovní boty chodidlo chrání, ale netlumí ho — beton nic nevrací, takže každý krok jde do pat, kolen a zad. Jediné, co ten náraz dokáže ztlumit, je ponožka.<br><br>Proto mají <strong>zónové polštářování</strong>: husté polštářky pod patou a přední částí chodidla, přesně tam, kde beton tluče, a tenký úplet všude jinde, takže bota nezačne být těsná. Pata a prsty jsou zesílené dvojitě pleteným nylonem, na dvou místech, kde ponožky povolí jako první.<br><br>Vzdušná síťka přes nárt a úplet, který odvádí pot, drží chodidla suchá celou směnu. Směs je bez vlny, takže nic nekouše a noha se nepřehřívá.<br><br>Široký žebrovaný lem drží ponožku nahoře, aniž by škrtil lýtko, hluboká kapsa na patu s jazýčkem nedovolí, aby sjížděla do boty, a pásek kolem klenby drží chodidlo, aby neklouzalo.<br><br>Jsou k dostání v černé barvě, ve velikostech M (EU 39–42), L (EU 43–45) a XL (EU 46–49). Platí <strong>30 dní na vrácení peněz</strong> a doprava je zdarma u objednávek nad 1700 Kč.
+
          <?php elseif( function_exists('noriks_is_type') && noriks_is_type('bowl', $current_product_id) ): ?>
 
                 <strong>NORIKS Bowl</strong> je zvýšená miska na krmivo a vodu určená pro malé psy. Miska stojí na ocelovém podstavci o výšce 11 cm a je nakloněná o 15°, takže pes jí vestoje, s hlavou v přirozenější poloze místo toho, aby ohýbal krk až k podlaze.<br><br>Miska je mělká (5 cm), takže vousy nenarážejí o okraj a krmivo se netlačí ven. Průměr je 15 cm a objem přibližně 430 ml — dost na porci nebo vodu pro malého psa.<br><br>Miska i podstavec jsou vyrobeny z nerezové oceli. Hladký povrch nenasává pachy a nedrží zbytky krmiva jako plast; stačí ji opláchnout teplou vodou s prostředkem na nádobí.<br><br>Vhodná je pro malá plemena, jako jsou jezevčík, francouzský buldoček, knírač, mops a maltézský psík.
@@ -716,6 +720,31 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
         
                   <img class="js-open-size-chart" style="cursor:pointer;" src="https://noriks.com/cz/wp-content/uploads/2026/01/Nogavice_tabela_velikosti_Cz.png">
                   
+    <?php elseif( function_exists('noriks_is_type') && noriks_is_type('slabproof', $current_product_id) ): ?>
+
+          <div class="noriks-size">
+            <p style="margin:0 0 14px;line-height:1.6;">Objednejte si <strong>svou obvyklou velikost bot</strong>. Úplet je pružný, takže každá velikost pokryje několik čísel.</p>
+            <table style="width:100%;border-collapse:collapse;font-size:14px;">
+              <thead>
+                <tr style="background:#d2632e;color:#fff;">
+                  <th style="padding:9px 10px;text-align:left;">Velikost</th>
+                  <th style="padding:9px 10px;text-align:left;">EU velikost bot</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php
+                foreach ( noriks_slabproof_sizes() as $i => $r ) :
+                  $bg = ( $i % 2 ) ? '#faf7f0' : '#fff'; ?>
+                  <tr style="background:<?php echo $bg; ?>;border-bottom:1px solid #eee;">
+                    <td style="padding:9px 10px;font-weight:700;"><?php echo esc_html( $r[0] ); ?></td>
+                    <td style="padding:9px 10px;"><?php echo esc_html( $r[1] ); ?></td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+            <p style="margin:14px 0 0;line-height:1.6;"><strong>Mezi dvěma velikostmi?</strong> Vezměte větší — polštářek na patě a pásek kolem klenby sednou na místo, jen když ponožka není příliš malá.</p>
+          </div>
+
     <?php elseif( function_exists('noriks_is_type') && noriks_is_type('kompwom', $current_product_id) ): ?>
 
           <div class="kwm-size">
@@ -791,7 +820,11 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
         <div class="toggle">+</div>
       </div>
       <div class="accordion-content">
-             <?php if( function_exists('noriks_is_type') && noriks_is_type('leakboxers', $current_product_id) ): ?>
+             <?php if( function_exists('noriks_is_type') && noriks_is_type('slabproof', $current_product_id) ): ?>
+
+                Praní v pračce na studeno, spolu s pracovním oblečením. Sušení v sušičce na nízkou teplotu. Bez ručního praní, sušení na šňůře a speciálního prášku.
+
+             <?php elseif( function_exists('noriks_is_type') && noriks_is_type('leakboxers', $current_product_id) ): ?>
 
                 Perte na 30–40 °C na programu pro jemné prádlo. Bez aviváže a bělidla. Sušte na vzduchu. Savost si udrží i po stovkách praní.
 

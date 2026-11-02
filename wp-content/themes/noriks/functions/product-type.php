@@ -54,6 +54,8 @@ function noriks_product_type_map() : array {
         'kneeheat'                => array( 'orto-kneeheat' ),
         'pal'                     => array( 'orto-pal' ),
         'bowl'                     => array( 'orto-bowl' ),
+        // NORIKS SlabProof — radne carape s jastucenjem za beton (boja + velicina).
+        'slabproof'                => array( 'orto-slabproof', 'slabproof' ),
         'kompwom'                 => array( 'orto-kompwom' ),
         'snug'                    => array( 'orto-snug' ),
         // NORIKS HYD — boca za vodikovu vodu (bez atributa)
@@ -133,3 +135,14 @@ function noriks_is_mixed_bundle( $product_id = null ) : bool {
 }
 
 endif;
+
+if ( ! function_exists( 'noriks_slabproof_sizes' ) ) {
+    /** NORIKS SlabProof: velicina, EU broj obuce, US muski broj (original). */
+    function noriks_slabproof_sizes() {
+        return array(
+            array( 'M',  '39 – 42', '6 – 9' ),
+            array( 'L',  '43 – 45', '9,5 – 12' ),
+            array( 'XL', '46 – 49', '12,5 – 15' ),
+        );
+    }
+}
