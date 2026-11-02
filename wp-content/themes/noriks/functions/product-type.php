@@ -54,6 +54,7 @@ function noriks_product_type_map() : array {
         'kneeheat'                => array( 'orto-kneeheat' ),
         'pal'                     => array( 'orto-pal' ),
         'bowl'                     => array( 'orto-bowl' ),
+        'winecooler'               => array( 'orto-winecooler', 'winecooler' ),
         // NORIKS SlabProof — radne carape s jastucenjem za beton (boja + velicina).
         'slabproof'                => array( 'orto-slabproof', 'slabproof' ),
         // NORIKS Tradesman — radne carape s jastucenjem (boja + velicina).
