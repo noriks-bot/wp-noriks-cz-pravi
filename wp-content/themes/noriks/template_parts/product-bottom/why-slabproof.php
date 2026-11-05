@@ -13,22 +13,22 @@ $wdir = get_template_directory_uri() . '/img/slabproof/';
       <div class="wslabproof__tekst">
         <div class="wslabproof__kicker">NÍZKÝ STŘIH</div>
         <h2 class="wslabproof__h2">Pracovní ponožka s polštářkem, <em>střižená pod kotník</em></h2>
-        <p class="wslabproof__p">NORIKS SlabProof je pracovní ponožka s polštářkem na beton, střižená pod kotník. Je udělaná do pracovní obuvi, ochranných tenisek s ocelovou špičkou a na horké dny v kraťasech, kdy vysoká ponožka jen překáží.</p>
-        <p class="wslabproof__p">Pod chodidlem je stejný polštář jako u vyššího modelu: hustý pod patou a přední částí chodidla, kde beton tluče nejvíc. Přes nárt vede síťovaná část, pata a prsty jsou zesílené a zvýšený jazýček na patě brání tomu, aby zadní část boty dřela kůži.</p>
+        <p class="wslabproof__p">NORIKS SlabProof je pracovní ponožka s polštářkem na celý den na nohou, střižená pod kotník. Je udělaná do pracovní obuvi, ochranných tenisek s ocelovou špičkou a na horké dny v kraťasech, kdy vysoká ponožka jen překáží.</p>
+        <p class="wslabproof__p">Pod chodidlem je stejný polštář jako u vyššího modelu: hustý pod patou a přední částí chodidla, kde krok dopadá nejtvrdší. Přes nárt vede síťovaná část, pata a prsty jsou zesílené a zvýšený jazýček na patě brání tomu, aby zadní část boty dřela kůži.</p>
         <p class="wslabproof__p">Ponožka je černá a dodává se ve třech velikostech: 39–42, 43–45 a 46–49. Pere se v pračce na studeno a suší v sušičce na nízkou teplotu, spolu s pracovním oblečením — bez ručního praní a speciálního prášku.</p>
-        <p class="wslabproof__zak">Polštář na beton ve střihu do nízké pracovní obuvi.</p>
+        <p class="wslabproof__zak">Polštář na každý pracovní den ve střihu do nízké pracovní obuvi.</p>
       </div>
     </div>
   </section>
 
   <section class="wslabproof__s">
     <div class="wslabproof__v wslabproof__v--rev">
-      <div class="wslabproof__media"><img src="<?php echo esc_url( $wdir . 'slabproof-05.webp' ); ?>" alt="Polštářování přesně tam, kde beton tluče nejvíc" loading="eager" decoding="async"></div>
+      <div class="wslabproof__media"><img src="<?php echo esc_url( $wdir . 'slabproof-05.webp' ); ?>" alt="Polštářování přesně tam, kde krok dopadá nejtvrdší" loading="eager" decoding="async"></div>
       <div class="wslabproof__tekst">
         <div class="wslabproof__kicker">ZÓNOVÉ POLŠTÁŘOVÁNÍ</div>
-        <h2 class="wslabproof__h2">Polštářování přesně tam, kde <em>beton tluče nejvíc</em></h2>
+        <h2 class="wslabproof__h2">Polštářování přesně tam, kde <em>krok dopadá nejtvrdší</em></h2>
         <p class="wslabproof__p">Polštářování jsme nevymysleli my. Ale NORIKS SlabProof je ponožka, jejíž polštářování je udělané pro podlahu, na které stojíte celý den: husté tam, kam dopadá pata a přední část chodidla, a tenké všude jinde, aby nikdy nezaplnilo botu a nestlačilo chodidlo.</p>
-        <p class="wslabproof__p">Husté polštářky jsou pod patou a pod přední částí chodidla, přesně v místech, kde beton při každém kroku tluče nejvíc. Na zbytku chodidla je ponožka tenká, takže tlumí krok, a bota přitom nepůsobí těsně. Polštářky jsou rozmístěné podle míst nárazu, ne rovnoměrně po celém chodidle.</p>
+        <p class="wslabproof__p">Husté polštářky jsou pod patou a pod přední částí chodidla, přesně v místech, která při každém kroku nesou největší náraz. Na zbytku chodidla je ponožka tenká, takže tlumí krok, a bota přitom nepůsobí těsně. Polštářky jsou rozmístěné podle míst nárazu, ne rovnoměrně po celém chodidle.</p>
         <p class="wslabproof__p">Nízký střih pod kotník je udělaný do pracovní obuvi, ochranných tenisek s ocelovou špičkou a na horké dny v kraťasech. Pod chodidlem je stejné zónové polštářování jako u vyššího modelu, jen ponožka končí pod kotníkem. Jazýček na patě navíc chrání patu před okrajem nízké boty.</p>
         <p class="wslabproof__zak">Hustě pod patou a přední částí chodidla, tence všude jinde.</p>
       </div>
@@ -69,10 +69,10 @@ $wdir = get_template_directory_uri() . '/img/slabproof/';
       <div class="wslabproof__tekst">
         <div class="wslabproof__kicker">NEMŮŽOU ZA TO BOTY</div>
         <h2 class="wslabproof__h2">Nikdy to nebylo <em>botami</em></h2>
-        <p class="wslabproof__p">Ochranná obuv je udělaná tak, aby chránila prsty, ne aby tlumila chodidlo. To je její práce. Jenže beton nepovolí ani o milimetr a každý krok musí někam odejít. Když už bota nemůže, zbývá ponožka.</p>
-        <p class="wslabproof__p">Stejná bota, stejný beton. Jediné, co se změnilo, je ponožka. Dvanáctihodinové směny na betonu jsou jako jízda náklaďákem bez tlumičů — a jediné, co ten náraz dokáže ztlumit, jsou zhruba dva a půl centimetru ponožky.</p>
+        <p class="wslabproof__p">Ochranná obuv je udělaná tak, aby chránila prsty, ne aby tlumila chodidlo. To je její práce. Jenže tvrdá podlaha nepovolí ani o milimetr a každý krok musí někam odejít. Když už bota nemůže, zbývá ponožka.</p>
+        <p class="wslabproof__p">Stejná bota, stejná práce. Jediné, co se změnilo, je ponožka. Dvanáctihodinové směny na nohou jsou jako jízda náklaďákem bez tlumičů — a jediné, co ten náraz dokáže ztlumit, jsou zhruba dva a půl centimetru ponožky.</p>
         <p class="wslabproof__p">Proto je NORIKS SlabProof udělaný tak, aby těch dva a půl centimetru bylo, jak má být: hustý polštář pod patou a přední částí chodidla, zbytek tenký a vzdušný.</p>
-        <p class="wslabproof__zak">Stejná bota, stejný beton — jen jiná ponožka.</p>
+        <p class="wslabproof__zak">Stejná bota, stejná práce — jen jiná ponožka.</p>
       </div>
     </div>
   </section>
@@ -97,10 +97,10 @@ $wdir = get_template_directory_uri() . '/img/slabproof/';
       <div class="wslabproof__tekst">
         <div class="wslabproof__kicker">SROVNÁNÍ</div>
         <h2 class="wslabproof__h2">Ne všechny pracovní ponožky jsou <em>udělané stejně</em></h2>
-        <p class="wslabproof__p">Levný multipack, drahý pár z vlny, nebo ponožka udělaná pro beton, na kterém opravdu stojíte. Porovnali jsme je podle věcí, které se v práci počítají: žádné díry po roce na betonu, polštářování tam, kde beton tluče, svěžest v pracovní botě. Každá z těch položek se ukáže až po několika týdnech v práci.</p>
+        <p class="wslabproof__p">Levný multipack, drahý pár z vlny, nebo ponožka udělaná pro práci, kterou opravdu děláte. Porovnali jsme je podle věcí, které se v práci počítají: žádné díry po roce práce, polštářování tam, kde krok dopadá, svěžest v pracovní botě. Každá z těch položek se ukáže až po několika týdnech v práci.</p>
         <p class="wslabproof__p">Sledovali jsme i to, aby vlna nesvědila, noha se nepřehřívala a zadní část boty nedřela patu. Levný multipack je levný, a pak se kupuje znovu; vlna má vyšší cenu; NORIKS SlabProof koupíte jednou a na dlouho.</p>
         <p class="wslabproof__p">Dobrá vlna vydrží, to jí přiznáváme. Ale v létě kouše a v pracovní botě hřeje. NORIKS SlabProof je udělaný pro podlahu, na které stojíte, ne pro horskou stezku.</p>
-        <p class="wslabproof__zak">Udělaná pro beton, ne pro hory.</p>
+        <p class="wslabproof__zak">Udělaná pro práci, ne pro hory.</p>
       </div>
     </div>
   </section>
@@ -111,8 +111,8 @@ $wdir = get_template_directory_uri() . '/img/slabproof/';
       <div class="wslabproof__tekst">
         <div class="wslabproof__kicker">KDO JE DĚLÁ</div>
         <h2 class="wslabproof__h2">Nevymyslel je obchodník s ponožkami, ale <em>elektrikář</em></h2>
-        <p class="wslabproof__p">Za touto ponožkou stojí elektrikář s dvaadvaceti lety praxe, většinou na velkých stavbách: nemocnice, sklady, distribuční centra. Betonové podlahy a dvanáctihodinové dny. Roky pracoval na nohou, na stejném betonu jako vy.</p>
-        <p class="wslabproof__p">Ve dvaceti to necítíš. Ve čtyřiceti pěti máš nohy hotové do oběda a spotřebuješ balení ponožek za měsíc — prodřené paty, mokro do poledne. Ponožky byly čím dál tenčí a kratší, po měsíci plné děr, a nikdo nedělal ponožku pro chlapa, který celý den stojí na betonu.</p>
+        <p class="wslabproof__p">Za touto ponožkou stojí elektrikář s dvaadvaceti lety praxe, většinou na velkých stavbách: nemocnice, sklady, distribuční centra. Tvrdé podlahy a dvanáctihodinové dny. Roky pracoval na nohou, stejně jako vy.</p>
+        <p class="wslabproof__p">Ve dvaceti to necítíš. Ve čtyřiceti pěti máš nohy hotové do oběda a spotřebuješ balení ponožek za měsíc — prodřené paty, mokro do poledne. Ponožky byly čím dál tenčí a kratší, po měsíci plné děr, a nikdo nedělal ponožku pro chlapa, který celý den pracuje na nohou.</p>
         <p class="wslabproof__p">Proto si udělal vlastní: zesílenou tam, kde vždycky praskne, suchou a takovou, která zůstane na místě. Rok ji nosil v práci, než byla připravená pro ostatní.</p>
         <p class="wslabproof__zak">Od řemeslníka, pro řemeslníky.</p>
       </div>

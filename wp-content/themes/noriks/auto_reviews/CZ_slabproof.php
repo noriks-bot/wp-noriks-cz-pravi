@@ -8,7 +8,7 @@ $auto_reviews_en = array(
     array("name" => "Jiří L.", "text" => "Zkoušel jsem snad všechny značky. Tyhle jsou nejlepší. Polštářování je opravdu znát."),
     array("name" => "Pavel M.", "text" => "Pět měsíců každodenního nošení a pořád jako nové. Stojí za každou korunu."),
     array("name" => "Lukáš N.", "text" => "Myslel jsem, že problém je v botách. Ukázalo se, že jsem jen potřeboval pořádné ponožky."),
-    array("name" => "Jakub B.", "text" => "Polštář pod patou je geniální. Na betonu je to znát od prvního dne."),
+    array("name" => "Jakub B.", "text" => "Polštář pod patou je geniální. V práci je to znát od prvního dne."),
     array("name" => "Michal V.", "text" => "V pracovních botách se už nepotím. Tyhle ponožky opravdu dýchají."),
     array("name" => "David Ž.", "text" => "Koupil jsem dva páry, objednal další čtyři. Nic jiného nepotřebuju."),
     array("name" => "Ondřej F.", "text" => "Konečně ponožka, která se po měsíci nerozpadne. Zesílená pata opravdu funguje."),
@@ -16,5 +16,5 @@ $auto_reviews_en = array(
     array("name" => "Zdeněk R.", "text" => "Zesílená pata a prsty, polštář pod patou. Pořádné pracovní ponožky."),
     array("name" => "Miroslav D.", "text" => "Nosí se pohodlně, neškrtí, neklouzají. Všechno, co potřebuju."),
     array("name" => "Josef J.", "text" => "Pět hvězdiček. Objednal jsem tři páry hned poté, co jsem vyzkoušel první."),
-    array("name" => "Roman G.", "text" => "Celý den pracuju na betonu. Konečně ponožky, které jsou pohodlné až do konce směny."),
+    array("name" => "Roman G.", "text" => "Celý den jsem v práci na nohou. Konečně ponožky, které jsou pohodlné až do konce směny."),
 );
