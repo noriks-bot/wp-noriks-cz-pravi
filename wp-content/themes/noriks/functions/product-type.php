@@ -167,13 +167,13 @@ if ( ! function_exists( 'noriks_slim_sizes' ) ) {
     /** NORIKS Slim: velicina, EU velicina, opseg struka — ena tabela za akordeon in modal. */
     function noriks_slim_sizes() {
         return array(
-            array( 'XS',  '32 – 34', '64 – 69 cm' ),
-            array( 'S',   '36',      '71 – 74 cm' ),
-            array( 'M',   '38 – 40', '76 – 81 cm' ),
-            array( 'L',   '42 – 44', '86 – 94 cm' ),
-            array( 'XL',  '46 – 48', '99 – 104 cm' ),
-            array( '2XL', '50 – 52', '107 – 112 cm' ),
-            array( '3XL', '54 – 56', '114 – 118 cm' ),
+            array( 'XS',  '32 – 34',  '58 – 66 cm' ),
+            array( 'S',   '34 – 36',  '67 – 75 cm' ),
+            array( 'M',   '38 – 40',  '76 – 83 cm' ),
+            array( 'L',   '42 – 44',  '84 – 93 cm' ),
+            array( 'XL',  '46 – 48',  '94 – 103 cm' ),
+            array( '2XL', '50 – 52',  '104 – 113 cm' ),
+            array( '3XL', '54 – 56',  '114 – 126 cm' ),
         );
     }
 }
