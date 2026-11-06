@@ -2,7 +2,7 @@
 /**
  * product-bottom: FISIOREST (orto-fisiorest)
  *
- * Dedicated bottom-nicer for the NORIKS FisioRest product.
+ * Dedicated bottom-nicer for the NORIKS NeckRelax product.
  * Shown via single-product-bottom-nicer.php when noriks_is_type('fisiorest').
  *
  * SCAFFOLD — media v tématu: img/fisiorest*.
@@ -159,7 +159,7 @@ $fis_upgrades = array(
 <!-- ============ 8) 14x levnější ============ -->
 <section class="fis-cheaper">
   <div class="fis-wrap fis-row2">
-    <div class="fis-row2-media"><img src="<?php echo esc_url( $fis_i.'fis-produkt-kvadrat.jpg' . $fis_ver ); ?>" alt="NORIKS FisioRest" loading="lazy"></div>
+    <div class="fis-row2-media"><img src="<?php echo esc_url( $fis_i.'fis-produkt-kvadrat.jpg' . $fis_ver ); ?>" alt="NORIKS NeckRelax" loading="lazy"></div>
     <div class="fis-row2-copy">
       <p class="fis-eyebrow">BEZPEČNÁ A UVOLŇUJÍCÍ TERAPIE</p>
       <h2 class="fis-h2">14× levnější než týdenní návštěvy</h2>
@@ -262,7 +262,7 @@ $fis_upgrades = array(
     .fis-card { border-left: 0; padding-left: 0; }
   }
 
-  /* Žádný odkaz "Tabulka velikostí" na FisioRestu (stejně jako bunion). */
+  /* Žádný odkaz "Tabulka velikostí" na NeckRelaxu (stejně jako bunion). */
   .noriks-global-sizechart, .gck-size-link, .gck-size-link-wrap,
   #open-size-chart, #open-size-chartCustom { display: none !important; }
 

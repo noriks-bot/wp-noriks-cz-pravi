@@ -567,7 +567,7 @@ $is_mixed_bundle = has_term( array( 'sady','orto-starter','orto-majica-bokserica
 
         <?php elseif( function_exists('noriks_is_type') && noriks_is_type('fisiorest', $current_product_id) ): ?>
 
-                NORIKS FisioRest je terapeutický polštář na krk, který kombinuje trakci, teplo a vibrační masáž v ergonomickém designu z paměťové pěny. Jemně protahuje krk pod správným úhlem, odlehčuje krční páteř a teplem i masáží uvolňuje svalové napětí. Bezdrátový, dobíjecí a obalený měkkým chladivým hedvábím – bezpečný i pro spánek.
+                NORIKS NeckRelax je terapeutický polštář na krk, který kombinuje trakci, teplo a vibrační masáž v ergonomickém designu z paměťové pěny. Jemně protahuje krk pod správným úhlem, odlehčuje krční páteř a teplem i masáží uvolňuje svalové napětí. Bezdrátový, dobíjecí a obalený měkkým chladivým hedvábím – bezpečný i pro spánek.
 
         <?php elseif( function_exists('noriks_is_type') && noriks_is_type('bunion', $current_product_id) ): ?>
 
@@ -964,7 +964,7 @@ Boxerky NORIKS jsou vyrobeny z prvotřídní směsi 95 % modalu a 5 % elastanu, 
         'kidsnest' => array( 'noriks-kidsnest.pdf', 'NORIKS KidsNest — dětský ortopedický polštář' ),
         'kneefix' => array( 'noriks-kneefix.pdf', 'NORIKS KneeFix — ortopedická kolenní ortéza' ),
         'ortopedski-jastuk' => array( 'noriks-ergosit.pdf', 'NORIKS ErgoSit — ortopedický sedací polštář' ),
-        'fisiorest' => array( 'noriks-fisiorest.pdf', 'NORIKS FisioRest — přístroj na krk' ),
+        'fisiorest' => array( 'noriks-fisiorest.pdf', 'NORIKS NeckRelax — přístroj na krk' ),
         'bunion' => array( 'noriks-bunion-fix.pdf', 'NORIKS Bunion Fix — korektor vbočeného palce' ),
         'ortopas' => array( 'noriks-ortopas.pdf', 'NORIKS ortopedický pás na záda' ),
     );

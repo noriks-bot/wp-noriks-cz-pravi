@@ -1,5 +1,5 @@
 <?php
-// Review pool for the NORIKS FisioRest neck device (fisiorest).
+// Review pool for the NORIKS NeckRelax neck device (fisiorest).
 // Text-only (no images), Czech.
 $auto_reviews_en = array(
     array("name" => "Adam K.",     "text" => "Po celém dni u počítače mě táhlo v krku. Deset minut s NORIKS a napětí je pryč. Používám ho každý večer."),

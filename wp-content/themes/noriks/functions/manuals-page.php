@@ -48,7 +48,7 @@ function noriks_manuals_list() {
         array(
             'file'  => 'noriks-fisiorest.pdf',
             'sku'   => 'NORIKS-FISIOREST',
-            'title' => 'NORIKS FisioRest — přístroj na krk',
+            'title' => 'NORIKS NeckRelax — přístroj na krk',
             'sub'   => 'Trakce, teplo a vibrační masáž v sezení od 15 do 30 minut.',
         ),
         array(
