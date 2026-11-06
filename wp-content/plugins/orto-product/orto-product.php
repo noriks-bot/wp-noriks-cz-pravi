@@ -1228,7 +1228,6 @@ function gck_render_bundle_selector() {
           }
           #bundle-selector .bundle-option > input[type="radio"] { grid-column: 1; grid-row: 1 / span 2; }
           #bundle-selector .bundle-option .gck-offer-head { grid-column: 2; grid-row: 1; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; line-height: 1.15; }
-          #bundle-selector .bundle-option .gck-size-select { width: auto !important; max-width: 100% !important; }
           #bundle-selector .bundle-option .bundle-option-title { font-size: 17px; font-weight: 800; letter-spacing: -.01em; line-height: 1.15; }
           #bundle-selector .bundle-option .gck-offer-sub { grid-column: 2; grid-row: 2; margin: 1px 0 0 !important; font-size: 13px; line-height: 1.25; color: #6b6b6b; }
           #bundle-selector .bundle-option .gck-offer-prices { display: inline-flex; align-items: center; gap: 8px; position: relative; top: -2px; }
@@ -1638,6 +1637,12 @@ function gck_render_bundle_selector() {
     <style>
       #bundle-selector .gck-dd-list::-webkit-scrollbar { width: 8px; }
       #bundle-selector .gck-dd-list::-webkit-scrollbar-thumb { background: #d8d8d8; border-radius: 8px; }
+      /* Izbirnik velikosti mora pokazati cel napis (crka + EU razpon), ne odrezanega. */
+      #bundle-selector .gck-size-select,
+      #bundle-selector .gck-dd,
+      #bundle-selector .gck-dd .gck-dd-btn { width: auto !important; min-width: 0 !important; max-width: 100% !important; }
+      #bundle-selector .gck-dd .gck-dd-btn,
+      #bundle-selector .gck-dd .gck-dd-label { overflow: visible !important; text-overflow: clip !important; white-space: nowrap !important; }
     </style>
     <script>
     (function(){
