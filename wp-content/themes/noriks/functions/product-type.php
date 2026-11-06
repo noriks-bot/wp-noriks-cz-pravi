@@ -174,8 +174,6 @@ if ( ! function_exists( 'noriks_slim_sizes' ) ) {
             array( 'XL',  '46 – 48', '99 – 104 cm' ),
             array( '2XL', '50 – 52', '107 – 112 cm' ),
             array( '3XL', '54 – 56', '114 – 118 cm' ),
-            array( '4XL', '58 – 60', '119 – 122 cm' ),
-            array( '5XL', '62 – 64', '124 – 127 cm' ),
         );
     }
 }
