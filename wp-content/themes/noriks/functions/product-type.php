@@ -60,6 +60,7 @@ function noriks_product_type_map() : array {
         // NORIKS Tradesman — radne carape s jastucenjem (boja + velicina).
         'tradesman'                => array( 'orto-tradesman' ),
         // NORIKS Slim — oblikujuce gacice visokog struka (boja + velicina).
+        'mamafit'                     => array( 'orto-mamafit' ),
         'slim'                     => array( 'orto-slim', 'slim' ),
         'kompwom'                 => array( 'orto-kompwom' ),
         'snug'                    => array( 'orto-snug' ),
