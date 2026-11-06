@@ -2204,7 +2204,8 @@ function gck_render_bundle_selector() {
                                             name="pairs[<?php echo esc_attr( $offer_id ); ?>][<?php echo $i; ?>][<?php echo esc_attr( $target_size_field_key ); ?>]">
                                             <?php foreach ( $size_values as $val ) : ?>
                                                 <option value="<?php echo esc_attr( $val ); ?>">
-                                                    <?php echo esc_html( $val ); ?>
+                                                    <?php // Oznaka „S - 34 – 36" (crka + EU razpon / mera), vrednost ostane gola crka.
+                                                    echo esc_html( function_exists( 'noriks_velikost_oznaka' ) ? noriks_velikost_oznaka( $val, $product_id ) : $val ); ?>
                                                 </option>
                                             <?php endforeach; ?>
                                         </select>
