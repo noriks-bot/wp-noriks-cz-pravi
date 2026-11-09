@@ -1185,6 +1185,11 @@ body.single-product {
    Storefront sets e.g. columns-5 -> width:8.57% + margin-right:14.28% with a
    very specific selector, so we must match/beat that specificity + !important
    and switch from float to flexbox for even, tight spacing. */
+/* Slicice galerije: najvec 2 vrsti (10 kosov). Ostale slike so dosegljive z drsenjem glavne slike. */
+.single-product div.product .woocommerce-product-gallery .flex-control-thumbs li:nth-child(n+11) {
+  display: none !important;
+}
+
 .single-product div.product .woocommerce-product-gallery .flex-control-nav.flex-control-thumbs,
 .single-product div.product .woocommerce-product-gallery .flex-control-thumbs {
   width: 100% !important;
