@@ -18,16 +18,6 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 $nwc      = get_template_directory_uri() . '/img/winecooler/';
 $nwc_path = get_template_directory() . '/img/winecooler/';
 
-/* video kupca (3 navpicni videi z lastnim gumbom za predvajanje) */
-$nwc_video = function( $n, $label ) use ( $nwc, $nwc_path ) {
-  $file = 'wc-video-' . $n . '.mp4'; $poster = 'wc-video-' . $n . '-poster.webp';
-  if ( ! file_exists( $nwc_path . $file ) ) { return ''; }
-  return '<div class="nwc-vid"><video src="' . esc_url( $nwc . $file ) . '"'
-    . ( file_exists( $nwc_path . $poster ) ? ' poster="' . esc_url( $nwc . $poster ) . '"' : '' )
-    . ' playsinline preload="metadata" aria-label="' . esc_attr( $label ) . '"></video>'
-    . '<button type="button" class="nwc-play" aria-label="' . esc_attr( 'Přehrát video: ' . $label ) . '"></button></div>';
-};
-
 /* mnenja — 1:1 z originalom */
 $nwc_testimonials = array(
   array( 'Skvělá věc', 'Skvělá věc, rovnoměrně chladí a nalévá bez rozlití.', 'Emma Molenaar' ),
@@ -38,19 +28,6 @@ $nwc_testimonials = array(
   array( 'Praktický', 'Praktický a pevný, přesně to, co jsem hledal.', 'Jesse de Bruin' ),
 );
 ?>
-
-<!-- 1) VIDEI KUPACA -->
-<section class="nwc-sec nwc-tint">
-  <div class="nwc-wrap">
-    <p class="nwc-kicker nwc-kicker--c">Videa zákazníků</p>
-    <h2 class="nwc-h2 nwc-h2--c">Poslechněte si <em>naše zákazníky</em> <span class="nwc-stars">★★★★★</span></h2>
-    <div class="nwc-vids">
-      <?php echo $nwc_video( 1, 'Video zákazníka 1 — NORIKS WineCooler' ); ?>
-      <?php echo $nwc_video( 2, 'Video zákazníka 2 — NORIKS WineCooler' ); ?>
-      <?php echo $nwc_video( 3, 'Video zákazníka 3 — NORIKS WineCooler' ); ?>
-    </div>
-  </div>
-</section>
 
 <!-- NOVE SEKCIJE (10.11.2026) -->
 <section class="fis-science"><div class="fis-wrap"><div class="fis-box"><h2 class="fis-title">4 důvody, proč si ho zamilujete</h2><div class="fis-grid">
@@ -118,18 +95,6 @@ $nwc_testimonials = array(
 </section>
 
 <style>
-/* videi kupcev: sirsi okvir in lastni gumb za predvajanje na sredini */
-.nwc-vids { margin: 0; gap: 22px; }
-.nwc-vid { position: relative; }
-.nwc-vid > video { width: 100%; display: block; }
-.nwc-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
-  width: 76px; height: 76px; border: 0; border-radius: 50%; background: rgba(255,255,255,.94);
-  box-shadow: 0 10px 28px rgba(40,20,10,.28); cursor: pointer; display: grid; place-items: center; padding: 0; }
-.nwc-play[hidden] { display: none; }
-.nwc-play::before { content: ""; width: 0; height: 0; margin-left: 6px;
-  border-top: 13px solid transparent; border-bottom: 13px solid transparent; border-left: 21px solid #8a2a3a; }
-@media (max-width: 749px) { .nwc-play { width: 60px; height: 60px; } }
-
 /* NORIKS standard: slika/video zapolni svoj stolpec v razmerju 4/5, besedilo navpicno na sredini */
 .nwc-row2 { align-items: center; }
 .nwc-media > img, .nwc-media > video,
@@ -162,11 +127,6 @@ $nwc_testimonials = array(
 .nwc-copy strong { color: #24191b; }
 .nwc-big { font-size: 19px !important; font-weight: 800; color: #24191b !important; }
 .nwc-sub { text-align: center; font-size: 16px; line-height: 1.6; color: #6b5a5d; max-width: 760px; margin: 0 auto 28px; }
-
-/* 1) videi kupaca */
-.nwc-vids { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin: 0; }
-.nwc-vid { position: relative; aspect-ratio: 9 / 16; overflow: hidden; background: #f1ecea; }
-.nwc-vid video { display: block; width: 100%; height: 100%; object-fit: cover; }
 
 /* 2) prednosti */
 .nwc-feat { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
@@ -211,7 +171,6 @@ $nwc_testimonials = array(
 @media (max-width: 560px) {
   .nwc-sec { padding: 42px 0; }
   .nwc-wrap { padding: 0 16px; }
-  .nwc-vids { gap: 8px; }
   .nwc-feat, .nwc-rev { grid-template-columns: 1fr; }
 }
 
@@ -407,15 +366,3 @@ $nwc_testimonials = array(
 }
 </style>
 
-<script>
-(function(){
-  document.querySelectorAll('.nwc-vid .nwc-play').forEach(function(b){
-    b.addEventListener('click', function(){
-      var v = b.parentNode.querySelector('video');
-      if (!v) return;
-      v.setAttribute('controls','');
-      v.play(); b.hidden = true;
-    });
-  });
-})();
-</script>
