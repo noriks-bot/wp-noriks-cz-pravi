@@ -49,7 +49,7 @@ defined( 'ABSPATH' ) || exit;
           /* Napis sledi dejansko izbranemu nacinu dostave. */
           $nbal = function_exists( 'noriks_balikovna_izbrana' ) && noriks_balikovna_izbrana();
           if ( $nbal ) {
-            echo 'Balíkovna - výdejna, pošta nebo box';
+            echo 'Balíkovna';
             $mid = function_exists( 'noriks_balikovna_seja_id' ) ? noriks_balikovna_seja_id() : '';
             $m   = $mid !== '' ? noriks_balikovna_mesto( $mid ) : null;
             if ( $m ) {

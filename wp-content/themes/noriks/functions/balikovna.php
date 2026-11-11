@@ -170,6 +170,7 @@ add_action( 'rest_api_init', function () {
 					'naziv'  => $m['naziv'],
 					'naslov' => $m['naslov'],
 					'tip'    => $m['tip'],
+					'obec'   => noriks_balikovna_obec( $m ),
 					'ure'    => implode( ' · ', noriks_balikovna_ure_besedilo( $m['ure'] ) ),
 				);
 			}
@@ -248,8 +249,16 @@ function noriks_balikovna_je_kljuc( $kljuc ) {
 	return strpos( (string) $kljuc, NORIKS_BALIKOVNA_ID ) === 0;
 }
 
-/** Ali je v tej kosarici izbrana Balíkovna? */
+/**
+ * Ali je izbrana Balíkovna? Gleda oddani obrazec (ob oddaji narocila je
+ * merodajen POST, ker seja se ni osvezena) in nato sejo.
+ */
 function noriks_balikovna_izbrana() {
+	if ( isset( $_POST['shipping_method'] ) ) {
+		foreach ( (array) $_POST['shipping_method'] as $m ) {
+			if ( noriks_balikovna_je_kljuc( sanitize_text_field( wp_unslash( $m ) ) ) ) { return true; }
+		}
+	}
 	$izbrani = ( function_exists( 'WC' ) && WC()->session ) ? WC()->session->get( 'chosen_shipping_methods' ) : array();
 	if ( ! is_array( $izbrani ) ) { return false; }
 	foreach ( $izbrani as $m ) {
@@ -265,25 +274,18 @@ function noriks_balikovna_seja_id() {
 }
 
 /* ------------------------------------------------------------------ *
- * 4) Blagajna — kartice nacinov dostave + izbirnik mesta
- *    Kliče se iz woocommerce/checkout/form-checkout.php.
+ * 4) Blagajna
+ *    Razporeditev sledi vigoshop.cz:
+ *      telefon -> e-posta -> "Způsob doručení" (kartici levo/desno)
+ *      -> ime/priimek -> izbirnik mesta (ko je izbrana Balíkovna; takrat so
+ *      polja naslova skrita) -> "Doprava" (datumi + cena + logotip).
  * ------------------------------------------------------------------ */
 
-/** Zelena kljukica na kartici (ista kot prej). */
-function noriks_balikovna_kljukica() {
-	return '<svg viewBox="0 0 19 14" fill="#3DBD00"><path fill-rule="evenodd" clip-rule="evenodd" d="M18.5725 3.40179L8.14482 13.5874C7.5815 14.1375 6.66839 14.1375 6.1056 13.5874L0.422493 8.03956C-0.140831 7.48994-0.140831 6.59748 0.422493 6.04707L1.44121 5.05126C2.00471 4.50094 2.91854 4.50094 3.48132 5.05126L7.12254 8.60835L15.5145 0.412609C16.078-0.137536 16.9909-0.137536 17.5537 0.412609L18.5733 1.40842C19.1424 1.95795 19.1424 2.8505 18.5725 3.40179Z"/></svg>';
-}
+const NORIKS_BALIKOVNA_LOGO    = 'https://images.vigo-shop.com/general/curriers/balikovna_transaprent.png';
+const NORIKS_BALIKOVNA_LOGO_CP = 'https://www.ceskaposta.cz/documents/20117/1310244/Logo_Ceska_posta_horizontalni.svg/dfc68dee-9367-d5d9-c3e5-4087f47d7a7f?version=1.0&t=1754915125425';
 
-/** Logotip Ceske poste na kartici (isti kot prej). */
-function noriks_balikovna_logo() {
-	return '<span class="delivery_img"><img decoding="async" class="ceska_posta standard" style="height:15px !important; width:70px !important;" src="https://www.ceskaposta.cz/documents/20117/1310244/Logo_Ceska_posta_horizontalni.svg/dfc68dee-9367-d5d9-c3e5-4087f47d7a7f?version=1.0&t=1754915125425"/></span>';
-}
-
-/**
- * Izrise seznam nacinov dostave na blagajni.
- * Brez Balíkovne izgleda enako kot prej (ena kartica, isti razredi CSS).
- */
-function noriks_balikovna_nacini() {
+/** Ponudbe dostave, locene na "na naslov" in "Balíkovna". */
+function noriks_balikovna_ponudbe() {
 	$ponudbe = array();
 	if ( function_exists( 'WC' ) && WC()->shipping() ) {
 		$paketi = WC()->shipping()->get_packages();
@@ -291,254 +293,142 @@ function noriks_balikovna_nacini() {
 			$ponudbe = $paketi[0]['rates'];
 		}
 	}
-
-	// Ce WooCommerce ne vrne nobene ponudbe, obdrzi videz blagajne kot prej.
-	if ( ! $ponudbe ) {
-		noriks_balikovna_rezervna_kartica();
-		return;
-	}
-
-	// Locimo dostavo na naslov od Balíkovne.
 	$doma = array();
 	$bal  = array();
 	foreach ( $ponudbe as $kljuc => $p ) {
 		if ( noriks_balikovna_je_kljuc( $kljuc ) ) { $bal[ $kljuc ] = $p; } else { $doma[ $kljuc ] = $p; }
 	}
 
-	$izbrani  = WC()->session ? (array) WC()->session->get( 'chosen_shipping_methods' ) : array();
+	$izbrani  = ( function_exists( 'WC' ) && WC()->session ) ? (array) WC()->session->get( 'chosen_shipping_methods' ) : array();
 	$trenutni = isset( $izbrani[0] ) ? (string) $izbrani[0] : '';
 
 	/* Na naslov pokazemo eno samo kartico — tisto, ki jo WooCommerce ze
-	   uporablja (ob kosarici nad mejo je to brezplacna dostava). Tako je
-	   blagajna enaka kot pred Balíkovno, le z eno novo moznostjo. */
+	   uporablja (ob kosarici nad mejo je to brezplacna dostava). */
 	if ( $doma ) {
-		$kljuc_doma = ( isset( $doma[ $trenutni ] ) ) ? $trenutni : key( $doma );
+		$kljuc_doma = isset( $doma[ $trenutni ] ) ? $trenutni : key( $doma );
 		$doma = array( $kljuc_doma => $doma[ $kljuc_doma ] );
 	}
-
-	$vrstni = $doma + $bal;   // dostava na naslov najprej = privzeta
-	if ( $trenutni === '' || ! isset( $vrstni[ $trenutni ] ) ) {
-		$kljuci   = array_keys( $vrstni );
-		$trenutni = $kljuci ? $kljuci[0] : '';
+	$vse = $doma + $bal;
+	if ( $trenutni === '' || ! isset( $vse[ $trenutni ] ) ) {
+		$kljuci   = array_keys( $vse );
+		$trenutni = $kljuci ? $kljuci[0] : '';   // privzeto dostava na naslov
 	}
-
-	$shranjen = noriks_balikovna_seja_id();
-	$mesto    = $shranjen !== '' ? noriks_balikovna_mesto( $shranjen ) : null;
-	$i        = 0;
-	?>
-	<ul class="shipping_method_custom">
-		<?php foreach ( $vrstni as $kljuc => $p ) :
-			$je_bal = noriks_balikovna_je_kljuc( $kljuc );
-			$cena   = (float) $p->get_cost();
-			$id_el  = 'shipping_method_0_' . sanitize_html_class( str_replace( ':', '_', $kljuc ) );
-			$naslov = $je_bal ? NORIKS_BALIKOVNA_NAPIS : ( count( $vrstni ) > 1 ? NORIKS_BALIKOVNA_DOMA : '' );
-			$i++;
-			?>
-			<li class="standard-shipping shipping-tab<?php echo $kljuc === $trenutni ? ' is-on' : ''; ?><?php echo $je_bal ? ' nbal-tab' : ''; ?>">
-				<input name="shipping_method[0]" data-index="0" id="<?php echo esc_attr( $id_el ); ?>"
-					value="<?php echo esc_attr( $kljuc ); ?>"
-					class="shipping_method shipping_method_field"
-					data-balikovna="<?php echo $je_bal ? '1' : '0'; ?>"
-					type="radio" <?php checked( $kljuc, $trenutni ); ?>>
-				<label for="<?php echo esc_attr( $id_el ); ?>" class="checkedlabel">
-					<?php echo noriks_balikovna_kljukica(); ?>
-					<div class="outer-wrapper">
-						<div class="inner-wrapper-dates">
-							<?php if ( $naslov !== '' ) : ?>
-								<span class="nbal-naslov"><?php echo esc_html( $naslov ); ?></span>
-							<?php endif; ?>
-							<strong class="hs-custom-date js-delivery-dates"<?php echo $i === 1 ? ' id="js-delivery-dates"' : ''; ?>></strong>
-						</div>
-						<div class="inner-wrapper-img">
-							<span class="shipping_method_delivery_price tag tag--red"><?php
-								echo $cena > 0 ? wp_kses_post( wc_price( $cena ) ) : 'Zdarma';
-							?></span>
-							<?php echo noriks_balikovna_logo(); ?>
-						</div>
-					</div>
-				</label>
-			</li>
-		<?php endforeach; ?>
-	</ul>
-
-	<?php if ( $bal ) : ?>
-	<div id="nbal-pick" class="nbal-pick"<?php echo noriks_balikovna_je_kljuc( $trenutni ) ? '' : ' hidden'; ?>>
-		<input type="hidden" id="nbal_id" name="nbal_id" value="<?php echo esc_attr( $shranjen ); ?>">
-		<label class="nbal-q-lab" for="nbal_q">Vyberte výdejní místo</label>
-		<input type="text" id="nbal_q" class="nbal-q" autocomplete="off"
-			placeholder="Zadejte PSČ, ulici nebo město odběrného místa.">
-		<ul id="nbal_list" class="nbal-list" hidden></ul>
-
-		<div id="nbal_vybrano" class="nbal-sel"<?php echo $mesto ? '' : ' hidden'; ?>>
-			<div class="nbal-sel-h">Místo vyzvednutí:</div>
-			<table class="nbal-tab">
-				<tr><th>Název:</th>  <td id="nbal_naziv"><?php echo $mesto ? esc_html( $mesto['naziv'] ) : ''; ?></td></tr>
-				<tr><th>Adresa:</th> <td id="nbal_naslov"><?php echo $mesto ? esc_html( $mesto['naslov'] ) : ''; ?></td></tr>
-				<tr><th>Typ:</th>    <td id="nbal_tip"><?php echo $mesto ? esc_html( $mesto['tip'] ) : ''; ?></td></tr>
-				<tr><th>Otevírací doba:</th>
-					<td><a href="#" id="nbal_ure_gumb">Zobrazit</a>
-						<div id="nbal_ure" class="nbal-ure" hidden><?php
-							if ( $mesto ) { echo esc_html( implode( ' · ', noriks_balikovna_ure_besedilo( $mesto['ure'] ) ) ); }
-						?><div class="nbal-ure-vir">Zdroj: Česká pošta</div></div></td></tr>
-			</table>
-			<a href="#" id="nbal_zmena" class="nbal-zmena">Změnit místo</a>
-		</div>
-		<div id="nbal_napaka" class="nbal-napaka" hidden>Vyberte prosím výdejní místo.</div>
-	</div>
-
-	<style>
-	#custom_shipping .shipping_method_custom li + li { margin-top: 6px !important; }
-	#custom_shipping .shipping_method_custom li:not(.is-on) .checkedlabel {
-		background: #fff !important; border-color: #d8d8d8 !important;
-	}
-	#custom_shipping .shipping_method_custom li:not(.is-on) label svg { fill: #cfcfcf !important; }
-	#custom_shipping .nbal-naslov {
-		display: block !important; font-size: 14px; font-weight: 700; line-height: 1.3;
-	}
-	#custom_shipping .inner-wrapper-dates .hs-custom-date { color: #555; font-weight: 500 !important; }
-	.nbal-pick { margin: 10px 0 0; position: relative; }
-	.nbal-q-lab { display: block; font-size: 13.5px; color: #555; margin: 0 0 5px; }
-	.nbal-q { width: 100%; padding: 12px 14px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; box-sizing: border-box; }
-	.nbal-list { position: absolute; z-index: 30; left: 0; right: 0; margin: 2px 0 0; padding: 0; list-style: none;
-		background: #fff; border: 1px solid #ccc; border-radius: 6px; max-height: 320px; overflow: auto;
-		box-shadow: 0 10px 28px rgba(0,0,0,.12); }
-	.nbal-list li { padding: 10px 14px; cursor: pointer; font-size: 14px; line-height: 1.35; border-bottom: 1px solid #f0f0f0; }
-	.nbal-list li:last-child { border-bottom: 0; }
-	.nbal-list li:hover, .nbal-list li.is-on { background: #1f6fbf; color: #fff; }
-	.nbal-list li .nbal-li-t { font-weight: 600; }
-	.nbal-list li .nbal-li-a { opacity: .85; }
-	.nbal-sel { margin-top: 12px; border: 1px solid #e3e3e3; border-radius: 8px; padding: 12px 14px; background: #fafafa; }
-	.nbal-sel-h { font-weight: 700; margin-bottom: 8px; }
-	.nbal-tab { width: 100%; border-collapse: collapse; font-size: 14px; }
-	.nbal-tab th { text-align: left; font-weight: 400; color: #666; padding: 4px 10px 4px 0; vertical-align: top; width: 130px; }
-	.nbal-tab td { padding: 4px 0; font-weight: 600; }
-	.nbal-ure { font-weight: 400; color: #444; margin-top: 6px; font-size: 13px; }
-	.nbal-ure-vir { color: #888; font-size: 12px; margin-top: 4px; }
-	.nbal-zmena { display: inline-block; margin-top: 8px; font-size: 13.5px; }
-	.nbal-napaka { color: #c0392b; font-size: 13.5px; margin-top: 6px; }
-	</style>
-
-	<script>
-	(function(){
-	  var koren = <?php echo wp_json_encode( esc_url_raw( rest_url( 'noriks/v1/balikovna' ) ) ); ?>;
-	  var wrap  = document.getElementById('custom_shipping'); if (!wrap) return;
-	  var q     = document.getElementById('nbal_q');
-	  var lista = document.getElementById('nbal_list');
-	  var skrit = document.getElementById('nbal_id');
-	  var okvir = document.getElementById('nbal_vybrano');
-	  var pick  = document.getElementById('nbal-pick');
-	  var napaka= document.getElementById('nbal_napaka');
-	  var cas;
-
-	  function izbran(){ return wrap.querySelector('input[name="shipping_method[0]"]:checked'); }
-	  function jeBal(){ var r = izbran(); return !!r && r.getAttribute('data-balikovna') === '1'; }
-
-	  function osvezi(){
-	    var r = izbran();
-	    wrap.querySelectorAll('.shipping_method_custom li').forEach(function(li){
-	      li.classList.toggle('is-on', !!r && li.contains(r));
-	    });
-	    if (pick) pick.hidden = !jeBal();
-	    if (napaka) napaka.hidden = true;
-	  }
-	  osvezi();
-
-	  wrap.addEventListener('change', function(e){
-	    if (!e.target.matches('input[name="shipping_method[0]"]')) return;
-	    osvezi();
-	    jQuery(document.body).trigger('update_checkout');
-	  });
-
-	  if (q) q.addEventListener('input', function(){
-	    clearTimeout(cas);
-	    var v = q.value.trim();
-	    if (v.length < 2) { lista.hidden = true; lista.innerHTML = ''; return; }
-	    cas = setTimeout(function(){
-	      fetch(koren + '?q=' + encodeURIComponent(v))
-	        .then(function(r){ return r.json(); })
-	        .then(function(d){
-	          lista.innerHTML = '';
-	          if (!d || !d.length) {
-	            lista.innerHTML = '<li class="nbal-prazno">Nic nenalezeno.</li>';
-	          } else {
-	            d.forEach(function(m){
-	              var li = document.createElement('li');
-	              li.setAttribute('data-id', m.id);
-	              li.innerHTML = '<span class="nbal-li-t"></span> <span class="nbal-li-a"></span>';
-	              li.querySelector('.nbal-li-t').textContent = m.naziv;
-	              li.querySelector('.nbal-li-a').textContent = m.naslov;
-	              li.addEventListener('click', function(){ izberi(m); });
-	              lista.appendChild(li);
-	            });
-	          }
-	          lista.hidden = false;
-	        })
-	        .catch(function(){ lista.hidden = true; });
-	    }, 220);
-	  });
-
-	  function izberi(m){
-	    skrit.value = m.id;
-	    document.getElementById('nbal_naziv').textContent  = m.naziv;
-	    document.getElementById('nbal_naslov').textContent = m.naslov;
-	    document.getElementById('nbal_tip').textContent    = m.tip;
-	    var ure = document.getElementById('nbal_ure');
-	    if (ure) { ure.hidden = true; ure.textContent = m.ure || ''; }
-	    q.value = '';
-	    lista.hidden = true;
-	    lista.innerHTML = '';
-	    q.hidden = true;
-	    document.querySelector('.nbal-q-lab').hidden = true;
-	    okvir.hidden = false;
-	    if (napaka) napaka.hidden = true;
-	    /* shrani v sejo, da izbira prezivi osvezitev blagajne */
-	    jQuery(document.body).trigger('update_checkout');
-	  }
-
-	  var zmena = document.getElementById('nbal_zmena');
-	  if (zmena) zmena.addEventListener('click', function(e){
-	    e.preventDefault();
-	    okvir.hidden = true;
-	    q.hidden = false;
-	    document.querySelector('.nbal-q-lab').hidden = false;
-	    q.focus();
-	  });
-
-	  var gumb = document.getElementById('nbal_ure_gumb');
-	  if (gumb) gumb.addEventListener('click', function(e){
-	    e.preventDefault();
-	    var ure = document.getElementById('nbal_ure');
-	    if (ure) ure.hidden = !ure.hidden;
-	  });
-
-	  document.addEventListener('click', function(e){
-	    if (lista && !lista.hidden && !lista.contains(e.target) && e.target !== q) { lista.hidden = true; }
-	  });
-
-	  /* ne pusti oddati narocila brez izbranega mesta */
-	  jQuery('form.checkout').on('checkout_place_order', function(){
-	    if (jeBal() && (!skrit.value || skrit.value === '')) {
-	      if (napaka) napaka.hidden = false;
-	      if (pick) pick.scrollIntoView({ behavior: 'smooth', block: 'center' });
-	      return false;
-	    }
-	    return true;
-	  });
-	})();
-	</script>
-	<?php
-	endif;
+	return array( 'doma' => $doma, 'bal' => $bal, 'vse' => $vse, 'izbran' => $trenutni );
 }
 
-/** Ko WooCommerce ne vrne ponudb: ista kartica kot pred Balíkovno. */
-function noriks_balikovna_rezervna_kartica() {
-	$cena = ( function_exists( 'WC' ) && WC()->cart ) ? (float) WC()->cart->get_shipping_total() : 0;
+/** Zelena kljukica na kartici dostave. */
+function noriks_balikovna_kljukica() {
+	return '<svg viewBox="0 0 19 14" fill="#3DBD00"><path fill-rule="evenodd" clip-rule="evenodd" d="M18.5725 3.40179L8.14482 13.5874C7.5815 14.1375 6.66839 14.1375 6.1056 13.5874L0.422493 8.03956C-0.140831 7.48994-0.140831 6.59748 0.422493 6.04707L1.44121 5.05126C2.00471 4.50094 2.91854 4.50094 3.48132 5.05126L7.12254 8.60835L15.5145 0.412609C16.078-0.137536 16.9909-0.137536 17.5537 0.412609L18.5733 1.40842C19.1424 1.95795 19.1424 2.8505 18.5725 3.40179Z"/></svg>';
+}
+
+/** "Obec" v povzetku mesta: sifra + kraj (kot ima vigoshop.cz). */
+function noriks_balikovna_obec( $m ) {
+	$deli = array_map( 'trim', explode( ',', (string) $m['naslov'] ) );
+	$kraj = '';
+	$mesto = '';
+	foreach ( $deli as $i => $d ) {
+		if ( preg_match( '/^\d{3} ?\d{2}$/', $d ) ) {
+			$kraj  = isset( $deli[ $i - 1 ] ) ? $deli[ $i - 1 ] : '';
+			$mesto = isset( $deli[ $i + 1 ] ) ? $deli[ $i + 1 ] : '';
+			break;
+		}
+	}
+	if ( $kraj === '' ) { return $m['id']; }
+	return $m['id'] . ' ' . $kraj . ( $mesto !== '' && $mesto !== $kraj ? ' (' . $mesto . ')' : '' );
+}
+
+/**
+ * "Způsob doručení" — kartici levo/desno. Izrise se nad polji za ime in
+ * naslov, tako kot pri konkurenci.
+ */
+function noriks_balikovna_izbira() {
+	$p = noriks_balikovna_ponudbe();
+	if ( ! $p['bal'] ) { return; }   // dokler nacin ni vklopljen, se blagajna ne spremeni
+
+	$kljuc_doma = $p['doma'] ? key( $p['doma'] ) : '';
+	$kljuc_bal  = key( $p['bal'] );
+	$je_bal     = noriks_balikovna_je_kljuc( $p['izbran'] );
+	?>
+	<div class="hs-delivery-type-container cz-balikovna">
+		<div class="container__title">Způsob doručení</div>
+		<div class="container__buttons">
+			<?php if ( $kljuc_doma !== '' ) : ?>
+			<div class="delivery-type hs-delivery-home enabled<?php echo $je_bal ? '' : ' active'; ?>"
+				data-rate="<?php echo esc_attr( $kljuc_doma ); ?>" data-balikovna="0">
+				<p>Doručení na adresu</p>
+				<img decoding="async" src="<?php echo esc_url( NORIKS_BALIKOVNA_LOGO_CP ); ?>" alt="Česká pošta">
+			</div>
+			<?php endif; ?>
+			<div class="delivery-type hs-delivery-machine enabled<?php echo $je_bal ? ' active' : ''; ?>"
+				data-rate="<?php echo esc_attr( $kljuc_bal ); ?>" data-balikovna="1">
+				<p><?php echo esc_html( NORIKS_BALIKOVNA_NAPIS ); ?></p>
+				<img decoding="async" src="<?php echo esc_url( NORIKS_BALIKOVNA_LOGO ); ?>" alt="Balíkovna">
+			</div>
+		</div>
+		<input type="hidden" name="shipping_method[0]" id="nbal_rate" value="<?php echo esc_attr( $p['izbran'] ); ?>">
+	</div>
+	<?php
+}
+
+/** Izbirnik prevzemnega mesta + povzetek izbranega mesta. */
+function noriks_balikovna_izbirnik() {
+	$p = noriks_balikovna_ponudbe();
+	if ( ! $p['bal'] ) { return; }
+
+	$je_bal   = noriks_balikovna_je_kljuc( $p['izbran'] );
+	$shranjen = noriks_balikovna_seja_id();
+	$mesto    = $shranjen !== '' ? noriks_balikovna_mesto( $shranjen ) : null;
+	?>
+	<p class="form-row form-row-wide col-xs-12 nbal-row" id="nbal_field"<?php echo $je_bal ? '' : ' style="display:none"'; ?>>
+		<span class="woocommerce-input-wrapper">
+			<select name="nbal_id" id="nbal_select" class="select form-input"
+				data-placeholder="Vyberte balíkovnu">
+				<option value=""></option>
+				<?php if ( $mesto ) : ?>
+					<option value="<?php echo esc_attr( $mesto['id'] ); ?>" selected="selected"><?php
+						echo esc_html( $mesto['naziv'] . ' ' . $mesto['naslov'] );
+					?></option>
+				<?php endif; ?>
+			</select>
+			<input type="text" id="nbal_q" class="nbal-q" autocomplete="off" hidden
+				placeholder="Vyberte balíkovnu">
+			<ul id="nbal_list" class="nbal-list" hidden></ul>
+		</span>
+		<img class="nbal-logo" decoding="async" src="<?php echo esc_url( NORIKS_BALIKOVNA_LOGO ); ?>" alt="Balíkovna">
+		<span id="nbal_napaka" class="nbal-napaka" hidden>Vyberte prosím výdejní místo.</span>
+	</p>
+
+	<div id="nbal_vybrano" class="nbal-sel"<?php echo ( $je_bal && $mesto ) ? '' : ' style="display:none"'; ?>>
+		<div class="nbal-sel-h">Místo vyzvednutí:</div>
+		<table class="nbal-tab">
+			<tr><th>Název:</th>  <td id="nbal_naziv"><?php echo $mesto ? esc_html( $mesto['naziv'] ) : ''; ?></td></tr>
+			<tr><th>Adresa:</th> <td id="nbal_naslov"><?php echo $mesto ? esc_html( $mesto['naslov'] ) : ''; ?></td></tr>
+			<tr><th>Obec:</th>   <td id="nbal_obec"><?php echo $mesto ? esc_html( noriks_balikovna_obec( $mesto ) ) : ''; ?></td></tr>
+			<tr><th>Otevírací doba:</th>
+				<td><a href="#" id="nbal_ure_gumb">Zobrazit</a>
+					<div id="nbal_ure" class="nbal-ure" hidden><?php
+						if ( $mesto ) { echo esc_html( implode( ' · ', noriks_balikovna_ure_besedilo( $mesto['ure'] ) ) ); }
+					?></div>
+					<div class="nbal-ure-vir" hidden>Zdroj: Česká pošta</div></td></tr>
+		</table>
+	</div>
+	<?php
+	noriks_balikovna_slog_in_skripta();
+}
+
+/** Blok "Doprava" v drugem stolpcu: datumi, cena, logotip prevoznika. */
+function noriks_balikovna_nacini() {
+	$p = noriks_balikovna_ponudbe();
+
+	if ( ! $p['vse'] ) { noriks_balikovna_rezervna_kartica(); return; }
+
+	$je_bal  = noriks_balikovna_je_kljuc( $p['izbran'] );
+	$ponudba = $p['vse'][ $p['izbran'] ];
+	$cena    = (float) $ponudba->get_cost();
 	?>
 	<ul class="shipping_method_custom">
 		<li class="standard-shipping shipping-tab is-on">
-			<input name="shipping_method[0]" data-index="0" id="shipping_method_0_standard_custom"
-				value="standard" class="shipping_method shipping_method_field" type="radio" checked>
-			<label for="shipping_method_0_standard_custom" class="checkedlabel">
+			<div class="checkedlabel">
 				<?php echo noriks_balikovna_kljukica(); ?>
 				<div class="outer-wrapper">
 					<div class="inner-wrapper-dates">
@@ -548,12 +438,252 @@ function noriks_balikovna_rezervna_kartica() {
 						<span class="shipping_method_delivery_price tag tag--red"><?php
 							echo $cena > 0 ? wp_kses_post( wc_price( $cena ) ) : 'Zdarma';
 						?></span>
-						<?php echo noriks_balikovna_logo(); ?>
+						<span class="delivery_img">
+							<img decoding="async" class="ceska_posta standard" id="nbal_doprava_logo"
+								style="height:15px !important; width:70px !important;"
+								src="<?php echo esc_url( $je_bal ? NORIKS_BALIKOVNA_LOGO : NORIKS_BALIKOVNA_LOGO_CP ); ?>">
+						</span>
 					</div>
 				</div>
-			</label>
+			</div>
 		</li>
 	</ul>
+	<?php
+}
+
+/** Ko WooCommerce ne vrne ponudb: ista kartica kot pred Balíkovno. */
+function noriks_balikovna_rezervna_kartica() {
+	$cena = ( function_exists( 'WC' ) && WC()->cart ) ? (float) WC()->cart->get_shipping_total() : 0;
+	?>
+	<ul class="shipping_method_custom">
+		<li class="standard-shipping shipping-tab is-on">
+			<div class="checkedlabel">
+				<?php echo noriks_balikovna_kljukica(); ?>
+				<div class="outer-wrapper">
+					<div class="inner-wrapper-dates">
+						<strong class="hs-custom-date js-delivery-dates" id="js-delivery-dates"></strong>
+					</div>
+					<div class="inner-wrapper-img">
+						<span class="shipping_method_delivery_price tag tag--red"><?php
+							echo $cena > 0 ? wp_kses_post( wc_price( $cena ) ) : 'Zdarma';
+						?></span>
+						<span class="delivery_img"><img decoding="async" class="ceska_posta standard"
+							style="height:15px !important; width:70px !important;"
+							src="<?php echo esc_url( NORIKS_BALIKOVNA_LOGO_CP ); ?>"></span>
+					</div>
+				</div>
+			</div>
+		</li>
+	</ul>
+	<?php
+}
+
+/* Vrivanje v obrazec: kartici nad imenom, izbirnik pod priimkom. */
+add_filter( 'woocommerce_form_field', function ( $polje, $kljuc ) {
+	if ( ! is_checkout() ) { return $polje; }
+	if ( $kljuc === 'billing_first_name' ) {
+		ob_start(); noriks_balikovna_izbira(); return ob_get_clean() . $polje;
+	}
+	if ( $kljuc === 'billing_last_name' ) {
+		ob_start(); noriks_balikovna_izbirnik(); return $polje . ob_get_clean();
+	}
+	return $polje;
+}, 10, 2 );
+
+/** Slog in skripta izbirnika (enkrat). */
+function noriks_balikovna_slog_in_skripta() {
+	static $enkrat = false;
+	if ( $enkrat ) { return; }
+	$enkrat = true;
+	?>
+	<style>
+	/* kartici "Způsob doručení" — mere vzete z vigoshop.cz */
+	.hs-delivery-type-container { display: flex; flex-direction: column; margin: 0 0 12px; }
+	.hs-delivery-type-container .container__title { font-size: 19.6px; font-weight: 700; margin: 0 0 9.8px; }
+	.hs-delivery-type-container .container__buttons { display: flex; flex-direction: row; }
+	.hs-delivery-type-container .delivery-type {
+		flex: 1 1 0; display: flex; flex-direction: column-reverse; justify-content: center;
+		align-items: center; text-align: center; margin: 2.8px; min-height: 76px; padding: 6px 8px;
+		border-radius: 4px; background: #fff; outline: 1px solid #cbcacb; cursor: pointer;
+	}
+	.hs-delivery-type-container .delivery-type.active { background: #f2feee; outline: 2px solid #47b426; }
+	.hs-delivery-type-container .delivery-type p { font-size: 15px; margin: 0; line-height: 1.25; }
+	.hs-delivery-type-container .delivery-type img { max-width: 75px; height: auto; margin: 0 0 6px; }
+
+	/* izbirnik mesta */
+	.nbal-row { margin: 0 0 5px !important; position: relative; }
+	.nbal-row .select2-container { width: 100% !important; }
+	.nbal-row .select2-selection--single { height: 50px !important; border: 1.5px solid #c9c9c9 !important; border-radius: 4px !important; }
+	.nbal-row .select2-selection__rendered { line-height: 47px !important; font-size: 14px; padding-left: 14px !important; }
+	.nbal-row .select2-selection__arrow { height: 48px !important; }
+	.nbal-row.is-filled .select2-selection--single { border-color: #47b426 !important; background: #f2feee !important; }
+	.nbal-row .nbal-logo { max-width: 86px; height: auto; display: block; margin: 6px 0 0; }
+	.nbal-q { width: 100%; height: 50px; padding: 0 14px; border: 1.5px solid #c9c9c9; border-radius: 4px;
+		font-size: 14px; box-sizing: border-box; }
+	.nbal-list { position: absolute; z-index: 30; left: 0; right: 0; margin: 2px 0 0; padding: 0; list-style: none;
+		background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 320px; overflow: auto;
+		box-shadow: 0 10px 28px rgba(0,0,0,.12); }
+	.nbal-list li { padding: 10px 14px; cursor: pointer; font-size: 14px; line-height: 1.35; border-bottom: 1px solid #f0f0f0; }
+	.nbal-list li:last-child { border-bottom: 0; }
+	.nbal-list li:hover { background: #1f6fbf; color: #fff; }
+	.nbal-napaka { color: #c0392b; font-size: 13.5px; display: block; margin-top: 6px; }
+
+	/* povzetek izbranega mesta */
+	.nbal-sel { margin: 4px 0 14px; }
+	.nbal-sel-h { font-size: 19.6px; font-weight: 700; margin: 0 0 9.8px; }
+	.nbal-tab { width: 100%; border-collapse: collapse; font-size: 14px; border: 1px solid #e3e3e3; }
+	.nbal-tab th { text-align: left; font-weight: 400; color: #555; padding: 10px 12px; vertical-align: top; width: 140px;
+		border-bottom: 1px solid #ededed; }
+	.nbal-tab td { padding: 10px 12px; font-weight: 700; border-bottom: 1px solid #ededed; }
+	.nbal-tab tr:last-child th, .nbal-tab tr:last-child td { border-bottom: 0; }
+	.nbal-ure { font-weight: 400; color: #444; margin-top: 6px; font-size: 13px; }
+	.nbal-ure-vir { color: #888; font-size: 12px; font-weight: 400; margin-top: 4px; }
+	</style>
+
+	<script>
+	(function(){
+	  var koren = <?php echo wp_json_encode( esc_url_raw( rest_url( 'noriks/v1/balikovna' ) ) ); ?>;
+	  var $ = window.jQuery;
+	  function el(id){ return document.getElementById(id); }
+
+	  var kartice = document.querySelectorAll('.hs-delivery-type-container .delivery-type');
+	  var rate    = el('nbal_rate');
+	  var polje   = el('nbal_field');
+	  var okvir   = el('nbal_vybrano');
+	  var napaka  = el('nbal_napaka');
+	  var sel     = el('nbal_select');
+	  if (!kartice.length || !rate) return;
+
+	  /* vrstice naslova, ki se pri Balíkovni skrijejo (kot na vigoshop.cz) */
+	  function vrsticeNaslova(){
+	    var v = [];
+	    ['billing_address_1_field','billing_address_2_field','billing_postcode_field','billing_city_field']
+	      .forEach(function(id){ var e = el(id); if (e) v.push(e); });
+	    var prva = el('billing_address_1_field');
+	    if (prva && prva.previousElementSibling &&
+	        prva.previousElementSibling.classList.contains('form-row')) { v.push(prva.previousElementSibling); }
+	    return v;
+	  }
+
+	  function jeBal(){
+	    var a = document.querySelector('.hs-delivery-type-container .delivery-type.active');
+	    return !!a && a.getAttribute('data-balikovna') === '1';
+	  }
+
+	  function osvezi(){
+	    var bal = jeBal();
+	    vrsticeNaslova().forEach(function(e){ e.style.display = bal ? 'none' : ''; });
+	    if (polje) polje.style.display = bal ? '' : 'none';
+	    if (okvir) okvir.style.display = (bal && sel && sel.value) ? '' : 'none';
+	    var logo = el('nbal_doprava_logo');
+	    if (logo) logo.src = bal
+	      ? <?php echo wp_json_encode( NORIKS_BALIKOVNA_LOGO ); ?>
+	      : <?php echo wp_json_encode( NORIKS_BALIKOVNA_LOGO_CP ); ?>;
+	    if (napaka) napaka.hidden = true;
+	    if (polje) polje.classList.toggle('is-filled', !!(sel && sel.value));
+	  }
+
+	  kartice.forEach(function(k){
+	    k.addEventListener('click', function(){
+	      kartice.forEach(function(x){ x.classList.remove('active'); });
+	      k.classList.add('active');
+	      rate.value = k.getAttribute('data-rate');
+	      osvezi();
+	      if ($) $(document.body).trigger('update_checkout');
+	    });
+	  });
+
+	  function izbrano(m){
+	    el('nbal_naziv').textContent  = m.naziv;
+	    el('nbal_naslov').textContent = m.naslov;
+	    el('nbal_obec').textContent   = m.obec || '';
+	    var ure = el('nbal_ure');
+	    if (ure) { ure.hidden = true; ure.textContent = m.ure || ''; }
+	    var vir = document.querySelector('.nbal-ure-vir'); if (vir) vir.hidden = true;
+	    if (okvir) okvir.style.display = '';
+	    if (polje) polje.classList.add('is-filled');
+	    if (napaka) napaka.hidden = true;
+	    if ($) $(document.body).trigger('update_checkout');
+	  }
+
+	  /* Izbirnik: selectWoo (enak videz kot drugod v blagajni), sicer rezervno polje. */
+	  if ($ && $.fn.selectWoo && sel) {
+	    $(sel).selectWoo({
+	      placeholder: 'Vyberte balíkovnu',
+	      width: '100%',
+	      minimumInputLength: 2,
+	      language: {
+	        inputTooShort: function(){ return 'Zadejte PSČ, ulici nebo město…'; },
+	        searching:     function(){ return 'Hledám…'; },
+	        noResults:     function(){ return 'Nic nenalezeno.'; }
+	      },
+	      ajax: {
+	        url: koren, dataType: 'json', delay: 220,
+	        data: function(p){ return { q: p.term }; },
+	        processResults: function(d){
+	          return { results: (d || []).map(function(m){
+	            return { id: m.id, text: m.naziv + ' ' + m.naslov, mesto: m };
+	          }) };
+	        }
+	      }
+	    });
+	    $(sel).on('select2:select', function(e){ izbrano(e.params.data.mesto); });
+	  } else if (sel) {
+	    /* rezervno: besedilno polje z lastnim seznamom */
+	    sel.hidden = true;
+	    var q = el('nbal_q'), lista = el('nbal_list'), cas;
+	    if (q) {
+	      q.hidden = false;
+	      q.addEventListener('input', function(){
+	        clearTimeout(cas);
+	        var v = q.value.trim();
+	        if (v.length < 2) { lista.hidden = true; lista.innerHTML = ''; return; }
+	        cas = setTimeout(function(){
+	          fetch(koren + '?q=' + encodeURIComponent(v)).then(function(r){ return r.json(); })
+	            .then(function(d){
+	              lista.innerHTML = '';
+	              if (!d || !d.length) { lista.innerHTML = '<li>Nic nenalezeno.</li>'; }
+	              else d.forEach(function(m){
+	                var li = document.createElement('li');
+	                li.textContent = m.naziv + ' — ' + m.naslov;
+	                li.addEventListener('click', function(){
+	                  sel.innerHTML = '<option value="' + m.id + '" selected></option>';
+	                  sel.options[0].textContent = m.naziv + ' ' + m.naslov;
+	                  q.value = m.naziv + ', ' + m.naslov;
+	                  lista.hidden = true;
+	                  izbrano(m);
+	                });
+	                lista.appendChild(li);
+	              });
+	              lista.hidden = false;
+	            }).catch(function(){ lista.hidden = true; });
+	        }, 220);
+	      });
+	      document.addEventListener('click', function(e){
+	        if (lista && !lista.hidden && !lista.contains(e.target) && e.target !== q) { lista.hidden = true; }
+	      });
+	    }
+	  }
+
+	  var gumb = el('nbal_ure_gumb');
+	  if (gumb) gumb.addEventListener('click', function(e){
+	    e.preventDefault();
+	    var ure = el('nbal_ure'); var vir = document.querySelector('.nbal-ure-vir');
+	    if (ure) { ure.hidden = !ure.hidden; if (vir) vir.hidden = ure.hidden; }
+	  });
+
+	  if ($) $('form.checkout').on('checkout_place_order', function(){
+	    if (jeBal() && (!sel || !sel.value)) {
+	      if (napaka) napaka.hidden = false;
+	      if (polje) polje.scrollIntoView({ behavior: 'smooth', block: 'center' });
+	      return false;
+	    }
+	    return true;
+	  });
+
+	  osvezi();
+	})();
+	</script>
 	<?php
 }
 
@@ -564,6 +694,15 @@ add_action( 'woocommerce_checkout_update_order_review', function ( $podatki ) {
 		WC()->session->set( NORIKS_BALIKOVNA_META . '_id', sanitize_text_field( $p['nbal_id'] ) );
 	}
 } );
+
+/* Pri Balíkovni ulica, hisna stevilka, PSC in mesto niso obvezni (skriti so). */
+add_filter( 'woocommerce_checkout_fields', function ( $polja ) {
+	if ( ! noriks_balikovna_izbrana() ) { return $polja; }
+	foreach ( array( 'billing_address_1', 'billing_address_2', 'billing_postcode', 'billing_city' ) as $k ) {
+		if ( isset( $polja['billing'][ $k ] ) ) { $polja['billing'][ $k ]['required'] = false; }
+	}
+	return $polja;
+}, 20 );
 
 /* ------------------------------------------------------------------ *
  * 5) Preverjanje in shranjevanje k narocilu
@@ -591,10 +730,15 @@ add_action( 'woocommerce_checkout_process', function () {
  */
 function noriks_balikovna_naslov_za_metakocko( $narocilo, $m ) {
 	$narocilo->set_shipping_postcode( $m['id'] );
+	$narocilo->set_billing_postcode( $m['id'] );
 	if ( apply_filters( 'noriks_balikovna_prazen_naslov', true, $narocilo, $m ) ) {
 		$narocilo->set_shipping_address_1( '' );
 		$narocilo->set_shipping_address_2( '' );
 		$narocilo->set_shipping_city( '' );
+		// polja naslova so na blagajni skrita, zato so prazna tudi pri racunu
+		$narocilo->set_billing_address_1( '' );
+		$narocilo->set_billing_address_2( '' );
+		$narocilo->set_billing_city( '' );
 	}
 }
 
