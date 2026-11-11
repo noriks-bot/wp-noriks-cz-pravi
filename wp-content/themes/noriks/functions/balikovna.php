@@ -513,11 +513,16 @@ add_filter( 'woocommerce_form_field', function ( $polje, $kljuc ) {
 	return $polje;
 }, 10, 2 );
 
-/** Slog in skripta izbirnika (enkrat). */
+/**
+ * Slog izbirnika (enkrat) + prijava skripte v nogo.
+ * Skripta mora v nogo: v obrazcu bi tekla, preden WooCommerce nalozi
+ * jQuery.selectWoo, in izbirnik bi padel na rezervno besedilno polje.
+ */
 function noriks_balikovna_slog_in_skripta() {
 	static $enkrat = false;
 	if ( $enkrat ) { return; }
 	$enkrat = true;
+	add_action( 'wp_footer', 'noriks_balikovna_skripta', 99 );
 	?>
 	<style>
 	/* Kartice nacinov dostave imajo slog ze v temi (vgrajen CSS blagajne:
@@ -558,7 +563,12 @@ function noriks_balikovna_slog_in_skripta() {
 	.nbal-ure { font-weight: 400; color: #444; margin-top: 6px; font-size: 13px; }
 	.nbal-ure-vir { color: #888; font-size: 12px; font-weight: 400; margin-top: 4px; }
 	</style>
+	<?php
+}
 
+/** Skripta izbirnika — v nogi, ko sta jQuery in selectWoo ze nalozena. */
+function noriks_balikovna_skripta() {
+	?>
 	<script>
 	(function(){
 	  var koren = <?php echo wp_json_encode( esc_url_raw( rest_url( 'noriks/v1/balikovna' ) ) ); ?>;
