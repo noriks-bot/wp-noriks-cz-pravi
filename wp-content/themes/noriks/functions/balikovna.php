@@ -430,7 +430,7 @@ function noriks_balikovna_nacini() {
 	?>
 	<ul class="shipping_method_custom">
 		<li class="standard-shipping shipping-tab is-on">
-			<div class="checkedlabel">
+			<label class="checkedlabel">
 				<?php echo noriks_balikovna_kljukica(); ?>
 				<div class="outer-wrapper">
 					<div class="inner-wrapper-dates">
@@ -447,7 +447,7 @@ function noriks_balikovna_nacini() {
 						</span>
 					</div>
 				</div>
-			</div>
+			</label>
 		</li>
 	</ul>
 	<?php
@@ -459,7 +459,7 @@ function noriks_balikovna_rezervna_kartica() {
 	?>
 	<ul class="shipping_method_custom">
 		<li class="standard-shipping shipping-tab is-on">
-			<div class="checkedlabel">
+			<label class="checkedlabel">
 				<?php echo noriks_balikovna_kljukica(); ?>
 				<div class="outer-wrapper">
 					<div class="inner-wrapper-dates">
@@ -474,7 +474,7 @@ function noriks_balikovna_rezervna_kartica() {
 							src="<?php echo esc_url( NORIKS_BALIKOVNA_LOGO_CP ); ?>"></span>
 					</div>
 				</div>
-			</div>
+			</label>
 		</li>
 	</ul>
 	<?php
@@ -511,6 +511,10 @@ function noriks_balikovna_slog_in_skripta() {
 	.hs-delivery-type-container .delivery-type.active { background: #f2feee; outline: 2px solid #47b426; }
 	.hs-delivery-type-container .delivery-type p { font-size: 15px; margin: 0; line-height: 1.25; }
 	.hs-delivery-type-container .delivery-type img { max-width: 75px; height: auto; margin: 0 0 6px; }
+
+	/* kljukica v bloku "Doprava" (CSS teme jo meri prek "label svg") */
+	#custom_shipping .checkedlabel svg { width: 19px !important; height: 14px !important;
+		flex: 0 0 19px !important; margin-right: 10px !important; }
 
 	/* izbirnik mesta */
 	.nbal-row { margin: 0 0 5px !important; position: relative; }
