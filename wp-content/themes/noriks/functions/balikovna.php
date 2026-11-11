@@ -325,10 +325,16 @@ function noriks_balikovna_ponudbe() {
 	$izbrani  = ( function_exists( 'WC' ) && WC()->session ) ? (array) WC()->session->get( 'chosen_shipping_methods' ) : array();
 	$trenutni = isset( $izbrani[0] ) ? (string) $izbrani[0] : '';
 
-	/* Na naslov pokazemo eno samo kartico — tisto, ki jo WooCommerce ze
-	   uporablja (ob kosarici nad mejo je to brezplacna dostava). */
+	/* Na naslov pokazemo eno samo kartico — najcenejso. Tako kupec nikoli ne
+	   vidi placljive dostave, ce je brezplacna ze dosezena (izbira v seji je
+	   lahko stara in bi sicer obvisela na placljivi). */
 	if ( $doma ) {
-		$kljuc_doma = isset( $doma[ $trenutni ] ) ? $trenutni : key( $doma );
+		$kljuc_doma = null;
+		foreach ( $doma as $k => $r ) {
+			if ( $kljuc_doma === null || (float) $r->get_cost() < (float) $doma[ $kljuc_doma ]->get_cost() ) {
+				$kljuc_doma = $k;
+			}
+		}
 		$doma = array( $kljuc_doma => $doma[ $kljuc_doma ] );
 	}
 	$vse = $doma + $bal;
