@@ -45,7 +45,20 @@ defined( 'ABSPATH' ) || exit;
 
       <!-- Shipping -->
       <div class="c--darkgray review-section-container review-addons shipping_order_review">
-        <div class="review-addons-title"><div>Standardní dodávka - Česká pošta</div></div>
+        <div class="review-addons-title"><div><?php
+          /* Napis sledi dejansko izbranemu nacinu dostave. */
+          $nbal = function_exists( 'noriks_balikovna_izbrana' ) && noriks_balikovna_izbrana();
+          if ( $nbal ) {
+            echo 'Balíkovna - výdejna, pošta nebo box';
+            $mid = function_exists( 'noriks_balikovna_seja_id' ) ? noriks_balikovna_seja_id() : '';
+            $m   = $mid !== '' ? noriks_balikovna_mesto( $mid ) : null;
+            if ( $m ) {
+              echo '<br><small>' . esc_html( $m['naziv'] ) . ', ' . esc_html( $m['naslov'] ) . '</small>';
+            }
+          } else {
+            echo 'Standardní dodávka - Česká pošta';
+          }
+        ?></div></div>
         <div class="review-addons-price review-sale-price" id="noriks-shipping-price">
           <?php
             $ship = (float) WC()->cart->get_shipping_total();

@@ -34,6 +34,14 @@ if ( WC()->cart->is_empty() ) return;
         <?php WC()->cart->calculate_totals(); ?>
         <div id="custom_shipping">
           <h3>Doprava - Česká pošta</h3>
+          <?php
+          /* Nacini dostave: na naslov (privzeto) + Balíkovna z izbirnikom mesta.
+             Logika je v functions/balikovna.php; brez vklopljene Balíkovne
+             izrise isto kartico kot prej. */
+          if ( function_exists( 'noriks_balikovna_nacini' ) ) {
+            noriks_balikovna_nacini();
+          } else {
+          ?>
           <ul class="shipping_method_custom">
             <li class="standard-shipping shipping-tab">
               <input name="shipping_method[0]" data-index="0" id="shipping_method_0_standard_custom"
@@ -42,7 +50,7 @@ if ( WC()->cart->is_empty() ) return;
                 <svg viewBox="0 0 19 14" fill="#3DBD00"><path fill-rule="evenodd" clip-rule="evenodd" d="M18.5725 3.40179L8.14482 13.5874C7.5815 14.1375 6.66839 14.1375 6.1056 13.5874L0.422493 8.03956C-0.140831 7.48994-0.140831 6.59748 0.422493 6.04707L1.44121 5.05126C2.00471 4.50094 2.91854 4.50094 3.48132 5.05126L7.12254 8.60835L15.5145 0.412609C16.078-0.137536 16.9909-0.137536 17.5537 0.412609L18.5733 1.40842C19.1424 1.95795 19.1424 2.8505 18.5725 3.40179Z"/></svg>
                 <div class="outer-wrapper">
                   <div class="inner-wrapper-dates">
-                    <strong class="hs-custom-date" id="js-delivery-dates"></strong>
+                    <strong class="hs-custom-date js-delivery-dates" id="js-delivery-dates"></strong>
                   </div>
                   <div class="inner-wrapper-img">
                     <span class="shipping_method_delivery_price tag tag--red"><?php $ship = (float) WC()->cart->get_shipping_total(); echo $ship > 0 ? wc_price($ship) : 'Zdarma'; ?></span>
@@ -52,6 +60,7 @@ if ( WC()->cart->is_empty() ) return;
               </label>
             </li>
           </ul>
+          <?php } ?>
           <div class="delivery-from-eu-warehouse">
             <img decoding="async" class="delivery-from-eu-warehouse__icon" src="https://images.vigo-shop.com/general/flags/eu-warehouse.svg">
             <span class="delivery-from-eu-warehouse__text">Sklad v EU</span>
@@ -116,7 +125,7 @@ jQuery(function($){
   var days=['neděle','pondělí','úterý','středa','čtvrtek','pátek','sobota'];
   function addBiz(d,n){var r=new Date(d);while(n>0){r.setDate(r.getDate()+1);if(r.getDay()!==0&&r.getDay()!==6)n--;}return r;}
   var now=new Date(),from=addBiz(now,2),to=addBiz(now,5);
-  $('#js-delivery-dates').text(days[from.getDay()]+', '+from.getDate()+'.'+(from.getMonth()+1)+'. - '+days[to.getDay()]+', '+to.getDate()+'.'+(to.getMonth()+1)+'.');
+  $('#js-delivery-dates, .js-delivery-dates').text(days[from.getDay()]+', '+from.getDate()+'.'+(from.getMonth()+1)+'. - '+days[to.getDay()]+', '+to.getDate()+'.'+(to.getMonth()+1)+'.');
 
   /* Shipping price — read from WC after checkout update */
   /* Update order review when clicking payment method label */

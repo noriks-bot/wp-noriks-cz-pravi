@@ -503,7 +503,12 @@ add_action( 'wp_footer', function() {
       /* Sync shipping price: copy from review-order (AJAX-rendered) to top shipping badge */
       function syncShippingPrice() {
         var price = $('#noriks-shipping-price').html();
-        if (price && price.trim()) $('.shipping_method_delivery_price').html(price);
+        if (!price || !price.trim()) return;
+        /* ko je kartic vec (dostava na naslov + Balíkovna), osvezi samo izbrano */
+        var $tgt = $('#custom_shipping input.shipping_method_field:checked')
+                     .closest('li').find('.shipping_method_delivery_price');
+        if (!$tgt.length) $tgt = $('.shipping_method_delivery_price');
+        $tgt.html(price);
       }
       $(document.body).on('updated_checkout init_checkout', syncShippingPrice);
       /* Force WC to recalculate on page load (fixes stale cache from cart) */
