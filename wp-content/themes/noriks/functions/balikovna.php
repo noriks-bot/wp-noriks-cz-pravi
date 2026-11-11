@@ -282,7 +282,9 @@ function noriks_balikovna_seja_id() {
  * ------------------------------------------------------------------ */
 
 const NORIKS_BALIKOVNA_LOGO    = 'https://images.vigo-shop.com/general/curriers/balikovna_transaprent.png';
-const NORIKS_BALIKOVNA_LOGO_CP = 'https://www.ceskaposta.cz/documents/20117/1310244/Logo_Ceska_posta_horizontalni.svg/dfc68dee-9367-d5d9-c3e5-4087f47d7a7f?version=1.0&t=1754915125425';
+/* Logotip za dostavo na naslov. Logotip z ceskaposta.cz se ne nalozi — streznik
+   blokira vroce povezave (zato je bil v bloku "Doprava" ze doslej prazen kvadratek). */
+const NORIKS_BALIKOVNA_LOGO_CP = 'https://images.vigo-shop.com/general/curriers/balikovna_adres_transparent.png';
 
 /** Ponudbe dostave, locene na "na naslov" in "Balíkovna". */
 function noriks_balikovna_ponudbe() {
@@ -379,7 +381,7 @@ function noriks_balikovna_izbirnik() {
 	$shranjen = noriks_balikovna_seja_id();
 	$mesto    = $shranjen !== '' ? noriks_balikovna_mesto( $shranjen ) : null;
 	?>
-	<p class="form-row form-row-wide col-xs-12 nbal-row" id="nbal_field"<?php echo $je_bal ? '' : ' style="display:none"'; ?>>
+	<div class="form-row form-row-wide col-xs-12 nbal-row" id="nbal_field"<?php echo $je_bal ? '' : ' style="display:none"'; ?>>
 		<span class="woocommerce-input-wrapper">
 			<select name="nbal_id" id="nbal_select" class="select form-input"
 				data-placeholder="Vyberte balíkovnu">
@@ -396,7 +398,7 @@ function noriks_balikovna_izbirnik() {
 		</span>
 		<img class="nbal-logo" decoding="async" src="<?php echo esc_url( NORIKS_BALIKOVNA_LOGO ); ?>" alt="Balíkovna">
 		<span id="nbal_napaka" class="nbal-napaka" hidden>Vyberte prosím výdejní místo.</span>
-	</p>
+	</div>
 
 	<div id="nbal_vybrano" class="nbal-sel"<?php echo ( $je_bal && $mesto ) ? '' : ' style="display:none"'; ?>>
 		<div class="nbal-sel-h">Místo vyzvednutí:</div>
@@ -553,6 +555,27 @@ function noriks_balikovna_slog_in_skripta() {
 	  var napaka  = el('nbal_napaka');
 	  var sel     = el('nbal_select');
 	  if (!kartice.length || !rate) return;
+
+	  /* Skripta blagajne po nalaganju prestavi vse .form-row na konec ovoja,
+	     zato nase bloke po tem postavimo na pravo mesto:
+	     kartice nad "Jméno", izbirnik mesta pod "Příjmení". */
+	  function postavi(){
+	    var kart  = document.querySelector('.hs-delivery-type-container');
+	    var ime   = el('billing_first_name_field');
+	    var prii  = el('billing_last_name_field');
+	    if (kart && ime && kart.nextElementSibling !== ime) {
+	      ime.parentNode.insertBefore(kart, ime);
+	    }
+	    if (prii && polje && prii.nextElementSibling !== polje) {
+	      prii.parentNode.insertBefore(polje, prii.nextElementSibling);
+	    }
+	    if (polje && okvir && polje.nextElementSibling !== okvir) {
+	      polje.parentNode.insertBefore(okvir, polje.nextElementSibling);
+	    }
+	  }
+	  postavi();
+	  [60, 300, 900, 2000].forEach(function(t){ setTimeout(postavi, t); });
+	  if ($) $(document.body).on('updated_checkout country_to_state_changed', function(){ postavi(); osvezi(); });
 
 	  /* vrstice naslova, ki se pri Balíkovni skrijejo (kot na vigoshop.cz) */
 	  function vrsticeNaslova(){
