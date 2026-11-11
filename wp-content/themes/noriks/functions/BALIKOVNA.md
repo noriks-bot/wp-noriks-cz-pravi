@@ -33,6 +33,13 @@ privzeta.
 
 ## 2. Metakocka
 
+**Preslikava dostavne službe.** Poleg naziva, po katerem Metakocka loči NP/NB/DR,
+je treba v povezavi s spletno trgovino klikniti **»Preberi dostavne službe«** in
+novemu načinu `Balík do Balíkovny` določiti vrsto dostave Pošta Češka
+([navodila](https://metakocka.freshdesk.com/sl/support/solutions/articles/3000086935-spletne-trgovine-preslikava-dostavne-slu%C5%BEbe)).
+Pri več vrstah dostave v eni trgovini je treba Metakocko **vnaprej obvestiti** —
+na računu ti morajo vklopiti dodatno funkcionalnost.
+
 Dve stvari, ki jih koda ne more narediti:
 
 1. **Pogodba s Češko pošto za Balíkovno.** V Metakocki: Dodatne nastavitve →
