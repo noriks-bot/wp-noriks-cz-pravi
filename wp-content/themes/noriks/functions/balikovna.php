@@ -534,20 +534,36 @@ function noriks_balikovna_slog_in_skripta() {
 	#custom_shipping .checkedlabel svg { width: 19px !important; height: 14px !important;
 		flex: 0 0 19px !important; margin-right: 10px !important; }
 
-	/* izbirnik mesta */
-	.nbal-row { margin: 0 0 5px !important; position: relative; }
+	/* Izbirnik mesta — mere so vzete iz nasih polj na blagajni
+	   (visina 60px, pisava 18px, obroba 1,5px #c9c9c9, zaobljenost 4px),
+	   da stoji v vrsti enako kot Jméno, Ulice in ostala polja. */
+	.nbal-row { margin: 0 0 10px !important; position: relative; }
 	.nbal-row .select2-container { width: 100% !important; }
-	.nbal-row .select2-selection--single { height: 50px !important; border: 1.5px solid #c9c9c9 !important; border-radius: 4px !important; }
-	.nbal-row .select2-selection__rendered { line-height: 47px !important; font-size: 14px; padding-left: 14px !important; }
-	.nbal-row .select2-selection__arrow { height: 48px !important; }
-	.nbal-row.is-filled .select2-selection--single { border-color: #47b426 !important; background: #f2feee !important; }
-	.nbal-row .nbal-logo { max-width: 86px; height: auto; display: block; margin: 6px 0 0; }
-	.nbal-q { width: 100%; height: 50px; padding: 0 14px; border: 1.5px solid #c9c9c9; border-radius: 4px;
-		font-size: 14px; box-sizing: border-box; }
+	.nbal-row .select2-container--default .select2-selection--single {
+		height: 60px !important; border: 1.5px solid #c9c9c9 !important;
+		border-radius: 4px !important; background: #fff !important; outline: none !important; }
+	.nbal-row .select2-container--default .select2-selection--single .select2-selection__rendered {
+		line-height: 57px !important; font-size: 18px !important; color: #333 !important;
+		padding: 0 34px 0 18px !important; }
+	.nbal-row .select2-container--default .select2-selection--single .select2-selection__placeholder {
+		color: #8a8a8a !important; font-size: 18px !important; }
+	.nbal-row .select2-container--default .select2-selection--single .select2-selection__arrow {
+		height: 57px !important; right: 12px !important; }
+	.nbal-row.is-filled .select2-container--default .select2-selection--single {
+		border-color: #47b426 !important; background: #f2feee !important; }
+	.select2-dropdown { border: 1.5px solid #c9c9c9 !important; border-radius: 4px !important; }
+	.select2-container--default .select2-results__option { font-size: 15px !important; line-height: 1.35 !important; }
+	.select2-container--default .select2-search--dropdown .select2-search__field {
+		height: 44px !important; font-size: 16px !important; padding: 0 12px !important;
+		border: 1.5px solid #c9c9c9 !important; border-radius: 4px !important; }
+	.nbal-row .nbal-logo { max-width: 86px; height: auto; display: block; margin: 8px 0 0; }
+	/* rezervno polje (ce selectWoo ni na voljo) — enake mere kot ostala polja */
+	.nbal-q { width: 100%; height: 60px; padding: 0 18px; border: 1.5px solid #c9c9c9; border-radius: 4px;
+		font-size: 18px; box-sizing: border-box; }
 	.nbal-list { position: absolute; z-index: 30; left: 0; right: 0; margin: 2px 0 0; padding: 0; list-style: none;
-		background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 320px; overflow: auto;
+		background: #fff; border: 1.5px solid #c9c9c9; border-radius: 4px; max-height: 320px; overflow: auto;
 		box-shadow: 0 10px 28px rgba(0,0,0,.12); }
-	.nbal-list li { padding: 10px 14px; cursor: pointer; font-size: 14px; line-height: 1.35; border-bottom: 1px solid #f0f0f0; }
+	.nbal-list li { padding: 10px 14px; cursor: pointer; font-size: 15px; line-height: 1.35; border-bottom: 1px solid #f0f0f0; }
 	.nbal-list li:last-child { border-bottom: 0; }
 	.nbal-list li:hover { background: #1f6fbf; color: #fff; }
 	.nbal-napaka { color: #c0392b; font-size: 13.5px; display: block; margin-top: 6px; }
