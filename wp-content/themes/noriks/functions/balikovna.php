@@ -639,9 +639,17 @@ function noriks_balikovna_skripta() {
 	    return !!a && a.getAttribute('data-balikovna') === '1';
 	  }
 
+	  /* Skrita polja naslova pocistimo: Metakocka pri Balíkovni hoce prazno
+	     ulico in mesto, hkrati pa stare vrednosti ne smejo v narocilo. */
+	  function pocistiNaslov(){
+	    ['billing_address_1','billing_address_2','billing_postcode','billing_city']
+	      .forEach(function(id){ var e = el(id); if (e && e.value !== '') { e.value = ''; } });
+	  }
+
 	  function osvezi(){
 	    var bal = jeBal();
 	    vrsticeNaslova().forEach(function(e){ e.style.display = bal ? 'none' : ''; });
+	    if (bal) { pocistiNaslov(); }
 	    if (polje) polje.style.display = bal ? '' : 'none';
 	    if (okvir) okvir.style.display = (bal && sel && sel.value) ? '' : 'none';
 	    var logo = el('nbal_doprava_logo');
