@@ -499,18 +499,10 @@ function noriks_balikovna_slog_in_skripta() {
 	$enkrat = true;
 	?>
 	<style>
-	/* kartici "Způsob doručení" — mere vzete z vigoshop.cz */
-	.hs-delivery-type-container { display: flex; flex-direction: column; margin: 0 0 12px; }
-	.hs-delivery-type-container .container__title { font-size: 19.6px; font-weight: 700; margin: 0 0 9.8px; }
-	.hs-delivery-type-container .container__buttons { display: flex; flex-direction: row; }
-	.hs-delivery-type-container .delivery-type {
-		flex: 1 1 0; display: flex; flex-direction: column-reverse; justify-content: center;
-		align-items: center; text-align: center; margin: 2.8px; min-height: 76px; padding: 6px 8px;
-		border-radius: 4px; background: #fff; outline: 1px solid #cbcacb; cursor: pointer;
-	}
-	.hs-delivery-type-container .delivery-type.active { background: #f2feee; outline: 2px solid #47b426; }
-	.hs-delivery-type-container .delivery-type p { font-size: 15px; margin: 0; line-height: 1.25; }
-	.hs-delivery-type-container .delivery-type img { max-width: 75px; height: auto; margin: 0 0 6px; }
+	/* Kartice nacinov dostave imajo slog ze v temi (vgrajen CSS blagajne:
+	   .hs-delivery-type-container / .delivery-type / .cz-balikovna, vkljucno
+	   z mobilnim). Zato tu ne dodajamo nicesar — vsako nase pravilo mu je
+	   nasprotovalo (razlicni visini in sirini kartic). */
 
 	/* kljukica v bloku "Doprava" (CSS teme jo meri prek "label svg") */
 	#custom_shipping .checkedlabel svg { width: 19px !important; height: 14px !important;
