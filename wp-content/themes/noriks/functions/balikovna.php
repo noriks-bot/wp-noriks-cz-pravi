@@ -395,6 +395,7 @@ function noriks_balikovna_izbira() {
 	$kljuc_bal  = key( $p['bal'] );
 	$je_bal     = noriks_balikovna_je_kljuc( $p['izbran'] );
 	?>
+	<!-- nbal 2026-11-12-c -->
 	<div class="hs-delivery-type-container cz-balikovna">
 		<div class="container__title">Způsob doručení</div>
 		<div class="container__buttons">
