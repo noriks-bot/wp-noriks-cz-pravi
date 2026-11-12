@@ -82,7 +82,16 @@ Dve stvari, ki jih koda ne more narediti:
    ([navodila](https://metakocka.freshdesk.com/sl/support/solutions/articles/3000106618-instructions-czech-post))
 
 Po navodilih Metakocke so pri NB **ulica, hišna številka in mesto prazni**,
-šteje samo poštna številka, v kateri je **šifra prevzemnega mesta**. To naredi
+šteje samo poštna številka. Katera poštna številka to je, pove Češka pošta sama:
+v opisu šifranta `ZV_BALIKOVNY.csv` (*Seznam Balíkoven pro uložení balíků*,
+odobrila centrala České pošty) je prvi stolpec opredeljen kot
+
+> `PSC` · Charakter · 5 · **PSČ provozovny**
+
+torej poštna številka **same poslovalnice**, ne kraja (OX Point na postaji v
+Litoměřicah ima `41214`, kraj pa `41201`). Za primerjavo: v njihovem šifrantu
+poslovalnic za oddajo (`ZV_DR_CE_podani.csv`) je isti stolpec opisan samo kot
+»PSČ«. To kodo torej zapišemo v poštno številko naročila. To naredi
 `noriks_balikovna_naslov_za_metakocko()` ob nastanku naročila. Polna pot do
 mesta ostane v `_balikovna_*` meta, v opombi naročila, v adminu, v mailu in na
 strani zahvale, tako da se podatek nikjer ne izgubi.
