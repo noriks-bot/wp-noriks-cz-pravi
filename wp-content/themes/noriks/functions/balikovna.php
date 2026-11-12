@@ -857,7 +857,14 @@ add_filter( 'woocommerce_checkout_fields', function ( $polja ) {
 add_action( 'woocommerce_before_calculate_totals', 'noriks_balikovna_obnovi_izbiro', 5 );
 function noriks_balikovna_obnovi_izbiro() {
 	if ( is_admin() && ! wp_doing_ajax() ) { return; }
-	if ( isset( $_POST['shipping_method'] ) ) { return; }   // oddani obrazec je mocnejsi
+	/* Obnovimo samo pri navadnem nalaganju strani. Ce zahteva ze nosi izbrani
+	   nacin (oddaja narocila ali osvezitev blagajne prek post_data), je ta
+	   mocnejsi — sicer bi povozili kupcev pravkar izbrani nacin. */
+	if ( isset( $_POST['shipping_method'] ) ) { return; }
+	if ( isset( $_POST['post_data'] ) ) {
+		parse_str( wp_unslash( $_POST['post_data'] ), $pd );
+		if ( isset( $pd['shipping_method'] ) ) { return; }
+	}
 	$wc = function_exists( 'WC' ) ? WC() : null;
 	if ( ! $wc || ! $wc->session ) { return; }
 
