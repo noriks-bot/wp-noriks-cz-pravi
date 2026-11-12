@@ -829,8 +829,17 @@ function noriks_balikovna_skripta() {
 /* Izbrano mesto shrani v sejo, da prezivi osvezitev blagajne. */
 add_action( 'woocommerce_checkout_update_order_review', function ( $podatki ) {
 	parse_str( $podatki, $p );
-	if ( isset( $p['nbal_id'] ) && function_exists( 'WC' ) && WC()->session ) {
-		WC()->session->set( NORIKS_BALIKOVNA_META . '_id', sanitize_text_field( $p['nbal_id'] ) );
+	$wc = function_exists( 'WC' ) ? WC() : null;
+	if ( ! $wc || ! $wc->session ) { return; }
+	if ( isset( $p['nbal_id'] ) ) {
+		$wc->session->set( NORIKS_BALIKOVNA_META . '_id', sanitize_text_field( $p['nbal_id'] ) );
+	}
+	/* Zapomni si tudi izbrani nacin dostave. WooCommerce ga ob ponovnem
+	   nalaganju strani ne obdrzi vedno, zato ga spodaj obnovimo sami —
+	   sicer se blagajna tiho vrne na dostavo na naslov, izbrano prevzemno
+	   mesto pa ostane v polju. */
+	if ( isset( $p['shipping_method'][0] ) ) {
+		$wc->session->set( NORIKS_BALIKOVNA_META . '_nacin', sanitize_text_field( $p['shipping_method'][0] ) );
 	}
 } );
 
@@ -842,6 +851,25 @@ add_filter( 'woocommerce_checkout_fields', function ( $polja ) {
 	}
 	return $polja;
 }, 20 );
+
+
+/* Obnovi izbrani nacin dostave ob nalaganju blagajne. */
+add_action( 'woocommerce_before_calculate_totals', 'noriks_balikovna_obnovi_izbiro', 5 );
+function noriks_balikovna_obnovi_izbiro() {
+	if ( is_admin() && ! wp_doing_ajax() ) { return; }
+	if ( isset( $_POST['shipping_method'] ) ) { return; }   // oddani obrazec je mocnejsi
+	$wc = function_exists( 'WC' ) ? WC() : null;
+	if ( ! $wc || ! $wc->session ) { return; }
+
+	$nacin = (string) $wc->session->get( NORIKS_BALIKOVNA_META . '_nacin' );
+	if ( $nacin === '' || ! noriks_balikovna_je_kljuc( $nacin ) ) { return; }
+
+	$izbrani = (array) $wc->session->get( 'chosen_shipping_methods' );
+	if ( isset( $izbrani[0] ) && $izbrani[0] === $nacin ) { return; }
+
+	$izbrani[0] = $nacin;
+	$wc->session->set( 'chosen_shipping_methods', $izbrani );
+}
 
 /* ------------------------------------------------------------------ *
  * 5) Preverjanje in shranjevanje k narocilu
