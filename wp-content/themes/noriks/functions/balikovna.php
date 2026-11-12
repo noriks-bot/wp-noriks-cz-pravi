@@ -45,6 +45,16 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
+/*
+ * TRDO STIKALO: v wp-config.php dodaj
+ *     define( 'NORIKS_BALIKOVNA_IZKLOP', true );
+ * in modul se sploh ne nalozi — blagajna dela tocno tako kot pred nadgradnjo.
+ * Vsakdanje stikalo je sicer preprostejse: v WooCommerce -> Doprava -> obmocje
+ * CZ izklopi (ali odstrani) nacin "Balíkovna". Brez njega ta datoteka ne
+ * spremeni blagajne.
+ */
+if ( defined( 'NORIKS_BALIKOVNA_IZKLOP' ) && NORIKS_BALIKOVNA_IZKLOP ) { return; }
+
 const NORIKS_BALIKOVNA_ID    = 'noriks_balikovna';
 const NORIKS_BALIKOVNA_META  = '_balikovna';
 /** Naziv nacina dostave, po katerem Metakocka prepozna NB. Ne spreminjaj. */
@@ -449,7 +459,9 @@ function noriks_balikovna_izbirnik() {
 function noriks_balikovna_nacini() {
 	$p = noriks_balikovna_ponudbe();
 
-	if ( ! $p['vse'] ) { noriks_balikovna_rezervna_kartica(); return; }
+	/* Izklopljeno (nacina Balíkovna ni v coni) ali brez ponudb: izrisemo
+	   natanko tisto kartico, kot je bila na blagajni pred to nadgradnjo. */
+	if ( ! $p['vse'] || ! $p['bal'] ) { noriks_balikovna_rezervna_kartica(); return; }
 
 	$je_bal  = noriks_balikovna_je_kljuc( $p['izbran'] );
 	$ponudba = $p['vse'][ $p['izbran'] ];
@@ -485,8 +497,10 @@ function noriks_balikovna_rezervna_kartica() {
 	$cena = ( function_exists( 'WC' ) && WC()->cart ) ? (float) WC()->cart->get_shipping_total() : 0;
 	?>
 	<ul class="shipping_method_custom">
-		<li class="standard-shipping shipping-tab is-on">
-			<label class="checkedlabel">
+		<li class="standard-shipping shipping-tab">
+			<input name="shipping_method[0]" data-index="0" id="shipping_method_0_standard_custom"
+				value="standard" class="shipping_method shipping_method_field" type="radio" checked>
+			<label for="shipping_method_0_standard_custom" class="checkedlabel">
 				<?php echo noriks_balikovna_kljukica(); ?>
 				<div class="outer-wrapper">
 					<div class="inner-wrapper-dates">

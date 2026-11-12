@@ -15,6 +15,29 @@ mest — tako kot ima vigoshop.cz.
 | `woocommerce/checkout/review-order.php` | napis dostave sledi izbranemu načinu + pokaže izbrano mesto |
 | `functions/checkout_mods.php` | osveževanje cene dostave velja samo za izbrano kartico |
 
+## 0. Stikalo za vklop/izklop
+
+Kodo lahko mirno das na produkcijo, ne da bi kupci karkoli videli.
+
+**Vsakdanje stikalo — en klik v WooCommerce:**
+WooCommerce → Nastavitve → Doprava → območje **CZ** → pri načinu
+**Balíkovna** odkljukaj/obkljukaj *Omogočeno*.
+
+- **izklopljeno** → na blagajni ni kartic za izbiro, ni izbirnika mest, blok
+  »Doprava« je natanko tak kot pred nadgradnjo (ista koda, isti radio).
+  Preverjanja naslova in zapisi v naročilo se ne sprožijo.
+- **vklopljeno** → kartici *Doručení na adresu* / *Výdejny, pošty a boxy* in
+  izbirnik mesta.
+
+**Trdo stikalo** (če ne želiš niti registriranega načina dostave) — v
+`wp-config.php`:
+
+```php
+define( 'NORIKS_BALIKOVNA_IZKLOP', true );
+```
+
+Takrat se modul sploh ne naloži: ni načina dostave, ni REST poti, ni sloga.
+
 ## 1. Vklop v WooCommerce (brez tega se nič ne spremeni)
 
 WooCommerce → Nastavitve → **Doprava** → območje **CZ** → Dodaj način dostave →
