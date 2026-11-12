@@ -531,10 +531,20 @@ function noriks_balikovna_slog_in_skripta() {
 	add_action( 'wp_footer', 'noriks_balikovna_skripta', 99 );
 	?>
 	<style>
-	/* Kartice nacinov dostave imajo slog ze v temi (vgrajen CSS blagajne:
-	   .hs-delivery-type-container / .delivery-type / .cz-balikovna, vkljucno
-	   z mobilnim). Zato tu ne dodajamo nicesar — vsako nase pravilo mu je
-	   nasprotovalo (razlicni visini in sirini kartic). */
+	/* Kartici nacina dostave — enak slog na CZ in PL.
+	   Osnovo (razporeditev, barve, mobilno) da vgrajeni CSS blagajne, tu samo
+	   poenotimo visino, logotip in napis, da sta trga enaka in da se daljsi
+	   napis ne prelije cez rob. */
+	.hs-delivery-type-container .container__buttons { align-items: stretch; }
+	.hs-delivery-type-container .delivery-type {
+		height: auto !important; min-height: 69px; padding: 8px !important;
+		box-sizing: border-box; }
+	.hs-delivery-type-container .delivery-type p {
+		font-size: 14px !important; line-height: 18px !important; margin: 4px 0 0 !important;
+		width: 100%; }
+	.hs-delivery-type-container .delivery-type img {
+		max-width: 72px !important; max-height: 32px !important; width: auto !important;
+		padding: 3px !important; margin: 0 !important; object-fit: contain; }
 
 	/* kljukica v bloku "Doprava" (CSS teme jo meri prek "label svg") */
 	#custom_shipping .checkedlabel svg { width: 19px !important; height: 14px !important;
