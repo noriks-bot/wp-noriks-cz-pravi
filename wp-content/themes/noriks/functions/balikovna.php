@@ -677,17 +677,35 @@ function noriks_balikovna_skripta() {
 	    return !!a && a.getAttribute('data-balikovna') === '1';
 	  }
 
-	  /* Skrita polja naslova pocistimo: Metakocka pri Balíkovni hoce prazno
-	     ulico in mesto, hkrati pa stare vrednosti ne smejo v narocilo. */
+	  /* Skrita polja naslova pocistimo (Metakocka pri Balíkovni hoce prazno ulico
+	     in mesto, stare vrednosti pa ne smejo v narocilo), a si kupcev naslov
+	     zapomnimo in ga vrnemo, ce se premisli in izbere dostavo na naslov. */
+	  var imenaNaslova = ['billing_address_1','billing_address_2','billing_postcode','billing_city'];
+	  var shranjenNaslov = null;
+
 	  function pocistiNaslov(){
-	    ['billing_address_1','billing_address_2','billing_postcode','billing_city']
-	      .forEach(function(id){ var e = el(id); if (e && e.value !== '') { e.value = ''; } });
+	    if (shranjenNaslov === null) {
+	      shranjenNaslov = imenaNaslova.map(function(id){ var e = el(id); return e ? e.value : ''; });
+	    }
+	    imenaNaslova.forEach(function(id){ var e = el(id); if (e && e.value !== '') { e.value = ''; } });
+	  }
+
+	  function vrniNaslov(){
+	    if (shranjenNaslov === null) { return; }
+	    imenaNaslova.forEach(function(id, i){
+	      var e = el(id);
+	      if (e && e.value === '' && shranjenNaslov[i]) {
+	        e.value = shranjenNaslov[i];
+	        e.dispatchEvent(new Event('change', {bubbles:true}));
+	      }
+	    });
+	    shranjenNaslov = null;
 	  }
 
 	  function osvezi(){
 	    var bal = jeBal();
 	    vrsticeNaslova().forEach(function(e){ e.style.display = bal ? 'none' : ''; });
-	    if (bal) { pocistiNaslov(); }
+	    if (bal) { pocistiNaslov(); } else { vrniNaslov(); }
 	    if (polje) polje.style.display = bal ? '' : 'none';
 	    if (okvir) okvir.style.display = (bal && sel && sel.value) ? '' : 'none';
 	    var logo = el('nbal_doprava_logo');
