@@ -395,7 +395,7 @@ function noriks_balikovna_izbira() {
 	$kljuc_bal  = key( $p['bal'] );
 	$je_bal     = noriks_balikovna_je_kljuc( $p['izbran'] );
 	?>
-	<!-- nbal 2026-11-12-c -->
+	<!-- nbal 2026-11-12-d -->
 	<div class="hs-delivery-type-container cz-balikovna">
 		<div class="container__title">Způsob doručení</div>
 		<div class="container__buttons">
@@ -840,7 +840,17 @@ add_action( 'woocommerce_checkout_update_order_review', function ( $podatki ) {
 	   sicer se blagajna tiho vrne na dostavo na naslov, izbrano prevzemno
 	   mesto pa ostane v polju. */
 	if ( isset( $p['shipping_method'][0] ) ) {
-		$wc->session->set( NORIKS_BALIKOVNA_META . '_nacin', sanitize_text_field( $p['shipping_method'][0] ) );
+		$nacin = sanitize_text_field( $p['shipping_method'][0] );
+		$wc->session->set( NORIKS_BALIKOVNA_META . '_nacin', $nacin );
+		/* Ta razlicica WooCommerca pri osvezitvi blagajne bere nacin dostave
+		   samo iz vrhnjega polja zahteve, ne iz post_data — izmerjeno. Ker
+		   kartice posiljajo izbiro v obrazcu, jo moramo uveljaviti sami,
+		   sicer bi izbira ostala na prejsnjem nacinu. */
+		$izbrani = (array) $wc->session->get( 'chosen_shipping_methods' );
+		if ( ! isset( $izbrani[0] ) || $izbrani[0] !== $nacin ) {
+			$izbrani[0] = $nacin;
+			$wc->session->set( 'chosen_shipping_methods', $izbrani );
+		}
 	}
 } );
 
