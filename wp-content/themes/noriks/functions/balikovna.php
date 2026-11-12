@@ -287,12 +287,15 @@ function noriks_balikovna_je_kljuc( $kljuc ) {
  * merodajen POST, ker seja se ni osvezena) in nato sejo.
  */
 function noriks_balikovna_izbrana() {
+	// ko je modul izklopljen, prevzemno mesto ni mogoce izbrati
+	if ( function_exists( 'noriks_balikovna_vklopljena' ) && ! noriks_balikovna_vklopljena() ) { return false; }
 	if ( isset( $_POST['shipping_method'] ) ) {
 		foreach ( (array) $_POST['shipping_method'] as $m ) {
 			if ( noriks_balikovna_je_kljuc( sanitize_text_field( wp_unslash( $m ) ) ) ) { return true; }
 		}
 	}
-	$izbrani = ( function_exists( 'WC' ) && WC()->session ) ? WC()->session->get( 'chosen_shipping_methods' ) : array();
+	$wc = function_exists( 'WC' ) ? WC() : null;
+	$izbrani = ( $wc && $wc->session ) ? $wc->session->get( 'chosen_shipping_methods' ) : array();
 	if ( ! is_array( $izbrani ) ) { return false; }
 	foreach ( $izbrani as $m ) {
 		if ( noriks_balikovna_je_kljuc( $m ) ) { return true; }
@@ -302,8 +305,9 @@ function noriks_balikovna_izbrana() {
 
 /** Sifra mesta iz seje (prezivi AJAX osvezitev blagajne). */
 function noriks_balikovna_seja_id() {
-	if ( ! function_exists( 'WC' ) || ! WC()->session ) { return ''; }
-	return (string) WC()->session->get( NORIKS_BALIKOVNA_META . '_id' );
+	$wc = function_exists( 'WC' ) ? WC() : null;
+	if ( ! $wc || ! $wc->session ) { return ''; }
+	return (string) $wc->session->get( NORIKS_BALIKOVNA_META . '_id' );
 }
 
 /* ------------------------------------------------------------------ *
@@ -318,8 +322,9 @@ function noriks_balikovna_seja_id() {
 /** Ponudbe dostave, locene na "na naslov" in "Balíkovna". */
 function noriks_balikovna_ponudbe() {
 	$ponudbe = array();
-	if ( function_exists( 'WC' ) && WC()->shipping() ) {
-		$paketi = WC()->shipping()->get_packages();
+	$wc = function_exists( 'WC' ) ? WC() : null;
+	if ( $wc && $wc->shipping() ) {
+		$paketi = $wc->shipping()->get_packages();
 		if ( isset( $paketi[0]['rates'] ) && is_array( $paketi[0]['rates'] ) ) {
 			$ponudbe = $paketi[0]['rates'];
 		}
@@ -330,7 +335,7 @@ function noriks_balikovna_ponudbe() {
 		if ( noriks_balikovna_je_kljuc( $kljuc ) ) { $bal[ $kljuc ] = $p; } else { $doma[ $kljuc ] = $p; }
 	}
 
-	$izbrani  = ( function_exists( 'WC' ) && WC()->session ) ? (array) WC()->session->get( 'chosen_shipping_methods' ) : array();
+	$izbrani  = ( $wc && $wc->session ) ? (array) $wc->session->get( 'chosen_shipping_methods' ) : array();
 	$trenutni = isset( $izbrani[0] ) ? (string) $izbrani[0] : '';
 
 	/* Na naslov pokazemo eno samo kartico — najcenejso. Tako kupec nikoli ne
@@ -492,7 +497,8 @@ function noriks_balikovna_nacini() {
 
 /** Ko WooCommerce ne vrne ponudb: ista kartica kot pred Balíkovno. */
 function noriks_balikovna_rezervna_kartica() {
-	$cena = ( function_exists( 'WC' ) && WC()->cart ) ? (float) WC()->cart->get_shipping_total() : 0;
+	$wc   = function_exists( 'WC' ) ? WC() : null;
+	$cena = ( $wc && $wc->cart ) ? (float) $wc->cart->get_shipping_total() : 0;
 	?>
 	<ul class="shipping_method_custom">
 		<li class="standard-shipping shipping-tab">
