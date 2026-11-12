@@ -45,16 +45,6 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-/*
- * TRDO STIKALO: v wp-config.php dodaj
- *     define( 'NORIKS_BALIKOVNA_IZKLOP', true );
- * in modul se sploh ne nalozi — blagajna dela tocno tako kot pred nadgradnjo.
- * Vsakdanje stikalo je sicer preprostejse: v WooCommerce -> Doprava -> obmocje
- * CZ izklopi (ali odstrani) nacin "Balíkovna". Brez njega ta datoteka ne
- * spremeni blagajne.
- */
-if ( defined( 'NORIKS_BALIKOVNA_IZKLOP' ) && NORIKS_BALIKOVNA_IZKLOP ) { return; }
-
 const NORIKS_BALIKOVNA_ID    = 'noriks_balikovna';
 const NORIKS_BALIKOVNA_META  = '_balikovna';
 /** Naziv nacina dostave, po katerem Metakocka prepozna NB. Ne spreminjaj. */
@@ -63,6 +53,18 @@ const NORIKS_BALIKOVNA_MK    = 'Balík do Balíkovny';
 const NORIKS_BALIKOVNA_NAPIS = 'Výdejny, pošty a boxy';
 /** Napis na kartici za dostavo na naslov. */
 const NORIKS_BALIKOVNA_DOMA  = 'Doručení na adresu';
+const NORIKS_BALIKOVNA_LOGO    = 'https://images.vigo-shop.com/general/curriers/balikovna_transaprent.png';
+/* Logotip za dostavo na naslov. Logotip z ceskaposta.cz se ne nalozi — streznik
+   blokira vroce povezave (zato je bil v bloku "Doprava" ze doslej prazen kvadratek). */
+const NORIKS_BALIKOVNA_LOGO_CP = 'https://images.vigo-shop.com/general/curriers/balikovna_adres_transparent.png';
+
+/*
+ * STIKALO: functions/paketomati-stikalo.php (en sam vnos v temi).
+ * Ce je izklopljeno, se ta modul sploh ne nalozi in blagajna dela natanko
+ * tako kot pred nadgradnjo.
+ */
+if ( ! function_exists( 'noriks_balikovna_vklopljena' ) || ! noriks_balikovna_vklopljena() ) { return; }
+
 
 /* ------------------------------------------------------------------ *
  * 1) Podatki o mestih
@@ -312,10 +314,6 @@ function noriks_balikovna_seja_id() {
  *      polja naslova skrita) -> "Doprava" (datumi + cena + logotip).
  * ------------------------------------------------------------------ */
 
-const NORIKS_BALIKOVNA_LOGO    = 'https://images.vigo-shop.com/general/curriers/balikovna_transaprent.png';
-/* Logotip za dostavo na naslov. Logotip z ceskaposta.cz se ne nalozi — streznik
-   blokira vroce povezave (zato je bil v bloku "Doprava" ze doslej prazen kvadratek). */
-const NORIKS_BALIKOVNA_LOGO_CP = 'https://images.vigo-shop.com/general/curriers/balikovna_adres_transparent.png';
 
 /** Ponudbe dostave, locene na "na naslov" in "Balíkovna". */
 function noriks_balikovna_ponudbe() {
