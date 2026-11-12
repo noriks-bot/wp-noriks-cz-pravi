@@ -19,7 +19,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-$noriks_balikovna_stikalo = array( 'devcz.noriks.com' );
+$noriks_balikovna_stikalo = false;
 
 /** Ali so paketomati vklopljeni na tej strani? */
 function noriks_balikovna_vklopljena() {
