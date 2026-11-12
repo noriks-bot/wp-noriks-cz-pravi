@@ -54,9 +54,13 @@ const NORIKS_BALIKOVNA_NAPIS = 'Výdejny, pošty a boxy';
 /** Napis na kartici za dostavo na naslov. */
 const NORIKS_BALIKOVNA_DOMA  = 'Doručení na adresu';
 const NORIKS_BALIKOVNA_LOGO    = 'https://images.vigo-shop.com/general/curriers/balikovna_transaprent.png';
-/* Logotip za dostavo na naslov. Logotip z ceskaposta.cz se ne nalozi — streznik
-   blokira vroce povezave (zato je bil v bloku "Doprava" ze doslej prazen kvadratek). */
+/* Logotip za dostavo na naslov, ko je Balíkovna VKLOPLJENA. Logotip z
+   ceskaposta.cz se ne nalozi (streznik blokira vroce povezave), zato je tam
+   logotip "Balíkovna na adresu" — isti prevoznik. */
 const NORIKS_BALIKOVNA_LOGO_CP = 'https://images.vigo-shop.com/general/curriers/balikovna_adres_transparent.png';
+/* Logotip, kakrsen je bil na blagajni PRED nadgradnjo. Uporablja ga rezervna
+   kartica (izklopljeno stanje), da se na CZ ne spremeni prav nicesar. */
+const NORIKS_BALIKOVNA_LOGO_PREJ = 'https://www.ceskaposta.cz/documents/20117/1310244/Logo_Ceska_posta_horizontalni.svg/dfc68dee-9367-d5d9-c3e5-4087f47d7a7f?version=1.0&t=1754915125425';
 
 /*
  * STIKALO: functions/paketomati-stikalo.php (en sam vnos v temi).
@@ -516,7 +520,7 @@ function noriks_balikovna_rezervna_kartica() {
 						?></span>
 						<span class="delivery_img"><img decoding="async" class="ceska_posta standard"
 							style="height:15px !important; width:70px !important;"
-							src="<?php echo esc_url( NORIKS_BALIKOVNA_LOGO_CP ); ?>"></span>
+							src="<?php echo esc_url( NORIKS_BALIKOVNA_LOGO_PREJ ); ?>"></span>
 					</div>
 				</div>
 			</label>
