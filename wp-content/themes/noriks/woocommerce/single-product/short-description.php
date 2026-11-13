@@ -333,9 +333,11 @@ if ( ! $short_description ) {
   .oj-recpill-av { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; object-position: 50% 12%; flex: 0 0 auto; }
   .oj-recpill-check { flex: 0 0 auto; }
   /* Mala zaliha-pilula (original: "Only a few are left in stock!") */
-  .oj-stockpill { display: flex; width: max-content; max-width: 100%; align-items: center; gap: 6px; background: #fff; border: 1px solid #f3b8c6; border-radius: 11px; padding: 4px 9px; }
-  .oj-stockpill svg { width: 12px; height: 12px; }
-  .oj-stockpill em { font-style: italic; font-size: 11.5px; font-weight: 600; color: #e5344a; }
+  /* Pilula je bila pretijesna, a italic tekst s velikim proredom djelovao je spusteno
+     u odnosu na ikonu. Vise zraka unutra, manji prored i veca ikona. */
+  .oj-stockpill { display: flex; width: max-content; max-width: 100%; align-items: center; gap: 8px; background: #fff; border: 1px solid #f3b8c6; border-radius: 999px; padding: 7px 14px; }
+  .oj-stockpill svg { width: 13px; height: 13px; }
+  .oj-stockpill em { font-style: italic; font-size: 12px; line-height: 1.15; font-weight: 600; color: #e5344a; }
   /* Sakrij veliki crveni countdown box na ovom proizvodu */
   .gck-countdown { display: none !important; }
   /* Discount badge (−33% …): outline chip kao original */
