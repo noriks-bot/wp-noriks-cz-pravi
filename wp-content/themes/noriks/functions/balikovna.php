@@ -395,7 +395,7 @@ function noriks_balikovna_izbira() {
 	$kljuc_bal  = key( $p['bal'] );
 	$je_bal     = noriks_balikovna_je_kljuc( $p['izbran'] );
 	?>
-	<!-- nbal 2026-11-12-d -->
+	<!-- nbal 2026-11-13-a -->
 	<div class="hs-delivery-type-container cz-balikovna">
 		<div class="container__title">Způsob doručení</div>
 		<div class="container__buttons">
@@ -559,15 +559,22 @@ function noriks_balikovna_slog_in_skripta() {
 	   poenotimo visino, logotip in napis, da sta trga enaka in da se daljsi
 	   napis ne prelije cez rob. */
 	.hs-delivery-type-container .container__buttons { align-items: stretch; }
+	/* Sredinjenje zapisemo sami in ne racunamo na vgrajeni CSS — ta je vezan na
+	   razreda .cz-balikovna / .pl-inpost in se je drugace obnasal na razlicnih
+	   straneh (napis poravnan levo namesto na sredino). */
 	.hs-delivery-type-container .delivery-type {
+		display: flex !important; flex-direction: column-reverse !important;
+		justify-content: center !important; align-items: center !important;
+		text-align: center !important;
 		height: auto !important; min-height: 69px; padding: 8px !important;
 		box-sizing: border-box; }
 	.hs-delivery-type-container .delivery-type p {
 		font-size: 14px !important; line-height: 18px !important; margin: 4px 0 0 !important;
-		width: 100%; }
+		width: 100%; text-align: center !important; }
 	.hs-delivery-type-container .delivery-type img {
-		max-width: 72px !important; max-height: 32px !important; width: auto !important;
-		padding: 3px !important; margin: 0 !important; object-fit: contain; }
+		display: block !important; max-width: 72px !important; max-height: 32px !important;
+		width: auto !important; padding: 3px !important; margin: 0 auto !important;
+		object-fit: contain; }
 
 	/* kljukica v bloku "Doprava" (CSS teme jo meri prek "label svg") */
 	#custom_shipping .checkedlabel svg { width: 19px !important; height: 14px !important;
