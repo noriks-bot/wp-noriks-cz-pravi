@@ -72,16 +72,16 @@ function noriks_pp_upsell_register_fields() {
  * ============================================================ */
 function noriks_pp_upsell_config() {
 	return apply_filters( 'noriks_pp_upsell_config', array(
-		'product_id' => 4780,                    // Plave Bokserice (varijabilni proizvod)
+		'product_id' => 4749,                    // Crne Bokserice (varijabilni proizvod)
 		'qty'        => 4,                       // uvijek 4 komada, iste veličine
 		'total'      => 479,                   // ista cijena kao thank you upsell (4 komada)
-		'title'      => '4x Modré boxerky',
+		'title'      => '4x Černé boxerky',
 		'desc'       => 'Prodyšné a měkké — přidejte je k objednávce se slevou %s%%.', // %s = izracunati popust
 		'size_attr'  => 'Velikost',
 		// Interna oznaka paketa (SKU konvencija kao kod bundle proizvoda + UPSELL na kraju).
-		'sku'        => 'NORIKS-BOX-BLUE-4-PACK-UPSELL',
+		'sku'        => 'NORIKS-BOX-BLACK-4-PACK-UPSELL',
 		// Kompozitna slika 4 komada na svijetlo sivoj podlozi (kvadratna).
-		'image'      => get_template_directory_uri() . '/img/upsell/upsell-4x-modre.png',
+		'image'      => get_template_directory_uri() . '/img/upsell/upsell-4x-crne.png',
 	) );
 }
 
