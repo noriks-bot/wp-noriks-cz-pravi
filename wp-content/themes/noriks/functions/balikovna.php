@@ -47,6 +47,19 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 const NORIKS_BALIKOVNA_ID    = 'noriks_balikovna';
 const NORIKS_BALIKOVNA_META  = '_balikovna';
+/**
+ * Ali v narocilo zapisemo ulico in kraj prevzemnega mesta?
+ *
+ * false (trenutno) = ulica, hisna stevilka in kraj so prazni, kot zahteva
+ *   Metakockina dokumentacija 3000106618. To je vedenje, kakrsno je bilo prej.
+ * true = napolnimo jih z naslovom prevzemnega mesta, ker Metakocka brez njiju
+ *   nalepke ne zgenerira (izmerjeno na pravem narocilu).
+ *
+ * Caka na odgovor Metakockine podpore. Prizge se s spremembo te vrstice v true.
+ * Logika je ze napisana in preverjena na vseh 12 149 prevzemnih mestih —
+ * glej noriks_balikovna_razclen_naslov() in BALIKOVNA.md.
+ */
+const NORIKS_BALIKOVNA_NASLOV_MESTA = false;
 /** Naziv nacina dostave, po katerem Metakocka prepozna NB. Ne spreminjaj. */
 const NORIKS_BALIKOVNA_MK    = 'Balík do Balíkovny';
 /** Napis na kartici na blagajni (kupcu). */
@@ -963,7 +976,7 @@ function noriks_balikovna_naslov_za_metakocko( $narocilo, $m ) {
 	$narocilo->set_shipping_postcode( $m['id'] );
 	$narocilo->set_billing_postcode( $m['id'] );
 
-	if ( ! apply_filters( 'noriks_balikovna_naslov_mesta', true, $narocilo, $m ) ) {
+	if ( ! apply_filters( 'noriks_balikovna_naslov_mesta', NORIKS_BALIKOVNA_NASLOV_MESTA, $narocilo, $m ) ) {
 		foreach ( array( 'shipping', 'billing' ) as $kaj ) {
 			$narocilo->{'set_' . $kaj . '_address_1'}( '' );
 			$narocilo->{'set_' . $kaj . '_address_2'}( '' );

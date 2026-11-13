@@ -118,10 +118,16 @@ Depoji in vrstice brez tipa se izpustijo. Iskanje teče na strežniku
 10039 ima vpisane samo sredo, petek, soboto in nedeljo), zato prazen dan
 pokažemo kot `—` in ne kot »zavřeno«.
 
-## Naslov naročila pri prevzemu (spremenjeno)
+## Naslov naročila pri prevzemu (NAPISANO, A UGASNJENO)
+
+> **Stikalo:** `NORIKS_BALIKOVNA_NASLOV_MESTA` v `balikovna.php` je **`false`** —
+> ulica, hišna številka in kraj so prazni, torej natanko tako, kot je bilo prej.
+> Čakamo na odgovor Metakockine podpore. Prižge se s spremembo te ene vrstice
+> v `true`; logika spodaj je napisana in preverjena.
 
 Poštna številka ostane **šifra prevzemnega mesta** — po njej Metakocka usmeri
-pošiljko. **Ulico in kraj pa odslej napolnimo z naslovom prevzemnega mesta.**
+pošiljko. Ko je stikalo prižgano, **ulico in kraj napolnimo z naslovom
+prevzemnega mesta**.
 
 Metakockina dokumentacija (3000106618) pravi nasprotno:
 
@@ -145,4 +151,5 @@ Preverjeno na vseh 12 149 vrsticah: 0 brez kraja, 69 brez ulice (tam se vpiše
 ime prevzemnega mesta, npr. `Hostivice BOX OX Point Floriánova`), 1072 brez
 hišne številke (ulica brez številke — polje ostane prazno).
 
-Nazaj na prazen naslov: `add_filter( 'noriks_balikovna_naslov_mesta', '__return_false' );`
+Posamičen preklop brez urejanja konstante:
+`add_filter( 'noriks_balikovna_naslov_mesta', '__return_true' );`
