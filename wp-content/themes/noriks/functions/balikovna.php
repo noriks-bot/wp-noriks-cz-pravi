@@ -395,7 +395,7 @@ function noriks_balikovna_izbira() {
 	$kljuc_bal  = key( $p['bal'] );
 	$je_bal     = noriks_balikovna_je_kljuc( $p['izbran'] );
 	?>
-	<!-- nbal 2026-11-13-b -->
+	<!-- nbal 2026-11-13-c -->
 	<div class="hs-delivery-type-container cz-balikovna">
 		<div class="container__title">Způsob doručení</div>
 		<div class="container__buttons">
@@ -919,21 +919,68 @@ add_action( 'woocommerce_checkout_process', function () {
 }, 5 );
 
 /**
- * Naslov za dostavo po zahtevi Metakocke:
- * pri NB sta ulica in mesto prazna, sifra mesta je v postni stevilki.
- * Izklop: add_filter( 'noriks_balikovna_prazen_naslov', '__return_false' );
+ * Razclenitev naslova prevzemnega mesta iz sifranta Ceske poste.
+ *
+ * V sifrantu je naslov en sam niz, v treh oblikah:
+ *   "Černokostelecká 2020/20, Strašnice, 10000, Praha"   (ulica, cetrt, PSC, kraj)
+ *   "Nusle E18, 14000, Praha"                            (ulica, PSC, kraj)
+ *   "25301, Hostivice"                                   (samo PSC in kraj)
+ * Zato beremo od zadaj: zadnji del je kraj, pred njim postna stevilka,
+ * prvi del pa ulica s hisno stevilko.
+ *
+ * @return array{ulica:string,hisna:string,mesto:string}
+ */
+function noriks_balikovna_razclen_naslov( $naslov ) {
+	$deli = array_values( array_filter( array_map( 'trim', explode( ',', (string) $naslov ) ), 'strlen' ) );
+	$mesto = $deli ? array_pop( $deli ) : '';
+	if ( $deli && preg_match( '/^\d{3}\s?\d{2}$/', end( $deli ) ) ) { array_pop( $deli ); }
+
+	$ulica = $deli ? $deli[0] : '';
+	$hisna = '';
+	// hisna stevilka je zadnji kos ulice, ki se zacne s stevilko ("2020/20", "E18" ne)
+	if ( $ulica !== '' && preg_match( '/^(.*\S)\s+(\d[\d\/\pL]*)$/u', $ulica, $u ) ) {
+		$ulica = trim( $u[1] );
+		$hisna = $u[2];
+	}
+	return array( 'ulica' => $ulica, 'hisna' => $hisna, 'mesto' => $mesto );
+}
+
+/**
+ * Naslov za dostavo pri prevzemu na Balikovni.
+ *
+ * Postna stevilka je sifra prevzemnega mesta — to je polje, po katerem
+ * Metakocka usmeri posiljko, in ostane nedotaknjeno.
+ *
+ * Ulico in kraj **napolnimo z naslovom prevzemnega mesta**. Metakockina
+ * dokumentacija (3000106618) sicer pravi, da sta pri NB/NP prazna, a nalepke
+ * z njima ne zgenerira — izmerjeno na pravem narocilu; ko je Dejan ulico in
+ * kraj vpisal rocno, se je nalepka naredila.
+ *
+ * Izklop (vrne prazen naslov kot prej):
+ *   add_filter( 'noriks_balikovna_naslov_mesta', '__return_false' );
  */
 function noriks_balikovna_naslov_za_metakocko( $narocilo, $m ) {
 	$narocilo->set_shipping_postcode( $m['id'] );
 	$narocilo->set_billing_postcode( $m['id'] );
-	if ( apply_filters( 'noriks_balikovna_prazen_naslov', true, $narocilo, $m ) ) {
-		$narocilo->set_shipping_address_1( '' );
-		$narocilo->set_shipping_address_2( '' );
-		$narocilo->set_shipping_city( '' );
-		// polja naslova so na blagajni skrita, zato so prazna tudi pri racunu
-		$narocilo->set_billing_address_1( '' );
-		$narocilo->set_billing_address_2( '' );
-		$narocilo->set_billing_city( '' );
+
+	if ( ! apply_filters( 'noriks_balikovna_naslov_mesta', true, $narocilo, $m ) ) {
+		foreach ( array( 'shipping', 'billing' ) as $kaj ) {
+			$narocilo->{'set_' . $kaj . '_address_1'}( '' );
+			$narocilo->{'set_' . $kaj . '_address_2'}( '' );
+			$narocilo->{'set_' . $kaj . '_city'}( '' );
+		}
+		return;
+	}
+
+	$a = noriks_balikovna_razclen_naslov( $m['naslov'] );
+	// ce prevzemno mesto nima ulice, raje posljemo njegovo ime kot prazno polje
+	$ulica = $a['ulica'] !== '' ? $a['ulica'] : $m['naziv'];
+	$mesto = $a['mesto'] !== '' ? $a['mesto'] : $m['naziv'];
+
+	foreach ( array( 'shipping', 'billing' ) as $kaj ) {
+		$narocilo->{'set_' . $kaj . '_address_1'}( $ulica );
+		$narocilo->{'set_' . $kaj . '_address_2'}( $a['hisna'] );
+		$narocilo->{'set_' . $kaj . '_city'}( $mesto );
 	}
 }
 

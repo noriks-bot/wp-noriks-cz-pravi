@@ -117,3 +117,32 @@ Depoji in vrstice brez tipa se izpustijo. Iskanje teče na strežniku
 **Opomba o odpiralnem času:** uradni CSV je pri urah luknjast (nonstop box
 10039 ima vpisane samo sredo, petek, soboto in nedeljo), zato prazen dan
 pokažemo kot `—` in ne kot »zavřeno«.
+
+## Naslov naročila pri prevzemu (spremenjeno)
+
+Poštna številka ostane **šifra prevzemnega mesta** — po njej Metakocka usmeri
+pošiljko. **Ulico in kraj pa odslej napolnimo z naslovom prevzemnega mesta.**
+
+Metakockina dokumentacija (3000106618) pravi nasprotno:
+
+> »V kolikor je zabeležena dostava v NB ali NP so vrednosti: ulica, hišna št.,
+> mesto, prazne. Za dostavo je pomembna zgolj poštna številka.«
+
+V praksi pa Metakocka brez ulice in kraja **nalepke ne zgenerira** — Dejan je
+to izmeril na pravem naročilu; ko je polji vpisal ročno, je nalepka nastala.
+Zato velja izmerjeno stanje, ne dokumentacija.
+
+Naslov v šifrantu Češke pošte je en sam niz v treh oblikah, zato ga
+`noriks_balikovna_razclen_naslov()` bere **od zadaj**:
+
+| oblika | primer | rezultat |
+|---|---|---|
+| ulica, četrt, PSČ, kraj | `Černokostelecká 2020/20, Strašnice, 10000, Praha` | ulica `Černokostelecká`, hišna `2020/20`, kraj `Praha` |
+| ulica, PSČ, kraj | `Toušeňská 2042, 25088, Čelákovice` | ulica `Toušeňská`, hišna `2042`, kraj `Čelákovice` |
+| PSČ, kraj | `25301, Hostivice` | ulica = **ime mesta**, kraj `Hostivice` |
+
+Preverjeno na vseh 12 149 vrsticah: 0 brez kraja, 69 brez ulice (tam se vpiše
+ime prevzemnega mesta, npr. `Hostivice BOX OX Point Floriánova`), 1072 brez
+hišne številke (ulica brez številke — polje ostane prazno).
+
+Nazaj na prazen naslov: `add_filter( 'noriks_balikovna_naslov_mesta', '__return_false' );`
