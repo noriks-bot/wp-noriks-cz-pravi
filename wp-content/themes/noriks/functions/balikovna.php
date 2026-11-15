@@ -55,11 +55,15 @@ const NORIKS_BALIKOVNA_META  = '_balikovna';
  * true = napolnimo jih z naslovom prevzemnega mesta, ker Metakocka brez njiju
  *   nalepke ne zgenerira (izmerjeno na pravem narocilu).
  *
- * Caka na odgovor Metakockine podpore. Prizge se s spremembo te vrstice v true.
- * Logika je ze napisana in preverjena na vseh 12 149 prevzemnih mestih —
+ * VKLOPLJENO 15. 11. 2026: skladisce je javilo, da Metakocka pri 176 narocilih
+ * nalepke ne zgenerira — "Prejemnik na racunu nima vnesenega mesta". Doslej smo
+ * posiljali prazno ulico in kraj, kot pise v dokumentaciji 3000106618; v praksi
+ * to ne dela. Sifra poslovalnice ostane v postni stevilki (po njej MK usmeri
+ * posiljko), vrsta posiljke NB pa pride iz naziva nacina dostave, ne iz naslova.
+ * Logika je preverjena na vseh 12 149 prevzemnih mestih —
  * glej noriks_balikovna_razclen_naslov() in BALIKOVNA.md.
  */
-const NORIKS_BALIKOVNA_NASLOV_MESTA = false;
+const NORIKS_BALIKOVNA_NASLOV_MESTA = true;
 /** Naziv nacina dostave, po katerem Metakocka prepozna NB. Ne spreminjaj. */
 const NORIKS_BALIKOVNA_MK    = 'Balík do Balíkovny';
 /** Napis na kartici na blagajni (kupcu). */
@@ -408,7 +412,7 @@ function noriks_balikovna_izbira() {
 	$kljuc_bal  = key( $p['bal'] );
 	$je_bal     = noriks_balikovna_je_kljuc( $p['izbran'] );
 	?>
-	<!-- nbal 2026-11-13-c -->
+	<!-- nbal 2026-11-15-a -->
 	<div class="hs-delivery-type-container cz-balikovna">
 		<div class="container__title">Způsob doručení</div>
 		<div class="container__buttons">
