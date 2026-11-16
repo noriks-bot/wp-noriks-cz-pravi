@@ -68,7 +68,7 @@ $trak[] = $l['trak_30'];
 $js = array( 'dodajam' => $l['dodajam'], 'dodano' => $l['dodano'], 'dodaj' => $l['dodaj'], 'izberi' => $l['izberi'], 'napaka' => $l['napaka'], 'zapri' => $l['zapri'], 'nalagam' => $l['nalagam'], 'poglej' => $l['poglej'], 'placilo' => $l['placilo'] );
 $st = 0;
 ?>
-<!-- nbf 2026-11-16-j -->
+<!-- nbf 2026-11-16-l -->
 <div class="nbf nbf--<?php echo esc_attr( $stran['slog'] ); ?> nbf--<?php echo esc_attr( $tip ); ?> nbf--<?php echo $cm ? 'cm' : 'bf'; ?>" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" data-stran="<?php echo esc_attr( $stran['slug'] ); ?>" data-t="<?php echo esc_attr( wp_json_encode( $js ) ); ?>">
 
   <section class="nbf-hero">
@@ -94,7 +94,13 @@ $st = 0;
           $p     = $x['p'];
           $url   = get_permalink( $p->get_id() );
           $pc    = sprintf( $l['pct'], $x['pop'] );
-          $slika = $p->get_image( 'woocommerce_single', array( 'loading' => $st < 4 ? 'eager' : 'lazy', 'alt' => $p->get_name() ) );
+          $ime   = $p->get_name();
+          $slika = $p->get_image( 'woocommerce_single', array( 'loading' => $st < 4 ? 'eager' : 'lazy', 'alt' => $ime ) );
+          if ( $cm && $p->get_sku() === NORIKS_BF_MAJICA_SKU ) {
+              // Black Friday kopija majice na Cyber Monday strani: isto, z napisom Cyber Monday
+              $ime   = str_replace( 'Black Friday', 'Cyber Monday', $ime );
+              $slika = '<img src="' . esc_url( get_template_directory_uri() . '/img/bf/majica-cyber-monday.jpg' ) . '" alt="' . esc_attr( $ime ) . '" loading="' . ( $st < 4 ? 'eager' : 'lazy' ) . '" width="1272" height="1896">';
+          }
           $st++;
           $hitro = in_array( $x['nacin'], array( 'orto', 'var', 'simple' ), true );
           $cfg   = array( 'id' => $p->get_id(), 'nacin' => $x['nacin'], 'attrs' => array(), 'pon' => array() );
@@ -116,7 +122,7 @@ $st = 0;
           <a class="nbf-k__s" href="<?php echo esc_url( $url ); ?>"><?php echo $slika; // phpcs:ignore -- WooCommerce vrne varen <img> ?></a>
           <div class="nbf-k__t">
             <?php if ( $rang ) : ?><div class="nbf-k__rang">#<?php echo (int) $st; ?></div><?php endif; ?>
-            <h3 class="nbf-k__n"><a href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( $p->get_name() ); ?></a></h3>
+            <h3 class="nbf-k__n"><a href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( $ime ); ?></a></h3>
             <div class="nbf-k__pk<?php echo ! empty( $x['vsebina'] ) ? ' nbf-k__pk--vs' : ''; ?>"><?php echo esc_html( $x['paket'] !== '' ? $x['paket'] : ( $ima_pk ? "\xC2\xA0" : '' ) ); ?></div>
             <div class="nbf-k__c">
               <div class="nbf-r"><span><?php echo esc_html( $l['redna'] ); ?></span><s class="nbf-c-red"><?php echo wp_kses_post( wc_price( $x['red'] ) ); ?></s></div>
@@ -133,10 +139,16 @@ $st = 0;
               <?php if ( $izbirni ) : ?>
               <div class="nbf-k__izb<?php echo $modalno ? ' nbf-k__izb--modal' : ''; ?>">
                 <?php foreach ( $izbirni as $a ) : ?>
-                <select class="nbf-sel" data-polje="<?php echo esc_attr( $a['p'] ); ?>" data-ime="<?php echo esc_attr( $a['ime'] ); ?>" aria-label="<?php echo esc_attr( $a['ime'] ); ?>">
-                  <option value=""><?php echo esc_html( $a['ime'] ); ?></option>
-                  <?php foreach ( $a['v'] as $v ) : ?><option value="<?php echo esc_attr( $v[0] ); ?>"><?php echo esc_html( $v[1] ); ?></option><?php endforeach; ?>
-                </select>
+                <div class="nbf-dd">
+                  <select class="nbf-sel" data-polje="<?php echo esc_attr( $a['p'] ); ?>" data-ime="<?php echo esc_attr( $a['ime'] ); ?>" aria-label="<?php echo esc_attr( $a['ime'] ); ?>" tabindex="-1">
+                    <option value=""><?php echo esc_html( $a['ime'] ); ?></option>
+                    <?php foreach ( $a['v'] as $v ) : ?><option value="<?php echo esc_attr( $v[0] ); ?>"><?php echo esc_html( $v[1] ); ?></option><?php endforeach; ?>
+                  </select>
+                  <button type="button" class="nbf-dd__g" aria-haspopup="listbox" aria-expanded="false"><i class="nbf-dd__b" hidden></i><span class="nbf-dd__n"><?php echo esc_html( $a['ime'] ); ?></span></button>
+                  <div class="nbf-dd__l" role="listbox" aria-label="<?php echo esc_attr( $a['ime'] ); ?>">
+                    <?php foreach ( $a['v'] as $vi => $v ) : $barva = ! empty( $a['b'][ $vi ] ) ? $a['b'][ $vi ] : ''; ?><div class="nbf-dd__o" role="option" data-v="<?php echo esc_attr( $v[0] ); ?>"<?php if ( $barva ) : ?> data-b="<?php echo esc_attr( $barva ); ?>"<?php endif; ?>><?php if ( $barva ) : ?><i style="background:<?php echo esc_attr( $barva ); ?>"></i><?php endif; ?><span><?php echo esc_html( $v[1] ); ?></span></div><?php endforeach; ?>
+                  </div>
+                </div>
                 <?php endforeach; ?>
               </div>
               <?php endif; ?>
@@ -184,9 +196,9 @@ $st = 0;
 .nbf h2.nbf-h2 em{font-style:normal;color:var(--a)}
 .nbf p.nbf-p{text-align:center;color:#c9c9cd;font-size:16px;margin:0 auto 36px;max-width:620px}
 .nbf-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px}
-.nbf-k{background:#fff;color:#16181d;border-radius:9px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 10px 30px rgba(0,0,0,.35);transition:transform .18s}
+.nbf-k{background:#fff;color:#16181d;border-radius:9px;position:relative;display:flex;flex-direction:column;box-shadow:0 10px 30px rgba(0,0,0,.35);transition:transform .18s}
 .nbf-k:hover{transform:translateY(-4px)}
-.nbf a.nbf-k__s{position:relative;display:block;background:#f4f4f5;aspect-ratio:1/1;overflow:hidden}
+.nbf a.nbf-k__s{position:relative;display:block;background:#f4f4f5;aspect-ratio:1/1;overflow:hidden;border-radius:inherit;border-bottom-left-radius:0;border-bottom-right-radius:0}
 .nbf a.nbf-k__s img{width:100%;height:100%;object-fit:cover;display:block;margin:0;border-radius:0}
 .nbf-k__t{padding:16px 16px 18px;display:flex;flex-direction:column;flex:1}
 .nbf h3.nbf-k__n{font-size:16px;font-weight:800;line-height:1.3;margin:0 0 14px;min-height:42px;text-transform:none;letter-spacing:0}
@@ -226,7 +238,7 @@ $st = 0;
 .nbf-m__o strong{color:#16181d}
 .nbf-m__nal{color:#8a8e95}
 .nbf-m__f{padding:14px 0 20px;background:#fff;border-top:1px solid #ececee;margin-top:8px}
-.nbf-m__ctrl .nbf-kol{margin-top:0}.nbf .nbf-m__ctrl .nbf-k__izb{margin-top:8px;flex-direction:row;gap:8px}.nbf .nbf-m .nbf-m__ctrl select.nbf-sel{flex:1 1 0;min-width:0;width:auto}.nbf-m__ctrl:not(:empty){margin-bottom:10px}
+.nbf-m__ctrl .nbf-kol{margin-top:0}.nbf .nbf-m__ctrl .nbf-k__izb{margin-top:8px;flex-direction:row;gap:8px}.nbf .nbf-m .nbf-m__ctrl .nbf-dd{flex:1 1 0;min-width:0;width:auto}.nbf-m__ctrl:not(:empty){margin-bottom:10px}
 .nbf-m__f .nbf-k__g{margin-top:0}
 @media (max-width:760px){.nbf-m{padding:0;align-items:flex-end}.nbf-m__p{grid-template-columns:1fr;max-width:none;max-height:94vh;border-radius:10px 10px 0 0;overflow-y:auto;display:block}
 .nbf-m__sl{aspect-ratio:1/1;max-height:46vh}.nbf-m__b{padding:18px 16px 0}.nbf .nbf-m h3.nbf-m__n{font-size:18px;margin-bottom:12px}.nbf-m__o{overflow:visible;font-size:14.5px}
@@ -235,13 +247,34 @@ $st = 0;
 .nbf .nbf-kol button.nbf-kol__g{flex:1 1 0;min-width:0;height:38px;border:1.5px solid #d3d5d9;background:#fff;color:#16181d;border-radius:5px;font-weight:800;font-size:14px;line-height:1;cursor:pointer;padding:0;margin:0;font-family:inherit;box-shadow:none;transition:background .12s,border-color .12s,color .12s;text-transform:none;letter-spacing:0}
 .nbf .nbf-kol button.nbf-kol__g:hover{border-color:#16181d}
 .nbf .nbf-kol button.nbf-kol__g.je-izbran{background:#16181d;border-color:#16181d;color:#fff}
+.nbf-k.je-dd{z-index:30}
+.nbf-dd{position:relative;flex:1 1 0;min-width:0}
+.nbf .nbf-dd select.nbf-sel{position:absolute;left:0;bottom:0;width:1px;height:1px;min-height:0;padding:0;margin:0;border:0;opacity:0;pointer-events:none;flex:none}
+.nbf .nbf-dd button.nbf-dd__g{position:relative;display:flex;align-items:center;gap:8px;width:100%;height:44px;min-height:0;padding:0 32px 0 11px;margin:0;border:1.5px solid #d3d5d9;border-radius:5px;background:#fff;color:#6b7078;font-family:inherit;font-size:14px;font-weight:600;line-height:1.2;text-align:left;text-transform:none;letter-spacing:0;cursor:pointer;box-shadow:none;transition:border-color .12s}
+.nbf .nbf-dd.je-izbrano button.nbf-dd__g{color:#16181d;font-weight:700}
+.nbf .nbf-dd button.nbf-dd__g::after{content:"";position:absolute;right:13px;top:50%;width:7px;height:7px;border-right:2px solid #16181d;border-bottom:2px solid #16181d;transform:translateY(-70%) rotate(45deg);transition:transform .12s}
+.nbf .nbf-dd.je-odprt button.nbf-dd__g::after{transform:translateY(-25%) rotate(225deg)}
+.nbf .nbf-dd button.nbf-dd__g:hover,.nbf .nbf-dd button.nbf-dd__g:focus,.nbf .nbf-dd.je-odprt button.nbf-dd__g{outline:none;border-color:#16181d;background:#fff}
+.nbf .nbf-dd select.nbf-sel--err ~ button.nbf-dd__g{border-color:#d92d20;background:#fff5f4}
+.nbf-dd__b{flex:0 0 20px;width:20px;height:20px;border-radius:4px;border:1px solid rgba(0,0,0,.2);display:block;box-sizing:border-box}
+.nbf-dd__b[hidden]{display:none}
+.nbf-dd__n{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nbf-dd__l{display:none;position:absolute;left:0;top:calc(100% + 4px);z-index:60;box-sizing:border-box;min-width:100%;width:max-content;max-width:290px;max-height:268px;overflow-y:auto;background:#fff;border:1px solid #e0e0e0;border-radius:8px;box-shadow:0 10px 26px rgba(0,0,0,.16);padding:4px;text-align:left}
+.nbf-dd.je-odprt .nbf-dd__l{display:block}
+.nbf-dd__o{display:flex;align-items:center;gap:10px;padding:9px 12px 9px 10px;border-radius:4px;cursor:pointer;font-size:15px;font-weight:500;color:#33363b;line-height:1.25}
+.nbf-dd__o i{flex:0 0 20px;width:20px;height:20px;border-radius:4px;border:1px solid rgba(0,0,0,.15);box-sizing:border-box}
+.nbf-dd__o:hover{background:#f6f6f6}
+.nbf-dd__o.je-izbran{background:var(--bb);color:#16181d;font-weight:700}
+.nbf-m .nbf-dd__l{top:auto;bottom:calc(100% + 4px);max-height:240px}
+@media (max-width:560px){.nbf .nbf-dd{flex:0 0 auto}.nbf .nbf-dd button.nbf-dd__g{height:42px;font-size:13.5px;padding-left:10px}.nbf-k .nbf-dd__l{right:0;width:auto;max-width:none}.nbf-dd__o{font-size:14px;padding:9px 10px 9px 8px;gap:8px}.nbf .nbf-m .nbf-m__ctrl .nbf-dd{flex:1 1 0}}
+.nbf--cian .nbf-dd button.nbf-dd__g{border-radius:3px}.nbf--zlata .nbf-dd button.nbf-dd__g{border-radius:4px}.nbf--zelena .nbf-dd button.nbf-dd__g{border-radius:11px;padding-left:16px}
 .nbf-k__pk:empty{display:none}
 .nbf-k__pk--vs{white-space:normal;overflow:visible;text-overflow:clip}
 .nbf-k__c,.nbf-k__d,.nbf-k__pk{box-sizing:border-box}
 .nbf-k .nbf-k__izb--modal{display:none}
 .nbf button.nbf-k__add[hidden]{display:none}
 .nbf .nbf-m__ctrl .nbf-k__izb--vec{flex-wrap:wrap}
-.nbf .nbf-m .nbf-m__ctrl .nbf-k__izb--vec select.nbf-sel{flex:1 1 calc(50% - 4px)}
+.nbf .nbf-m .nbf-m__ctrl .nbf-k__izb--vec .nbf-dd{flex:1 1 calc(50% - 4px)}
 .nbf a.nbf-k__s,.nbf h3.nbf-k__n a{cursor:pointer}
 .nbf-k__izb{display:flex;gap:8px;margin-top:8px}
 .nbf select.nbf-sel{flex:1 1 0;min-width:0;width:100%;height:44px;border:1.5px solid #d3d5d9;border-radius:5px;background:#fff;color:#16181d;font-size:14px;font-weight:600;padding:0 28px 0 11px;margin:0;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%2316181d' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;cursor:pointer;box-shadow:none;line-height:1.2}
@@ -300,15 +333,51 @@ $st = 0;
   var ajax = koren.getAttribute('data-ajax'), T = {};
   try { T = JSON.parse(koren.getAttribute('data-t')) || {}; } catch (e) {}
 
+  // ---- izbirniki (kot na straneh majic in bokseric): gumb z barvnim vzorcem + seznam; pravi <select> ostane vir vrednosti ----
+  function osvezi(sel) {
+    var dd = sel.closest ? sel.closest('.nbf-dd') : null; if (!dd) { return; }
+    var n = dd.querySelector('.nbf-dd__n'), b = dd.querySelector('.nbf-dd__b'), izbran = null;
+    dd.querySelectorAll('.nbf-dd__o').forEach(function (o) { var je = o.getAttribute('data-v') === sel.value && sel.value !== ''; o.classList.toggle('je-izbran', je); o.setAttribute('aria-selected', je ? 'true' : 'false'); if (je) { izbran = o; } });
+    n.textContent = izbran ? izbran.textContent.trim() : (sel.getAttribute('data-ime') || '');
+    dd.classList.toggle('je-izbrano', !!izbran);
+    var barva = izbran ? izbran.getAttribute('data-b') : '';
+    if (barva) { b.style.background = barva; b.hidden = false; } else { b.hidden = true; }
+  }
+  function zapriDD(razen) {
+    koren.querySelectorAll('.nbf-dd.je-odprt').forEach(function (d) {
+      if (d === razen) { return; }
+      d.classList.remove('je-odprt'); d.querySelector('.nbf-dd__g').setAttribute('aria-expanded', 'false');
+      var kk = d.closest('.nbf-k'); if (kk) { kk.classList.remove('je-dd'); }
+    });
+  }
+  document.addEventListener('click', function (e) { if (!(e.target.closest && e.target.closest('.nbf-dd'))) { zapriDD(null); } });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { zapriDD(null); } });
+  koren.addEventListener('click', function (e) {
+    var g = e.target.closest ? e.target.closest('.nbf-dd__g') : null, o = e.target.closest ? e.target.closest('.nbf-dd__o') : null;
+    if (!g && !o) { return; }
+    e.preventDefault();
+    var dd = (g || o).closest('.nbf-dd'), sel = dd.querySelector('select.nbf-sel');
+    if (g) {
+      var odpri = !dd.classList.contains('je-odprt');
+      zapriDD(odpri ? dd : null);
+      dd.classList.toggle('je-odprt', odpri); g.setAttribute('aria-expanded', odpri ? 'true' : 'false');
+      var kk = dd.closest('.nbf-k'); if (kk) { kk.classList.toggle('je-dd', odpri); }
+      return;
+    }
+    sel.value = o.getAttribute('data-v');
+    sel.dispatchEvent(new Event('change', { bubbles: true }));
+    zapriDD(null);
+  });
+
   koren.addEventListener('change', function (e) {
     if (!(e.target.classList && e.target.classList.contains('nbf-sel'))) { return; }
-    e.target.classList.remove('nbf-sel--err');
+    e.target.classList.remove('nbf-sel--err'); osvezi(e.target);
     var vModalu = e.target.closest('.nbf-m'), k = vModalu ? odprtaKartica : e.target.closest('.nbf-k');
     if (!k) { return; }
     if (vModalu) {
       var polje = e.target.getAttribute('data-polje'), ciljni = null;
       k.querySelectorAll('select.nbf-sel').forEach(function (s) { if (s.getAttribute('data-polje') === polje) { ciljni = s; } });
-      if (ciljni) { ciljni.value = e.target.value; ciljni.classList.remove('nbf-sel--err'); }
+      if (ciljni) { ciljni.value = e.target.value; ciljni.classList.remove('nbf-sel--err'); osvezi(ciljni); }
       var nm = vModalu.querySelector('.nbf-m__err'); if (nm) { nm.textContent = ''; }
     }
     var n = k.querySelector('.nbf-k__err'); if (n) { n.textContent = ''; }
@@ -335,7 +404,7 @@ $st = 0;
         nm.textContent = '';
         var manjka = null;
         modal.querySelectorAll('.nbf-m__ctrl select.nbf-sel').forEach(function (s) { if (!s.value && !manjka) { manjka = s; } });
-        if (manjka) { manjka.classList.add('nbf-sel--err'); nm.textContent = (T.izberi || '{A}').replace('{A}', manjka.getAttribute('data-ime')); try { manjka.focus(); } catch (x) {} return; }
+        if (manjka) { manjka.classList.add('nbf-sel--err'); nm.textContent = (T.izberi || '{A}').replace('{A}', manjka.getAttribute('data-ime')); try { manjka.parentNode.querySelector('.nbf-dd__g').focus(); } catch (x) {} return; }
         gm.classList.add('je-zaseden'); gm.textContent = T.dodajam || '…';
         g.click();
         var n = 0, cakaj = setInterval(function () {
@@ -373,7 +442,8 @@ $st = 0;
         var izv = k.querySelector(sel); if (!izv) { return; }
         var kop = izv.cloneNode(true);
         var s1 = izv.querySelectorAll('select'), s2 = kop.querySelectorAll('select');
-        for (var i = 0; i < s1.length; i++) { s2[i].value = s1[i].value; s2[i].classList.remove('nbf-sel--err'); }
+        kop.querySelectorAll('.nbf-dd').forEach(function (d) { d.classList.remove('je-odprt'); });
+        for (var i = 0; i < s1.length; i++) { s2[i].value = s1[i].value; s2[i].classList.remove('nbf-sel--err'); osvezi(s2[i]); }
         kop.classList.remove('nbf-k__izb--modal'); if (s2.length > 2) { kop.classList.add('nbf-k__izb--vec'); }
         ctrl.appendChild(kop);
       });
@@ -384,7 +454,7 @@ $st = 0;
     modal.querySelector('.nbf-m__o').innerHTML = '<p class="nbf-m__nal">' + (T.nalagam || '') + '</p>';
     modal.classList.add('je-odprt'); document.documentElement.classList.add('nbf-brez-drsenja');
     if (predpomnilnik[id]) { napolniModal(predpomnilnik[id]); return; }
-    fetch(ajax + '?action=noriks_bf_info&id=' + encodeURIComponent(id), { credentials: 'same-origin' })
+    fetch(ajax + '?action=noriks_bf_info&id=' + encodeURIComponent(id) + '&stran=' + encodeURIComponent(koren.getAttribute('data-stran') || ''), { credentials: 'same-origin' })
       .then(function (r) { return r.json(); })
       .then(function (res) { if (res && res.success && res.data) { predpomnilnik[id] = res.data; if (odprtaKartica === k) { napolniModal(res.data); } } else if (odprtaKartica === k) { modal.querySelector('.nbf-m__o').innerHTML = ''; } })
       .catch(function () { if (odprtaKartica === k) { modal.querySelector('.nbf-m__o').innerHTML = ''; } });
@@ -444,7 +514,7 @@ $st = 0;
     if (manjka) {
       manjka.classList.add('nbf-sel--err');
       nap.textContent = (T.izberi || '{A}').replace('{A}', manjka.getAttribute('data-ime'));
-      try { manjka.focus(); } catch (x) {}
+      try { manjka.parentNode.querySelector('.nbf-dd__g').focus(); } catch (x) {}
       return;
     }
 

@@ -118,6 +118,7 @@ function noriks_bf_prag() {
  * Dejansko znizanje — SAMO za nakupe s teh pristajalnih strani.
  * Strani izdelkov, katalog in cene izdelkov ostanejo nespremenjeni.
  * ------------------------------------------------------------------ */
+if ( ! defined( 'NORIKS_BF_MAJICA_SKU' ) ) { define( 'NORIKS_BF_MAJICA_SKU', 'NORIKS-SHIRTS-ORTO-BF' ); }   // Black Friday kopija ORTO majice
 if ( ! defined( 'NORIKS_BF_POPUST' ) ) { define( 'NORIKS_BF_POPUST', 35 ); }   // ciljni odstotek; lepa cena pristane med 30 in 40 %
 
 /**
@@ -213,6 +214,22 @@ function noriks_bf_meta_postavke( $item, $cart_item_key, $values, $order ) {
         if ( $slug !== '' && ! in_array( $slug, $strani, true ) ) { $strani[] = $slug; }
         $order->update_meta_data( '_noriks_bf_stran', implode( ',', $strani ) );
     }
+}
+
+/**
+ * Barva vzorca za vrednost atributa (npr. "Crna" -> #000). Ista paleta kot barvni krogci
+ * na strani izdelka: prepisana iz vticnika orto-product tega trga (.color-<slug>).
+ */
+function noriks_bf_barva( $vrednost ) {
+    static $po_slugu = null, $po_vrednosti = null;
+    if ( $po_slugu === null ) {
+        $po_slugu     = array( 'black' => '#000', 'crna' => '#000', 'cerna' => '#000', 'blue' => '#203240', 'modra' => '#203240', 'plava' => '#203240', 'modra-cz' => '#203240', 'modr' => '#203240', 'tamnoplava' => '#2a3262', 'tmavemodra' => '#2a3262', 'tmave-modra' => '#2a3262', 'green' => '#294d3b', 'zelena' => '#294d3b', 'zelena-cz' => '#294d3b', 'zelen' => '#294d3b', 'gray' => '#706d78', 'siva' => '#706d78', 'seda' => '#706d78', 'crvena' => '#ba212f', 'cervena' => '#ba212f', 'white' => '#fff', 'bela' => '#fff', 'bijela' => '#fff', 'bila' => '#fff', 'b' => '#fff', 'bez' => '#e4e0cf', 'bezova' => '#e4e0cf', 'smeda' => '#9f6f4e', 'hneda' => '#9f6f4e', 'hn' => '#9f6f4e', 'roza' => '#e6a8b8', 'ljubicasta' => '#b48fc4', 'ruzova' => '#e6a8b8', 'fialova' => '#b48fc4', 'telova' => '#ecd9bd', 'fuchsiova' => '#d81b72', 'svestkova' => '#5b2147', 'tamnosiva' => '#4a4a4f', 'tmave-seda' => '#4a4a4f' );
+        $po_vrednosti = array(  );
+    }
+    $vrednost = trim( (string) $vrednost );
+    if ( isset( $po_vrednosti[ $vrednost ] ) ) { return $po_vrednosti[ $vrednost ]; }
+    $slug = sanitize_title( $vrednost );
+    return isset( $po_slugu[ $slug ] ) ? $po_slugu[ $slug ] : '';
 }
 
 /**
@@ -354,6 +371,12 @@ function noriks_bf_kartica( $p ) {
         $k['ponudbe'][ $i ]['pop'] = $pp;
         if ( $k['nacin'] !== 'ogled' && $pp > $k['pop_max'] ) { $k['pop_max'] = $pp; }
     }
+    // Barvni vzorci v izbirniku: atribut je barvni, ce ima vsaj polovica vrednosti znano barvo.
+    foreach ( $k['attrs'] as $ai => $a ) {
+        $b = array(); $zadetki = 0;
+        foreach ( $a['v'] as $v ) { $c = noriks_bf_barva( $v[0] ); $b[] = $c; if ( $c !== '' ) { $zadetki++; } }
+        $k['attrs'][ $ai ]['b'] = ( $zadetki > 0 && $zadetki * 2 >= count( $a['v'] ) ) ? $b : array();
+    }
     $k['prodaja'] = (int) $p->get_total_sales();
     return $k;
 }
@@ -397,7 +420,8 @@ function noriks_bf_je_tipa( $id, $tipi ) {
 /**
  * Majice, bokserice in kompleti: objavljeni, z akcijsko ceno. Vkljuceni so tudi
  * izdelki, skriti iz kataloga — glavne strani ponudb (SHIRTS-ORTO, BOXERS-ORTO, SHBOX)
- * so skrite na skoraj vseh trgih. Izloceni so izdelki za upsell (SKU z UPSELL/MYSTERY) in starter paketi;
+ * Izloceni so izdelki za upsell (SKU z UPSELL/MYSTERY), starter paketi in vse ORTO strani ponudb;
+ * namesto njih je med majicami Black Friday kopija ORTO majice (NORIKS_BF_MAJICA_SKU);
  * po prodaji padajoce. $tipi = kateri tipi (privzeto vsi), $s_slabproof = dodaj se
  * SlabProof nogavice (tudi ce so skrite).
  */
@@ -415,6 +439,8 @@ function noriks_bf_oblacila( $tipi = null, $s_slabproof = false ) {
         $videni[ $pid ] = true;
         if ( preg_match( '/UPSELL|MYSTERY|STARTER/i', (string) $p->get_sku() ) || ! noriks_bf_je_tipa( $pid, $tipi ) ) { continue; }
         if ( has_term( array( 'starter-paketi', 'orto-starter' ), 'product_cat', $pid ) ) { continue; }   // starter paketov na teh straneh ni
+        // ORTO strani ponudb (izbirnik paketov) niso na teh straneh; edina izjema je Black Friday kopija majice, ki se doda spodaj.
+        if ( function_exists( 'gck_is_orto_bundle_enabled' ) && gck_is_orto_bundle_enabled( $pid ) ) { continue; }
         $k = noriks_bf_kartica( $p );
         if ( ! $k ) { continue; }
         $k['vrsta'] = $n++;
@@ -422,6 +448,14 @@ function noriks_bf_oblacila( $tipi = null, $s_slabproof = false ) {
         $dodani[ $pid ] = true;
     }
     $ven = noriks_bf_uredi( $ven );
+    // Black Friday kopija najbolje prodajane ORTO majice (SKU NORIKS-SHIRTS-ORTO-BF) — vedno prva med majicami.
+    if ( in_array( 'majice', $tipi, true ) && function_exists( 'wc_get_product_id_by_sku' ) ) {
+        $bid = wc_get_product_id_by_sku( NORIKS_BF_MAJICA_SKU );
+        if ( $bid && ! isset( $dodani[ $bid ] ) ) {
+            $k = noriks_bf_kartica( wc_get_product( $bid ) );
+            if ( $k ) { $k['vrsta'] = -2; array_unshift( $ven, $k ); $dodani[ $bid ] = true; }
+        }
+    }
     if ( $s_slabproof && function_exists( 'wc_get_product_id_by_sku' ) ) {
         $sid = wc_get_product_id_by_sku( 'NORIKS-SLABPROOF' );
         if ( $sid && ! isset( $dodani[ $sid ] ) ) {
@@ -457,6 +491,12 @@ function noriks_bf_info() {
         $v = wp_get_attachment_image_url( $iid, 'woocommerce_single' );
         $m = wp_get_attachment_image_url( $iid, 'woocommerce_thumbnail' );
         if ( $v ) { $slike[] = array( $v, $m ? $m : $v ); }
+    }
+    $slug   = isset( $_REQUEST['stran'] ) ? sanitize_title( wp_unslash( $_REQUEST['stran'] ) ) : '';
+    $strani = noriks_bf_strani();
+    if ( $slike && isset( $strani[ $slug ]['dogodek'] ) && $strani[ $slug ]['dogodek'] === 'cm' && $p->get_sku() === NORIKS_BF_MAJICA_SKU ) {
+        $cm_slika = get_template_directory_uri() . '/img/bf/majica-cyber-monday.jpg';
+        $slike[0] = array( $cm_slika, $cm_slika );
     }
     wp_send_json_success( array(
         'ime'    => $p->get_name(),
