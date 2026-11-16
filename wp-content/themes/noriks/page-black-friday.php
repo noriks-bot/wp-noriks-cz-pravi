@@ -68,8 +68,8 @@ $trak[] = $l['trak_30'];
 $js = array( 'dodajam' => $l['dodajam'], 'dodano' => $l['dodano'], 'dodaj' => $l['dodaj'], 'izberi' => $l['izberi'], 'napaka' => $l['napaka'], 'zapri' => $l['zapri'], 'nalagam' => $l['nalagam'], 'poglej' => $l['poglej'], 'placilo' => $l['placilo'] );
 $st = 0;
 ?>
-<!-- nbf 2026-11-16-h -->
-<div class="nbf nbf--<?php echo esc_attr( $stran['slog'] ); ?> nbf--<?php echo esc_attr( $tip ); ?> nbf--<?php echo $cm ? 'cm' : 'bf'; ?>" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" data-t="<?php echo esc_attr( wp_json_encode( $js ) ); ?>">
+<!-- nbf 2026-11-16-j -->
+<div class="nbf nbf--<?php echo esc_attr( $stran['slog'] ); ?> nbf--<?php echo esc_attr( $tip ); ?> nbf--<?php echo $cm ? 'cm' : 'bf'; ?>" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" data-stran="<?php echo esc_attr( $stran['slug'] ); ?>" data-t="<?php echo esc_attr( wp_json_encode( $js ) ); ?>">
 
   <section class="nbf-hero">
     <div class="nbf-okvir"><b><?php echo $cm ? 'CYBER' : 'BLACK'; ?></b><i><?php echo $cm ? 'MONDAY' : 'FRIDAY'; ?></i></div>
@@ -99,9 +99,12 @@ $st = 0;
           $hitro = in_array( $x['nacin'], array( 'orto', 'var', 'simple' ), true );
           $cfg   = array( 'id' => $p->get_id(), 'nacin' => $x['nacin'], 'attrs' => array(), 'pon' => array() );
           foreach ( $x['attrs'] as $a ) { $cfg['attrs'][] = array( 'p' => $a['p'], 'v' => array_map( function ( $v ) { return $v[0]; }, $a['v'] ) ); }
+          // Vrstica z imenom paketa je prisotna pri vseh kolicinah (tudi 1x), da kartica ob preklopu ne skoci.
+          $ima_pk = false;
+          foreach ( $x['ponudbe'] as $po ) { if ( $po['paket'] !== '' ) { $ima_pk = true; } }
           foreach ( $x['ponudbe'] as $po ) {
               $cfg['pon'][] = array(
-                  'id'  => $po['id'], 'kos' => $po['kos'], 'pk' => ( $po['kos'] > 1 ? $po['paket'] : '' ),
+                  'id'  => $po['id'], 'kos' => $po['kos'], 'pk' => ( $po['paket'] !== '' ? $po['paket'] : ( $ima_pk ? "\xC2\xA0" : '' ) ),
                   'red' => wc_price( $po['red'] ), 'pri' => '−' . wc_price( $po['red'] - $po['akc'] ), 'akc' => wc_price( $po['akc'] ),
                   'pc'  => '−' . sprintf( $l['pct'], $po['pop'] ),
                   'd'   => $prag > 0 ? ( $po['akc'] >= $prag ? $l['d_free'] : str_replace( '{D}', $D, $l['d_nad'] ) ) : '',
@@ -109,12 +112,12 @@ $st = 0;
           }
           $vec = $hitro && count( $x['ponudbe'] ) > 1;
           ?>
-        <article class="nbf-k"<?php if ( $hitro ) : ?> data-bf="<?php echo esc_attr( wp_json_encode( $cfg ) ); ?>"<?php endif; ?>>
+        <article class="nbf-k" data-id="<?php echo (int) $p->get_id(); ?>"<?php if ( $hitro ) : ?> data-bf="<?php echo esc_attr( wp_json_encode( $cfg ) ); ?>"<?php endif; ?>>
           <a class="nbf-k__s" href="<?php echo esc_url( $url ); ?>"><?php echo $slika; // phpcs:ignore -- WooCommerce vrne varen <img> ?></a>
           <div class="nbf-k__t">
             <?php if ( $rang ) : ?><div class="nbf-k__rang">#<?php echo (int) $st; ?></div><?php endif; ?>
             <h3 class="nbf-k__n"><a href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( $p->get_name() ); ?></a></h3>
-            <div class="nbf-k__pk"><?php echo esc_html( $x['kos'] > 1 ? $x['paket'] : '' ); ?></div>
+            <div class="nbf-k__pk<?php echo ! empty( $x['vsebina'] ) ? ' nbf-k__pk--vs' : ''; ?>"><?php echo esc_html( $x['paket'] !== '' ? $x['paket'] : ( $ima_pk ? "\xC2\xA0" : '' ) ); ?></div>
             <div class="nbf-k__c">
               <div class="nbf-r"><span><?php echo esc_html( $l['redna'] ); ?></span><s class="nbf-c-red"><?php echo wp_kses_post( wc_price( $x['red'] ) ); ?></s></div>
               <div class="nbf-r nbf-r--p"><span><?php echo esc_html( $l['popust'] ); ?><b class="nbf-c-pc">−<?php echo esc_html( $pc ); ?></b></span><em class="nbf-c-pri">−<?php echo wp_kses_post( wc_price( $x['red'] - $x['akc'] ) ); ?></em></div>
@@ -126,9 +129,9 @@ $st = 0;
               </div>
             <?php endif; ?>
             <?php if ( $hitro ) : ?>
-              <?php $izbirni = array_filter( $x['attrs'], function ( $a ) { return count( $a['v'] ) > 1; } ); ?>
+              <?php $izbirni = array_filter( $x['attrs'], function ( $a ) { return count( $a['v'] ) > 1; } ); $modalno = count( $izbirni ) > 2; // vec kot 2 izbiri: izbira v modalu ?>
               <?php if ( $izbirni ) : ?>
-              <div class="nbf-k__izb">
+              <div class="nbf-k__izb<?php echo $modalno ? ' nbf-k__izb--modal' : ''; ?>">
                 <?php foreach ( $izbirni as $a ) : ?>
                 <select class="nbf-sel" data-polje="<?php echo esc_attr( $a['p'] ); ?>" data-ime="<?php echo esc_attr( $a['ime'] ); ?>" aria-label="<?php echo esc_attr( $a['ime'] ); ?>">
                   <option value=""><?php echo esc_html( $a['ime'] ); ?></option>
@@ -137,7 +140,8 @@ $st = 0;
                 <?php endforeach; ?>
               </div>
               <?php endif; ?>
-              <button type="button" class="nbf-k__g nbf-k__add"><?php echo esc_html( $l['dodaj'] ); ?></button>
+              <?php if ( $modalno ) : ?><button type="button" class="nbf-k__g nbf-k__odpri"><?php echo esc_html( $l['dodaj'] ); ?></button><?php endif; ?>
+              <button type="button" class="nbf-k__g nbf-k__add"<?php echo $modalno ? ' hidden' : ''; ?>><?php echo esc_html( $l['dodaj'] ); ?></button>
               <div class="nbf-k__err" role="alert"></div>
             <?php else : ?>
               <a class="nbf-k__g" href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( $l['gumb'] ); ?></a>
@@ -160,13 +164,13 @@ $st = 0;
 .nbf-hero::before,.nbf-hero::after{content:"";position:absolute;width:420px;height:420px;border-radius:50%;background:rgba(var(--ar),.16);filter:blur(90px);pointer-events:none}
 .nbf-hero::before{left:-140px;top:-120px}.nbf-hero::after{right:-140px;bottom:-200px}
 .nbf-hero>*{position:relative;z-index:1}
-.nbf-okvir{display:inline-block;border:2px solid var(--a);border-radius:12px;padding:20px 46px 18px;margin:0 0 30px;box-shadow:0 0 26px rgba(var(--ar),.55),inset 0 0 26px rgba(var(--ar),.22)}
+.nbf-okvir{display:inline-block;border:2px solid var(--a);border-radius:6px;padding:20px 46px 18px;margin:0 0 30px;box-shadow:0 0 26px rgba(var(--ar),.55),inset 0 0 26px rgba(var(--ar),.22)}
 .nbf-okvir b{display:block;font-size:clamp(42px,8vw,86px);font-weight:900;letter-spacing:5px;line-height:1;color:#fff}
 .nbf-okvir i{display:block;font-style:normal;font-size:clamp(38px,7.3vw,78px);font-weight:900;letter-spacing:7px;line-height:1.08;color:#0d0a09;-webkit-text-stroke:4px var(--a);paint-order:stroke fill}
 .nbf h1.nbf-h1{font-size:clamp(27px,5vw,56px);font-weight:900;line-height:1.12;margin:0 0 16px;color:#fff;letter-spacing:.5px;text-transform:none}
 .nbf h1.nbf-h1 em{font-style:normal;color:var(--a);white-space:nowrap}
 .nbf p.nbf-sub{max-width:640px;margin:0 auto 28px;font-size:17px;line-height:1.55;color:#d9d9dc}
-.nbf a.nbf-gumb{display:inline-block;background:var(--a);color:var(--at);font-weight:800;font-size:15px;letter-spacing:.6px;padding:16px 36px;border-radius:999px;text-decoration:none;transition:transform .15s,box-shadow .15s;box-shadow:0 8px 26px rgba(var(--ar),.4)}
+.nbf a.nbf-gumb{display:inline-block;background:var(--a);color:var(--at);font-weight:800;font-size:15px;letter-spacing:.6px;padding:16px 36px;border-radius:13px;text-decoration:none;transition:transform .15s,box-shadow .15s;box-shadow:0 8px 26px rgba(var(--ar),.4)}
 .nbf a.nbf-gumb:hover{transform:translateY(-2px);color:var(--at)}
 .nbf-trak{background:var(--a);color:var(--tt);overflow:hidden;white-space:nowrap;padding:13px 0;font-weight:800;font-size:14px;letter-spacing:1.2px}
 .nbf-trak__t{display:inline-flex;align-items:center;animation:nbf-tek 46s linear infinite;will-change:transform}
@@ -180,7 +184,7 @@ $st = 0;
 .nbf h2.nbf-h2 em{font-style:normal;color:var(--a)}
 .nbf p.nbf-p{text-align:center;color:#c9c9cd;font-size:16px;margin:0 auto 36px;max-width:620px}
 .nbf-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px}
-.nbf-k{background:#fff;color:#16181d;border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 10px 30px rgba(0,0,0,.35);transition:transform .18s}
+.nbf-k{background:#fff;color:#16181d;border-radius:9px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 10px 30px rgba(0,0,0,.35);transition:transform .18s}
 .nbf-k:hover{transform:translateY(-4px)}
 .nbf a.nbf-k__s{position:relative;display:block;background:#f4f4f5;aspect-ratio:1/1;overflow:hidden}
 .nbf a.nbf-k__s img{width:100%;height:100%;object-fit:cover;display:block;margin:0;border-radius:0}
@@ -190,31 +194,31 @@ $st = 0;
 .nbf-k__c{margin-top:auto;border-top:1px solid #ececee;padding-top:12px}
 .nbf-r{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:14px;color:#55595f;margin:0 0 7px}
 .nbf-r s{color:#8a8e95;text-decoration:line-through}
-.nbf-r--p{color:#16181d}.nbf-r--p b{display:inline-block;background:var(--bb);color:var(--bt);border-radius:999px;padding:2px 9px;font-weight:800;font-size:13px;margin-left:4px}
+.nbf-r--p{color:#16181d}.nbf-r--p b{display:inline-block;background:var(--bb);color:var(--bt);border-radius:6px;padding:2px 9px;font-weight:800;font-size:13px;margin-left:4px}
 .nbf-r--p em{font-style:normal;font-weight:700;color:var(--bt);white-space:nowrap}
 .nbf-r--z{font-size:15px;font-weight:800;color:#16181d;margin:10px 0 0;align-items:center}
 .nbf-r--z strong{font-size:22px;font-weight:900;white-space:nowrap}
 .nbf-r s .woocommerce-Price-amount,.nbf-r em .woocommerce-Price-amount,.nbf-r strong .woocommerce-Price-amount{color:inherit;font:inherit}
-.nbf a.nbf-k__g{display:block;text-align:center;background:var(--a);color:var(--at);font-weight:800;font-size:15px;letter-spacing:.6px;padding:14px 10px;border-radius:12px;text-decoration:none;margin-top:14px;transition:background .15s}
+.nbf a.nbf-k__g{display:block;text-align:center;background:var(--a);color:var(--at);font-weight:800;font-size:15px;letter-spacing:.6px;padding:14px 10px;border-radius:6px;text-decoration:none;margin-top:14px;transition:background .15s}
 .nbf a.nbf-k__g:hover{background:var(--a2);color:var(--at)}
 .nbf-k__d{text-align:center;font-size:13px;color:#55595f;margin-top:10px}
-.nbf-k__pk{font-size:13px;color:#6b7078;margin:-8px 0 12px;font-weight:600}
+.nbf-k__pk{font-size:13px;line-height:1.35;color:#6b7078;margin:-8px 0 12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nbf-brez-drsenja{overflow:hidden}
 .nbf-m{position:fixed;inset:0;z-index:999990;background:rgba(8,8,10,.72);display:none;align-items:center;justify-content:center;padding:24px;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
 .nbf-m.je-odprt{display:flex}
-.nbf-m__p{position:relative;background:#fff;color:#16181d;border-radius:20px;width:100%;max-width:980px;max-height:calc(100vh - 48px);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.nbf-m__p{position:relative;background:#fff;color:#16181d;border-radius:10px;width:100%;max-width:980px;max-height:calc(100vh - 48px);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5)}
 .nbf .nbf-m button.nbf-m__x{position:absolute;right:12px;top:12px;z-index:3;width:38px;height:38px;border-radius:50%;border:0;background:#16181d;color:#fff;font-size:24px;line-height:1;cursor:pointer;padding:0;margin:0;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.25)}
 .nbf-m__g{background:#f4f4f5;display:flex;flex-direction:column;min-height:0}
 .nbf-m__sl{flex:1 1 auto;min-height:0;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center}
 .nbf-m__sl img{width:100%;height:100%;object-fit:contain;display:block;margin:0}
 .nbf-m__sm{display:flex;gap:8px;padding:10px;overflow-x:auto;scrollbar-width:thin}
 .nbf-m__sm:empty{display:none}
-.nbf .nbf-m__sm button{flex:0 0 62px;width:62px;height:62px;padding:0;margin:0;border:2px solid transparent;border-radius:10px;overflow:hidden;background:#fff;cursor:pointer;box-shadow:none}
+.nbf .nbf-m__sm button{flex:0 0 62px;width:62px;height:62px;padding:0;margin:0;border:2px solid transparent;border-radius:5px;overflow:hidden;background:#fff;cursor:pointer;box-shadow:none}
 .nbf .nbf-m__sm button.je-izbran{border-color:var(--a)}
 .nbf-m__sm img{width:100%;height:100%;object-fit:cover;display:block;margin:0}
 .nbf-m__b{display:flex;flex-direction:column;min-height:0;padding:26px 26px 0}
 .nbf .nbf-m h3.nbf-m__n{font-size:22px;font-weight:800;line-height:1.25;margin:0 44px 14px 0;color:#16181d;text-transform:none;letter-spacing:0}
-.nbf-m__c{border:1px solid #ececee;border-radius:14px;padding:12px 14px 12px;margin-bottom:14px}
+.nbf-m__c{border:1px solid #ececee;border-radius:7px;padding:12px 14px 12px;margin-bottom:14px}
 .nbf-m__c .nbf-r:last-child{margin-bottom:0}
 .nbf-m__o{flex:1 1 auto;min-height:60px;overflow-y:auto;font-size:15px;line-height:1.6;color:#33363b;padding-right:6px}
 .nbf-m__o p{margin:0 0 12px;font-size:15px;line-height:1.6;color:#33363b}
@@ -224,19 +228,26 @@ $st = 0;
 .nbf-m__f{padding:14px 0 20px;background:#fff;border-top:1px solid #ececee;margin-top:8px}
 .nbf-m__ctrl .nbf-kol{margin-top:0}.nbf .nbf-m__ctrl .nbf-k__izb{margin-top:8px;flex-direction:row;gap:8px}.nbf .nbf-m .nbf-m__ctrl select.nbf-sel{flex:1 1 0;min-width:0;width:auto}.nbf-m__ctrl:not(:empty){margin-bottom:10px}
 .nbf-m__f .nbf-k__g{margin-top:0}
-@media (max-width:760px){.nbf-m{padding:0;align-items:flex-end}.nbf-m__p{grid-template-columns:1fr;max-width:none;max-height:94vh;border-radius:20px 20px 0 0;overflow-y:auto;display:block}
+@media (max-width:760px){.nbf-m{padding:0;align-items:flex-end}.nbf-m__p{grid-template-columns:1fr;max-width:none;max-height:94vh;border-radius:10px 10px 0 0;overflow-y:auto;display:block}
 .nbf-m__sl{aspect-ratio:1/1;max-height:46vh}.nbf-m__b{padding:18px 16px 0}.nbf .nbf-m h3.nbf-m__n{font-size:18px;margin-bottom:12px}.nbf-m__o{overflow:visible;font-size:14.5px}
 .nbf-m__f{position:sticky;bottom:0;padding:12px 0 14px}.nbf-m__f a.nbf-k__o{margin-top:8px}.nbf .nbf-m__sm button{flex-basis:54px;width:54px;height:54px}}
 .nbf-kol{display:flex;gap:6px;margin-top:12px}
-.nbf .nbf-kol button.nbf-kol__g{flex:1 1 0;min-width:0;height:38px;border:1.5px solid #d3d5d9;background:#fff;color:#16181d;border-radius:10px;font-weight:800;font-size:14px;line-height:1;cursor:pointer;padding:0;margin:0;font-family:inherit;box-shadow:none;transition:background .12s,border-color .12s,color .12s;text-transform:none;letter-spacing:0}
+.nbf .nbf-kol button.nbf-kol__g{flex:1 1 0;min-width:0;height:38px;border:1.5px solid #d3d5d9;background:#fff;color:#16181d;border-radius:5px;font-weight:800;font-size:14px;line-height:1;cursor:pointer;padding:0;margin:0;font-family:inherit;box-shadow:none;transition:background .12s,border-color .12s,color .12s;text-transform:none;letter-spacing:0}
 .nbf .nbf-kol button.nbf-kol__g:hover{border-color:#16181d}
 .nbf .nbf-kol button.nbf-kol__g.je-izbran{background:#16181d;border-color:#16181d;color:#fff}
 .nbf-k__pk:empty{display:none}
+.nbf-k__pk--vs{white-space:normal;overflow:visible;text-overflow:clip}
+.nbf-k__c,.nbf-k__d,.nbf-k__pk{box-sizing:border-box}
+.nbf-k .nbf-k__izb--modal{display:none}
+.nbf button.nbf-k__add[hidden]{display:none}
+.nbf .nbf-m__ctrl .nbf-k__izb--vec{flex-wrap:wrap}
+.nbf .nbf-m .nbf-m__ctrl .nbf-k__izb--vec select.nbf-sel{flex:1 1 calc(50% - 4px)}
+.nbf a.nbf-k__s,.nbf h3.nbf-k__n a{cursor:pointer}
 .nbf-k__izb{display:flex;gap:8px;margin-top:8px}
-.nbf select.nbf-sel{flex:1 1 0;min-width:0;width:100%;height:44px;border:1.5px solid #d3d5d9;border-radius:10px;background:#fff;color:#16181d;font-size:14px;font-weight:600;padding:0 28px 0 11px;margin:0;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%2316181d' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;cursor:pointer;box-shadow:none;line-height:1.2}
+.nbf select.nbf-sel{flex:1 1 0;min-width:0;width:100%;height:44px;border:1.5px solid #d3d5d9;border-radius:5px;background:#fff;color:#16181d;font-size:14px;font-weight:600;padding:0 28px 0 11px;margin:0;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%2316181d' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;cursor:pointer;box-shadow:none;line-height:1.2}
 .nbf select.nbf-sel:focus{outline:none;border-color:var(--a)}
 .nbf select.nbf-sel.nbf-sel--err{border-color:#d92d20;background-color:#fff5f4}
-.nbf button.nbf-k__g{display:block;width:100%;border:0;cursor:pointer;text-align:center;background:var(--a);color:var(--at);font-weight:800;font-size:15px;letter-spacing:.6px;padding:14px 10px;border-radius:12px;margin-top:10px;transition:background .15s;font-family:inherit;line-height:1.3;text-transform:none}
+.nbf button.nbf-k__g{display:block;width:100%;border:0;cursor:pointer;text-align:center;background:var(--a);color:var(--at);font-weight:800;font-size:15px;letter-spacing:.6px;padding:14px 10px;border-radius:6px;margin-top:10px;transition:background .15s;font-family:inherit;line-height:1.3;text-transform:none}
 .nbf button.nbf-k__g:hover{background:var(--a2)}
 .nbf button.nbf-k__g.je-zaseden{opacity:.75;cursor:progress}
 .nbf button.nbf-k__g.je-dodano{background:#1f8a4c}
@@ -262,23 +273,23 @@ $st = 0;
 .nbf--cian{--a:#00d9ff;--a2:#00b9da;--ar:0,217,255;--hg:#04283c;--at:#04121a;--tt:#04121a;--bb:#e0f9ff;--bt:#007e99}
 .nbf--vijola{--a:#a855f7;--a2:#9333ea;--ar:168,85,247;--hg:#260b4a;--at:#fff;--tt:#fff;--bb:#f1e6ff;--bt:#7e22ce}
 .nbf--cm .nbf-hero{background-image:linear-gradient(rgba(var(--ar),.075) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--ar),.075) 1px,transparent 1px),radial-gradient(70% 90% at 50% 0%,var(--hg) 0%,#0a0a0b 72%);background-size:46px 46px,46px 46px,auto}
-.nbf--cian .nbf-okvir{border-radius:3px;box-shadow:0 0 34px rgba(var(--ar),.6),inset 0 0 30px rgba(var(--ar),.22)}
-.nbf--cian .nbf-k{border-radius:8px}.nbf--cian a.nbf-k__g,.nbf--cian button.nbf-k__g,.nbf--cian a.nbf-gumb{border-radius:6px}.nbf--cian select.nbf-sel,.nbf--cian .nbf-kol button.nbf-kol__g{border-radius:6px}
-.nbf--vijola .nbf-okvir{transform:skewX(-7deg);border-radius:6px;border-width:3px}
+.nbf--cian .nbf-okvir{border-radius:2px;box-shadow:0 0 34px rgba(var(--ar),.6),inset 0 0 30px rgba(var(--ar),.22)}
+.nbf--cian .nbf-k{border-radius:4px}.nbf--cian a.nbf-k__g,.nbf--cian button.nbf-k__g,.nbf--cian a.nbf-gumb{border-radius:3px}.nbf--cian select.nbf-sel,.nbf--cian .nbf-kol button.nbf-kol__g{border-radius:3px}
+.nbf--vijola .nbf-okvir{transform:skewX(-7deg);border-radius:3px;border-width:3px}
 .nbf--vijola .nbf-okvir i{color:var(--a);-webkit-text-stroke:0}
 .nbf--vijola .nbf-k{border-bottom:5px solid var(--a)}
 .nbf--zlata .nbf-okvir{transform:rotate(-2deg);border-width:3px}
 .nbf--zlata .nbf-okvir i{color:var(--a);-webkit-text-stroke:0}
-.nbf--zlata .nbf-kol button.nbf-kol__g{border-radius:8px}.nbf--zelena .nbf-kol button.nbf-kol__g{border-radius:999px}
-.nbf--zlata .nbf-k{border-radius:10px}.nbf--zlata a.nbf-k__g,.nbf--zlata button.nbf-k__g{border-radius:8px}.nbf--zlata select.nbf-sel{border-radius:8px}
+.nbf--zlata .nbf-kol button.nbf-kol__g{border-radius:4px}.nbf--zelena .nbf-kol button.nbf-kol__g{border-radius:10px}
+.nbf--zlata .nbf-k{border-radius:5px}.nbf--zlata a.nbf-k__g,.nbf--zlata button.nbf-k__g{border-radius:4px}.nbf--zlata select.nbf-sel{border-radius:4px}
 .nbf--modra .nbf-okvir{border:0;border-bottom:5px solid var(--a);border-radius:0;box-shadow:none;padding:0 6px 16px}
 .nbf--modra .nbf-okvir i{color:var(--a);-webkit-text-stroke:0}
 .nbf--modra .nbf-k{border-top:5px solid var(--a)}
-.nbf--zelena .nbf-okvir{border-radius:26px}
-.nbf--zelena a.nbf-k__g,.nbf--zelena button.nbf-k__g,.nbf--zelena a.nbf-gumb{border-radius:999px}.nbf--zelena select.nbf-sel{border-radius:999px;padding-left:16px}
+.nbf--zelena .nbf-okvir{border-radius:13px}
+.nbf--zelena a.nbf-k__g,.nbf--zelena button.nbf-k__g,.nbf--zelena a.nbf-gumb{border-radius:12px}.nbf--zelena select.nbf-sel{border-radius:11px;padding-left:16px}
 .nbf--rdeca .nbf-okvir{background:var(--a);border-color:var(--a);box-shadow:0 0 44px rgba(var(--ar),.55)}
 .nbf--rdeca .nbf-okvir i{color:#fff;-webkit-text-stroke:0}
-.nbf-k__rang{align-self:flex-start;background:var(--a);color:var(--at);font-weight:900;font-size:13px;line-height:1;border-radius:999px;padding:6px 11px;margin:0 0 10px;letter-spacing:.6px}
+.nbf-k__rang{align-self:flex-start;background:var(--a);color:var(--at);font-weight:900;font-size:13px;line-height:1;border-radius:6px;padding:6px 11px;margin:0 0 10px;letter-spacing:.6px}
 .nbf--top9 .nbf-grid{grid-template-columns:repeat(3,minmax(0,1fr));max-width:1060px;margin-left:auto;margin-right:auto}
 @media (max-width:860px){.nbf--top9 .nbf-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:560px){.nbf-k__rang{font-size:11.5px;padding:5px 9px;margin-bottom:8px}.nbf--modra .nbf-okvir{padding:0 4px 12px}}
@@ -343,14 +354,15 @@ $st = 0;
     sm.innerHTML = '';
     if (d.slike && d.slike.length > 1) { d.slike.forEach(function (s, i) { var b = document.createElement('button'); b.type = 'button'; b.setAttribute('data-v', s[0]); if (i === 0) { b.className = 'je-izbran'; } b.innerHTML = '<img src="' + s[1] + '" alt="" loading="lazy">'; sm.appendChild(b); }); }
     modal.querySelector('.nbf-m__o').innerHTML = (d.kratek || '') + (d.opis || '');
-    modal.querySelector('.nbf-m__stran').href = d.url || '#';
   }
+  // Klik na sliko, naslov, "Poglej vec" ali gumb pri izdelkih z vec izbirami odpre modal — nakup ostane na tej strani.
   koren.addEventListener('click', function (e) {
-    var v = e.target.closest ? e.target.closest('.nbf-k__vec') : null; if (!v) { return; }
+    var v = e.target.closest ? e.target.closest('.nbf-k__vec, a.nbf-k__s, .nbf-k__n a, .nbf-k__odpri') : null; if (!v) { return; }
+    var k = v.closest('.nbf-k'); if (!k) { return; }
     if (e.metaKey || e.ctrlKey || e.shiftKey) { return; }
     e.preventDefault();
     if (!modal) { narediModal(); }
-    var k = v.closest('.nbf-k'), id = v.getAttribute('data-id'); odprtaKartica = k;
+    var id = k.getAttribute('data-id'), povezava = k.querySelector('.nbf-k__vec'), href = povezava ? povezava.href : '#'; odprtaKartica = k;
     modal.querySelector('.nbf-m__n').textContent = k.querySelector('.nbf-k__n').textContent.trim();
     var c = k.querySelector('.nbf-k__c'); modal.querySelector('.nbf-m__c').innerHTML = c ? c.innerHTML : '';
     var gk = k.querySelector('.nbf-k__add'), gm = modal.querySelector('.nbf-m__dodaj'), ctrl = modal.querySelector('.nbf-m__ctrl');
@@ -362,19 +374,44 @@ $st = 0;
         var kop = izv.cloneNode(true);
         var s1 = izv.querySelectorAll('select'), s2 = kop.querySelectorAll('select');
         for (var i = 0; i < s1.length; i++) { s2[i].value = s1[i].value; s2[i].classList.remove('nbf-sel--err'); }
+        kop.classList.remove('nbf-k__izb--modal'); if (s2.length > 2) { kop.classList.add('nbf-k__izb--vec'); }
         ctrl.appendChild(kop);
       });
     }
-    var st = modal.querySelector('.nbf-m__stran'); st.textContent = T.poglej || ''; st.href = v.href;
+    // povezava na stran izdelka ostane samo pri izdelkih, ki jih s te strani ni mogoce dodati
+    var st = modal.querySelector('.nbf-m__stran'); st.textContent = T.poglej || ''; st.href = href; st.style.display = gk ? 'none' : '';
     modal.querySelector('.nbf-m__sl').innerHTML = ''; modal.querySelector('.nbf-m__sm').innerHTML = '';
     modal.querySelector('.nbf-m__o').innerHTML = '<p class="nbf-m__nal">' + (T.nalagam || '') + '</p>';
     modal.classList.add('je-odprt'); document.documentElement.classList.add('nbf-brez-drsenja');
     if (predpomnilnik[id]) { napolniModal(predpomnilnik[id]); return; }
     fetch(ajax + '?action=noriks_bf_info&id=' + encodeURIComponent(id), { credentials: 'same-origin' })
       .then(function (r) { return r.json(); })
-      .then(function (res) { if (res && res.success && res.data) { predpomnilnik[id] = res.data; if (odprtaKartica === k) { napolniModal(res.data); } } else { window.location.href = v.href; } })
-      .catch(function () { window.location.href = v.href; });
+      .then(function (res) { if (res && res.success && res.data) { predpomnilnik[id] = res.data; if (odprtaKartica === k) { napolniModal(res.data); } } else if (odprtaKartica === k) { modal.querySelector('.nbf-m__o').innerHTML = ''; } })
+      .catch(function () { if (odprtaKartica === k) { modal.querySelector('.nbf-m__o').innerHTML = ''; } });
   });
+
+  function prikazi(k, po) {
+    function html(s, h) { var el = k.querySelector(s); if (el) { el.innerHTML = h; } }
+    function txt(s, t) { var el = k.querySelector(s); if (el) { el.textContent = t; } }
+    html('.nbf-c-red', po.red); html('.nbf-c-pri', po.pri); html('.nbf-c-akc', po.akc);
+    txt('.nbf-c-pc', po.pc); txt('.nbf-k__pk', po.pk || ''); if (po.d) { txt('.nbf-c-d', po.d); }
+  }
+  // Cenovni blok, vrstica paketa in vrstica o dostavi dobijo visino najdaljse ponudbe,
+  // da kartica ob preklopu kolicine (1x / 2x / 3x) ne skoci.
+  function rezerviraj() {
+    koren.querySelectorAll('.nbf-k[data-bf]').forEach(function (k) {
+      var cfg; try { cfg = JSON.parse(k.getAttribute('data-bf')); } catch (x) { return; }
+      if (!cfg.pon || cfg.pon.length < 2) { return; }
+      var deli = [k.querySelector('.nbf-k__c'), k.querySelector('.nbf-k__d'), k.querySelector('.nbf-k__pk')], naj = [0, 0, 0];
+      deli.forEach(function (el) { if (el) { el.style.minHeight = ''; } });
+      cfg.pon.forEach(function (po) { prikazi(k, po); deli.forEach(function (el, i) { if (el) { naj[i] = Math.max(naj[i], el.getBoundingClientRect().height); } }); });
+      prikazi(k, cfg.pon[parseInt(k.getAttribute('data-izb'), 10) || 0] || cfg.pon[0]);
+      deli.forEach(function (el, i) { if (el && naj[i] > 0) { el.style.minHeight = Math.ceil(naj[i]) + 'px'; } });
+    });
+  }
+  rezerviraj();
+  var casR = null; window.addEventListener('resize', function () { clearTimeout(casR); casR = setTimeout(rezerviraj, 200); });
+  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(rezerviraj); }
 
   // izbira kolicine / ponudbe: preracuna cene na kartici
   koren.addEventListener('click', function (e) {
@@ -387,10 +424,7 @@ $st = 0;
     k.setAttribute('data-izb', i);
     function oznaci(koren2) { koren2.querySelectorAll('.nbf-kol__g').forEach(function (b) { b.classList.toggle('je-izbran', (parseInt(b.getAttribute('data-i'), 10) || 0) === i); }); }
     oznaci(k); if (modal && odprtaKartica === k) { oznaci(modal); }
-    function html(s, h) { var el = k.querySelector(s); if (el) { el.innerHTML = h; } }
-    function txt(s, t) { var el = k.querySelector(s); if (el) { el.textContent = t; } }
-    html('.nbf-c-red', po.red); html('.nbf-c-pri', po.pri); html('.nbf-c-akc', po.akc);
-    txt('.nbf-c-pc', po.pc); txt('.nbf-k__pk', po.pk || ''); if (po.d) { txt('.nbf-c-d', po.d); }
+    prikazi(k, po);
     if (modal && odprtaKartica === k) { var c = k.querySelector('.nbf-k__c'); modal.querySelector('.nbf-m__c').innerHTML = c ? c.innerHTML : ''; }
   });
 
@@ -419,6 +453,7 @@ $st = 0;
     fd.append('action', 'noriks_bf_add');
     fd.append('product_id', cfg.id);
     fd.append('nacin', cfg.nacin);
+    fd.append('stran', koren.getAttribute('data-stran') || '');
     if (cfg.nacin === 'orto') { fd.append('bundle_option', po.id); } else { fd.append('quantity', po.kos); }
     (cfg.attrs || []).forEach(function (a) {
       var v = a.v.length === 1 ? a.v[0] : izbrano[a.p];
