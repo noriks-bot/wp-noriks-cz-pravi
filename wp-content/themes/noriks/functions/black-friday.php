@@ -2,8 +2,11 @@
 /**
  * NORIKS — Black Friday pristajalni strani.
  *
- *   /black-friday/         vsi izdelki: novi izdelki + majice in bokserice
- *   /black-friday-basics/  samo majice, bokserice in SlabProof nogavice
+ *   /black-friday/         vsi izdelki: novi izdelki + majice in bokserice (oranzna)
+ *   /black-friday-basics/  majice, bokserice in SlabProof nogavice        (zlata)
+ *   /black-friday-shirts/  samo majice                                    (modra)
+ *   /black-friday-boxers/  samo bokserice                                 (zelena)
+ *   /black-friday-top9/    9 najbolj prodajanih izdelkov nasploh          (rdeca)
  *
  * Po vzoru fitocanin.com/pages/black-friday-2026: temen hero, tekoci trak, kartice
  * z redno ceno, BF popustom in koncno ceno. Cen NE spreminjamo — stran prikaze
@@ -18,9 +21,25 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-const NORIKS_BF_SLUG_VSE   = 'black-friday';
-const NORIKS_BF_SLUG_OBLEK = 'black-friday-basics';
-const NORIKS_BF_NAJVEC     = 30;   // najvec kartic v enem razdelku
+const NORIKS_BF_NAJVEC = 30;   // najvec kartic v enem razdelku
+
+/** Pet pristajalnih strani: slug => (naslov strani, tip vsebine, slog). */
+function noriks_bf_strani() {
+    return array(
+        'black-friday'        => array( 'naslov' => 'Black Friday',        'tip' => 'vse',       'slog' => 'oranzna' ),
+        'black-friday-basics' => array( 'naslov' => 'Black Friday Basics', 'tip' => 'basics',    'slog' => 'zlata' ),
+        'black-friday-shirts' => array( 'naslov' => 'Black Friday Shirts', 'tip' => 'majice',    'slog' => 'modra' ),
+        'black-friday-boxers' => array( 'naslov' => 'Black Friday Boxers', 'tip' => 'bokserice', 'slog' => 'zelena' ),
+        'black-friday-top9'   => array( 'naslov' => 'Black Friday Top 9',  'tip' => 'top9',      'slog' => 'rdeca' ),
+    );
+}
+
+/** Nastavitve trenutne strani (privzeto: vse). */
+function noriks_bf_stran() {
+    $s = noriks_bf_strani();
+    foreach ( $s as $slug => $c ) { if ( is_page( $slug ) ) { return $c; } }
+    return $s['black-friday'];
+}
 
 /** Besedila tega trga. {P} = najvecji popust, {D} = prag brezplacne dostave, {A} = ime atributa. */
 function noriks_bf_l() {
@@ -52,6 +71,13 @@ function noriks_bf_l() {
         'dodano'     => '✓ PŘIDÁNO',
         'izberi'     => 'Vyberte: {A}',
         'napaka'     => 'Přidání se nezdařilo. Zkuste to znovu.',
+        'w_maj'      => 'TRIČKA',
+        'w_box'      => 'BOXERKY',
+        'akcija'     => 'V AKCI',
+        'top_b'      => 'NEJPRODÁVANĚJŠÍCH',
+        'sub_maj'    => 'Trička za akční ceny – vyberte si velikost a objednejte.',
+        'sub_box'    => 'Boxerky za akční ceny – vyberte si velikost a objednejte.',
+        'sub_top'    => 'Devět nejprodávanějších produktů za akční ceny.',
     );
 }
 
@@ -151,12 +177,12 @@ function noriks_bf_kartica( $p ) {
     return $k;
 }
 
-function noriks_bf_uredi( $seznam ) {
+function noriks_bf_uredi( $seznam, $najvec = NORIKS_BF_NAJVEC ) {
     usort( $seznam, function ( $a, $b ) {
         if ( $a['prodaja'] !== $b['prodaja'] ) { return $b['prodaja'] <=> $a['prodaja']; }
         return $a['vrsta'] <=> $b['vrsta'];
     } );
-    return array_slice( $seznam, 0, NORIKS_BF_NAJVEC );
+    return array_slice( $seznam, 0, $najvec );
 }
 
 /** Novi izdelki (seznam SKU), po prodaji padajoce. */
@@ -178,20 +204,24 @@ function noriks_bf_novi() {
     return noriks_bf_uredi( $ven );
 }
 
-/** Ali je izdelek majica / bokserica / komplet (po razresevalniku tipov tega trga). */
-function noriks_bf_je_oblacilo( $id ) {
+/** Ali je izdelek enega od danih tipov (po razresevalniku tipov tega trga). */
+function noriks_bf_je_tipa( $id, $tipi ) {
     if ( ! function_exists( 'noriks_is_type' ) ) { return false; }
-    foreach ( array( 'majice', 'bokserice', 'starter', 'majice-bokserice-paketi', 'majica-darila' ) as $t ) {
+    foreach ( (array) $tipi as $t ) {
         if ( noriks_is_type( $t, $id ) ) { return true; }
     }
     return false;
 }
 
 /**
- * Majice, bokserice in kompleti: objavljeni, vidni v katalogu, z akcijsko ceno;
- * po prodaji padajoce. $s_slabproof = dodaj se SlabProof nogavice (tudi ce so skrite).
+ * Majice, bokserice in kompleti: objavljeni, z akcijsko ceno. Vkljuceni so tudi
+ * izdelki, skriti iz kataloga — glavne strani ponudb (SHIRTS-ORTO, BOXERS-ORTO, SHBOX)
+ * so skrite na skoraj vseh trgih. Izloceni so samo izdelki za upsell (SKU z UPSELL/MYSTERY);
+ * po prodaji padajoce. $tipi = kateri tipi (privzeto vsi), $s_slabproof = dodaj se
+ * SlabProof nogavice (tudi ce so skrite).
  */
-function noriks_bf_oblacila( $s_slabproof = false ) {
+function noriks_bf_oblacila( $tipi = null, $s_slabproof = false ) {
+    if ( ! $tipi ) { $tipi = array( 'majice', 'bokserice', 'starter', 'majice-bokserice-paketi', 'majica-darila' ); }
     $ven = array(); $videni = array(); $dodani = array();
     if ( ! function_exists( 'wc_get_product_ids_on_sale' ) ) { return $ven; }
     $n = 0;
@@ -202,7 +232,7 @@ function noriks_bf_oblacila( $s_slabproof = false ) {
         $pid = $p->get_id();
         if ( isset( $videni[ $pid ] ) ) { continue; }
         $videni[ $pid ] = true;
-        if ( $p->get_catalog_visibility() === 'hidden' || ! noriks_bf_je_oblacilo( $pid ) ) { continue; }
+        if ( preg_match( '/UPSELL|MYSTERY/i', (string) $p->get_sku() ) || ! noriks_bf_je_tipa( $pid, $tipi ) ) { continue; }
         $k = noriks_bf_kartica( $p );
         if ( ! $k ) { continue; }
         $k['vrsta'] = $n++;
@@ -218,6 +248,18 @@ function noriks_bf_oblacila( $s_slabproof = false ) {
         }
     }
     return $ven;
+}
+
+/** Najbolj prodajani izdelki nasploh (novi + majice in bokserice skupaj). */
+function noriks_bf_top( $n = 9 ) {
+    $vsi = array(); $videni = array();
+    foreach ( array_merge( noriks_bf_novi(), noriks_bf_oblacila() ) as $k ) {
+        $id = $k['p']->get_id();
+        if ( isset( $videni[ $id ] ) ) { continue; }
+        $videni[ $id ] = true;
+        $vsi[] = $k;
+    }
+    return noriks_bf_uredi( $vsi, $n );
 }
 
 /** Dodajanje v kosarico s kartice (isti podatki kot obrazec na strani izdelka). */
@@ -263,9 +305,10 @@ function noriks_bf_add() {
     WC_AJAX::get_refreshed_fragments();   // poslje fragmente (tudi stranske kosarice) in konca
 }
 
-/** Enkrat ustvari obe WP strani in jima dodeli predlogo page-black-friday.php. */
+/** Enkrat ustvari vseh pet WP strani in jim dodeli predlogo page-black-friday.php. */
 function noriks_bf_ensure_page() {
-    foreach ( array( NORIKS_BF_SLUG_VSE => 'Black Friday', NORIKS_BF_SLUG_OBLEK => 'Black Friday Basics' ) as $slug => $naslov ) {
+    foreach ( noriks_bf_strani() as $slug => $nast ) {
+        $naslov = $nast['naslov'];
         $opt = 'noriks_bf_page_' . md5( $slug );
         $id  = (int) get_option( $opt );
         if ( $id && get_post_status( $id ) ) { continue; }
