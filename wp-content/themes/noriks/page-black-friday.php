@@ -2,16 +2,26 @@
 /**
  * Template Name: Black Friday
  *
- * Pristajalna stran: hero pasica, tekoci trak, kartice izdelkov z akcijskimi cenami.
- * Besedila in izbor izdelkov: functions/black-friday.php.
+ * Pristajalna stran: hero pasica, tekoci trak, kartice izdelkov z akcijskimi cenami,
+ * izbira velikosti in dodajanje v kosarico neposredno s kartice.
+ * Ista predloga za /black-friday/ (vse) in /black-friday-basics/ (majice, bokserice,
+ * SlabProof). Besedila in izbor izdelkov: functions/black-friday.php.
  */
 get_header();
 
-$l       = noriks_bf_l();
-$izdelki = noriks_bf_izdelki();
-$prag    = noriks_bf_prag();
-$najvec  = 0;
-foreach ( $izdelki as $x ) { if ( $x['pop'] > $najvec ) { $najvec = $x['pop']; } }
+$l        = noriks_bf_l();
+$oblacila = is_page( NORIKS_BF_SLUG_OBLEK );
+$prag     = noriks_bf_prag();
+
+$razdelki = array();
+if ( $oblacila ) {
+    $razdelki[] = array( 'k' => $l['b_k'], 'a' => $l['b_a'], 'b' => $l['b_b'], 'izdelki' => noriks_bf_oblacila( true ) );
+} else {
+    $razdelki[] = array( 'k' => $l['sek_k'], 'a' => $l['sek_a'], 'b' => $l['sek_b'], 'izdelki' => noriks_bf_novi() );
+    $razdelki[] = array( 'k' => $l['b_k'],   'a' => $l['b_a'],   'b' => $l['b_b'],   'izdelki' => noriks_bf_oblacila( false ) );
+}
+$najvec = 0;
+foreach ( $razdelki as $r ) { foreach ( $r['izdelki'] as $x ) { if ( $x['pop'] > $najvec ) { $najvec = $x['pop']; } } }
 
 $P = sprintf( $l['pct'], $najvec );
 $D = $prag > 0 ? trim( html_entity_decode( wp_strip_all_tags( wc_price( $prag, array( 'decimals' => ( floor( $prag ) == $prag ? 0 : wc_get_price_decimals() ) ) ) ), ENT_QUOTES, 'UTF-8' ) ) : '';
@@ -20,43 +30,70 @@ $trak = array( 'BLACK FRIDAY 2026' );
 if ( $najvec > 0 ) { $trak[] = str_replace( '{P}', $P, $l['trak_p'] ); }
 if ( $D !== '' )   { $trak[] = str_replace( '{D}', $D, $l['trak_d'] ); }
 $trak[] = $l['trak_30'];
+
+$js = array( 'dodajam' => $l['dodajam'], 'dodano' => $l['dodano'], 'dodaj' => $l['dodaj'], 'izberi' => $l['izberi'], 'napaka' => $l['napaka'] );
+$st = 0;
 ?>
-<!-- nbf 2026-11-16-a -->
-<div class="nbf">
+<!-- nbf 2026-11-16-b -->
+<div class="nbf" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" data-t="<?php echo esc_attr( wp_json_encode( $js ) ); ?>">
 
   <section class="nbf-hero">
     <div class="nbf-okvir"><b>BLACK</b><i>FRIDAY</i></div>
     <h1 class="nbf-h1"><?php echo wp_kses( str_replace( '{P}', '<em>' . esc_html( $P ) . '</em>', esc_html( $l['h1'] ) ), array( 'em' => array() ) ); ?></h1>
-    <p class="nbf-sub"><?php echo esc_html( $l['sub'] ); ?></p>
+    <p class="nbf-sub"><?php echo esc_html( $oblacila ? $l['sub2'] : $l['sub'] ); ?></p>
     <a class="nbf-gumb" href="#nbf-ponudbe"><?php echo esc_html( $l['gumb_hero'] ); ?></a>
   </section>
 
+  <?php foreach ( $razdelki as $ri => $r ) : if ( empty( $r['izdelki'] ) ) { continue; } ?>
+
   <div class="nbf-trak" aria-hidden="true"><div class="nbf-trak__t">
-    <?php for ( $k = 0; $k < 6; $k++ ) : foreach ( $trak as $t ) : ?><span><?php echo esc_html( $t ); ?></span><span class="nbf-zv">✦</span><?php endforeach; endfor; ?>
+    <?php for ( $z = 0; $z < 6; $z++ ) : foreach ( $trak as $t ) : ?><span><?php echo esc_html( $t ); ?></span><span class="nbf-zv">✦</span><?php endforeach; endfor; ?>
   </div></div>
 
-  <section class="nbf-sek" id="nbf-ponudbe"><div class="nbf-v">
-    <div class="nbf-k1"><?php echo esc_html( $l['sek_k'] ); ?></div>
-    <h2 class="nbf-h2"><?php echo esc_html( $l['sek_a'] ); ?> <em><?php echo esc_html( $l['sek_b'] ); ?></em></h2>
+  <section class="nbf-sek"<?php echo $ri === 0 ? ' id="nbf-ponudbe"' : ''; ?>><div class="nbf-v">
+    <div class="nbf-k1"><?php echo esc_html( $r['k'] ); ?></div>
+    <h2 class="nbf-h2"><?php echo esc_html( $r['a'] ); ?> <em><?php echo esc_html( $r['b'] ); ?></em></h2>
     <p class="nbf-p"><?php echo esc_html( $l['sek_p'] ); ?></p>
 
     <div class="nbf-grid">
-      <?php foreach ( $izdelki as $n => $x ) :
-          $p    = $x['p'];
-          $url  = get_permalink( $p->get_id() );
-          $pc   = sprintf( $l['pct'], $x['pop'] );
-          $slika = $p->get_image( 'woocommerce_single', array( 'loading' => $n < 4 ? 'eager' : 'lazy', 'alt' => $p->get_name() ) );
+      <?php foreach ( $r['izdelki'] as $x ) :
+          $p     = $x['p'];
+          $url   = get_permalink( $p->get_id() );
+          $pc    = sprintf( $l['pct'], $x['pop'] );
+          $slika = $p->get_image( 'woocommerce_single', array( 'loading' => $st < 4 ? 'eager' : 'lazy', 'alt' => $p->get_name() ) );
+          $st++;
+          $hitro = in_array( $x['nacin'], array( 'orto', 'var', 'simple' ), true );
+          $cfg   = array( 'id' => $p->get_id(), 'nacin' => $x['nacin'], 'offer' => $x['offer'], 'kos' => $x['kos'], 'attrs' => array() );
+          foreach ( $x['attrs'] as $a ) { $cfg['attrs'][] = array( 'p' => $a['p'], 'v' => array_map( function ( $v ) { return $v[0]; }, $a['v'] ) ); }
           ?>
-        <article class="nbf-k">
+        <article class="nbf-k"<?php if ( $hitro ) : ?> data-bf="<?php echo esc_attr( wp_json_encode( $cfg ) ); ?>"<?php endif; ?>>
           <a class="nbf-k__s" href="<?php echo esc_url( $url ); ?>"><?php echo $slika; // phpcs:ignore -- WooCommerce vrne varen <img> ?></a>
           <div class="nbf-k__t">
             <h3 class="nbf-k__n"><a href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( $p->get_name() ); ?></a></h3>
+            <?php if ( $x['paket'] !== '' && $x['kos'] > 1 ) : ?><div class="nbf-k__pk"><?php echo esc_html( $x['paket'] ); ?></div><?php endif; ?>
             <div class="nbf-k__c">
               <div class="nbf-r"><span><?php echo esc_html( $l['redna'] ); ?></span><s><?php echo wp_kses_post( wc_price( $x['red'] ) ); ?></s></div>
               <div class="nbf-r nbf-r--p"><span><?php echo esc_html( $l['popust'] ); ?><b>−<?php echo esc_html( $pc ); ?></b></span><em>−<?php echo wp_kses_post( wc_price( $x['red'] - $x['akc'] ) ); ?></em></div>
               <div class="nbf-r nbf-r--z"><span><?php echo esc_html( $l['placilo'] ); ?></span><strong><?php echo wp_kses_post( wc_price( $x['akc'] ) ); ?></strong></div>
             </div>
-            <a class="nbf-k__g" href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( $l['gumb'] ); ?></a>
+            <?php if ( $hitro ) : ?>
+              <?php $izbirni = array_filter( $x['attrs'], function ( $a ) { return count( $a['v'] ) > 1; } ); ?>
+              <?php if ( $izbirni ) : ?>
+              <div class="nbf-k__izb">
+                <?php foreach ( $izbirni as $a ) : ?>
+                <select class="nbf-sel" data-polje="<?php echo esc_attr( $a['p'] ); ?>" data-ime="<?php echo esc_attr( $a['ime'] ); ?>" aria-label="<?php echo esc_attr( $a['ime'] ); ?>">
+                  <option value=""><?php echo esc_html( $a['ime'] ); ?></option>
+                  <?php foreach ( $a['v'] as $v ) : ?><option value="<?php echo esc_attr( $v[0] ); ?>"><?php echo esc_html( $v[1] ); ?></option><?php endforeach; ?>
+                </select>
+                <?php endforeach; ?>
+              </div>
+              <?php endif; ?>
+              <button type="button" class="nbf-k__g nbf-k__add"><?php echo esc_html( $l['dodaj'] ); ?></button>
+              <div class="nbf-k__err" role="alert"></div>
+              <a class="nbf-k__o" href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( $l['poglej'] ); ?></a>
+            <?php else : ?>
+              <a class="nbf-k__g" href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( $l['gumb'] ); ?></a>
+            <?php endif; ?>
             <?php if ( $prag > 0 ) : ?>
               <div class="nbf-k__d">🚚 <?php echo esc_html( $x['akc'] >= $prag ? $l['d_free'] : str_replace( '{D}', $D, $l['d_nad'] ) ); ?></div>
             <?php endif; ?>
@@ -65,6 +102,7 @@ $trak[] = $l['trak_30'];
       <?php endforeach; ?>
     </div>
   </div></section>
+  <?php endforeach; ?>
 
 </div>
 <style>.nbf{background:#0a0a0b;color:#fff;font-family:inherit;line-height:1.4}
@@ -111,6 +149,22 @@ $trak[] = $l['trak_30'];
 .nbf a.nbf-k__g{display:block;text-align:center;background:#ff6d2e;color:#fff;font-weight:800;font-size:15px;letter-spacing:.6px;padding:14px 10px;border-radius:12px;text-decoration:none;margin-top:14px;transition:background .15s}
 .nbf a.nbf-k__g:hover{background:#e85a1c;color:#fff}
 .nbf-k__d{text-align:center;font-size:13px;color:#55595f;margin-top:10px}
+.nbf-k__pk{font-size:13px;color:#6b7078;margin:-8px 0 12px;font-weight:600}
+.nbf-k__izb{display:flex;gap:8px;margin-top:12px}
+.nbf select.nbf-sel{flex:1 1 0;min-width:0;width:100%;height:44px;border:1.5px solid #d3d5d9;border-radius:10px;background:#fff;color:#16181d;font-size:14px;font-weight:600;padding:0 28px 0 11px;margin:0;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%2316181d' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;cursor:pointer;box-shadow:none;line-height:1.2}
+.nbf select.nbf-sel:focus{outline:none;border-color:#ff6d2e}
+.nbf select.nbf-sel.nbf-sel--err{border-color:#d92d20;background-color:#fff5f4}
+.nbf button.nbf-k__g{display:block;width:100%;border:0;cursor:pointer;text-align:center;background:#ff6d2e;color:#fff;font-weight:800;font-size:15px;letter-spacing:.6px;padding:14px 10px;border-radius:12px;margin-top:10px;transition:background .15s;font-family:inherit;line-height:1.3;text-transform:none}
+.nbf button.nbf-k__g:hover{background:#e85a1c}
+.nbf button.nbf-k__g.je-zaseden{opacity:.75;cursor:progress}
+.nbf button.nbf-k__g.je-dodano{background:#1f8a4c}
+.nbf-k__err{min-height:0;font-size:12.5px;color:#d92d20;font-weight:600;text-align:center;margin-top:6px}
+.nbf-k__err:empty{display:none}
+.nbf a.nbf-k__o{display:block;text-align:center;font-size:13.5px;font-weight:700;color:#16181d;text-decoration:underline;text-underline-offset:3px;margin-top:10px}
+.nbf a.nbf-k__o:hover{color:#e2530f}
+.nbf-sek + .nbf-trak + .nbf-sek{padding-top:60px}
+@media (max-width:560px){.nbf-k__pk{font-size:11.5px;margin:-5px 0 8px}.nbf-k__izb{gap:6px;margin-top:9px;flex-direction:column}.nbf select.nbf-sel{flex:0 0 auto;height:42px;min-height:42px;font-size:13.5px;padding-left:10px}
+.nbf button.nbf-k__g{font-size:12.5px;padding:12px 4px;letter-spacing:.2px}.nbf a.nbf-k__o{font-size:12px;margin-top:8px}.nbf-k__err{font-size:11.5px}}
 @media (max-width:1180px){.nbf-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:860px){.nbf-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.nbf-hero{padding:54px 16px 50px}.nbf-sek{padding:44px 14px 56px}}
 @media (max-width:560px){.nbf-okvir{padding:14px 26px 12px;margin-bottom:22px}.nbf-okvir i{-webkit-text-stroke:1.5px #ff6d2e}.nbf p.nbf-sub{font-size:15.5px}
@@ -118,4 +172,73 @@ $trak[] = $l['trak_30'];
 .nbf-r--p b{font-size:11.5px;padding:1px 7px;margin-left:2px}.nbf-r--z{font-size:12.5px}.nbf-r--z strong{font-size:17px}
 .nbf a.nbf-k__g{font-size:13px;padding:12px 6px;letter-spacing:.3px}.nbf-k__d{font-size:11.5px}.nbf-trak{font-size:12.5px;padding:11px 0}}
 @media (max-width:359px){.nbf-grid{grid-template-columns:1fr}}</style>
+<script>
+(function () {
+  var koren = document.querySelector('.nbf'); if (!koren) { return; }
+  var ajax = koren.getAttribute('data-ajax'), T = {};
+  try { T = JSON.parse(koren.getAttribute('data-t')) || {}; } catch (e) {}
+
+  koren.addEventListener('change', function (e) {
+    if (e.target.classList && e.target.classList.contains('nbf-sel')) {
+      e.target.classList.remove('nbf-sel--err');
+      var n = e.target.closest('.nbf-k').querySelector('.nbf-k__err'); if (n) { n.textContent = ''; }
+    }
+  });
+
+  koren.addEventListener('click', function (e) {
+    var g = e.target.closest ? e.target.closest('.nbf-k__add') : null; if (!g) { return; }
+    e.preventDefault();
+    if (g.classList.contains('je-zaseden')) { return; }
+    var k = g.closest('.nbf-k'), nap = k.querySelector('.nbf-k__err'), cfg;
+    try { cfg = JSON.parse(k.getAttribute('data-bf')); } catch (x) { return; }
+    nap.textContent = '';
+
+    var izbrano = {}, manjka = null;
+    k.querySelectorAll('select.nbf-sel').forEach(function (s) {
+      izbrano[s.getAttribute('data-polje')] = s.value;
+      if (!s.value && !manjka) { manjka = s; }
+    });
+    if (manjka) {
+      manjka.classList.add('nbf-sel--err');
+      nap.textContent = (T.izberi || '{A}').replace('{A}', manjka.getAttribute('data-ime'));
+      try { manjka.focus(); } catch (x) {}
+      return;
+    }
+
+    var fd = new FormData();
+    fd.append('action', 'noriks_bf_add');
+    fd.append('product_id', cfg.id);
+    fd.append('nacin', cfg.nacin);
+    if (cfg.nacin === 'orto') { fd.append('bundle_option', cfg.offer); }
+    (cfg.attrs || []).forEach(function (a) {
+      var v = a.v.length === 1 ? a.v[0] : izbrano[a.p];
+      if (cfg.nacin === 'orto') {
+        for (var i = 1; i <= cfg.kos; i++) { fd.append('pairs[' + cfg.offer + '][' + i + '][' + a.p + ']', v); }
+      } else { fd.append(a.p, v); }
+    });
+
+    g.classList.add('je-zaseden'); g.textContent = T.dodajam || '…';
+    function nazaj() { g.classList.remove('je-zaseden', 'je-dodano'); g.textContent = T.dodaj || ''; }
+
+    fetch(ajax, { method: 'POST', body: fd, credentials: 'same-origin' })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        if (res && res.fragments) {
+          g.classList.remove('je-zaseden'); g.classList.add('je-dodano'); g.textContent = T.dodano || '✓';
+          if (window.jQuery) {
+            var $ = window.jQuery;
+            $.each(res.fragments, function (kljuc, vrednost) { $(kljuc).replaceWith(vrednost); });
+            $(document.body).trigger('added_to_cart', [res.fragments, res.cart_hash, $(g)]);
+            $(document.body).trigger('wc_fragment_refresh');
+          }
+          setTimeout(nazaj, 2200);
+        } else {
+          nazaj();
+          nap.textContent = (res && res.data && res.data.message) ? res.data.message : (T.napaka || '');
+        }
+      })
+      .catch(function () { nazaj(); nap.textContent = T.napaka || ''; });
+  });
+})();
+</script>
 <?php get_footer(); ?>
