@@ -495,10 +495,10 @@ function gck_render_bundle_selector() {
     $gck_offer_badges = has_term( array( 'orto-cloath', 'orto-cloud' ), 'product_cat', $product_id )
         ? array( 1 => 'NEJPRODÁVANĚJŠÍ', 2 => 'NEJLEPŠÍ CENA' )
         : array();
-    $gck_no_attrs    = has_term( array( 'orto-red', 'orto-kneeheat', 'orto-pal', 'orto-bowl', 'orto-mamabelt', 'orto-winecooler', 'orto-cloath', 'orto-hyd', 'orto-cloud', 'orto-controlpro', 'orto-bunion', 'orto-fisiorest', 'orto-norikshers', 'orto-noriks-hers', 'orto-ortopedski-jastuk' ), 'product_cat', $product_id );
+    $gck_no_attrs    = has_term( array( 'orto-red', 'orto-kneeheat', 'orto-pal', 'orto-bowl', 'orto-winecooler', 'orto-cloath', 'orto-hyd', 'orto-cloud', 'orto-controlpro', 'orto-bunion', 'orto-fisiorest', 'orto-norikshers', 'orto-noriks-hers', 'orto-ortopedski-jastuk' ), 'product_cat', $product_id );
     $gck_single_size = has_term( array( 'orto-ortopas', 'orto-kidsnest' ), 'product_cat', $product_id );
     // Samo boja (brez velicine): NORIKS Snug — sicer bi pogoj "manj kot dve lastnosti" izbirnik zavrnil.
-    $gck_single_color = has_term( array( 'orto-snug' ), 'product_cat', $product_id );
+    $gck_single_color = has_term( array( 'orto-snug', 'orto-mamabelt' ), 'product_cat', $product_id );
 
     // SHGIFTS (orto-majica-darila): the SAME split-garment selector as SHBOX,
     // extended to 3 garment groups (4 trička + 1 boxerky + 1 pár ponožek). Gated
