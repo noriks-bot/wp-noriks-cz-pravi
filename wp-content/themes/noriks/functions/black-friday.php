@@ -119,6 +119,10 @@ function noriks_bf_prag() {
  * Strani izdelkov, katalog in cene izdelkov ostanejo nespremenjeni.
  * ------------------------------------------------------------------ */
 if ( ! defined( 'NORIKS_BF_MAJICA_SKU' ) ) { define( 'NORIKS_BF_MAJICA_SKU', 'NORIKS-SHIRTS-ORTO-BF' ); }   // Black Friday kopija ORTO majice
+// Dodatni kolicinski popust (v %) na ceno za kos pri 2, 3 ter 4 in vec kosih — velja za izdelke brez izbirnika paketov.
+if ( ! defined( 'NORIKS_BF_KOL_2' ) ) { define( 'NORIKS_BF_KOL_2', 5 ); }
+if ( ! defined( 'NORIKS_BF_KOL_3' ) ) { define( 'NORIKS_BF_KOL_3', 10 ); }
+if ( ! defined( 'NORIKS_BF_KOL_4' ) ) { define( 'NORIKS_BF_KOL_4', 15 ); }
 if ( ! defined( 'NORIKS_BF_POPUST' ) ) { define( 'NORIKS_BF_POPUST', 35 ); }   // ciljni odstotek; lepa cena pristane med 30 in 40 %
 
 /**
@@ -128,8 +132,15 @@ if ( ! defined( 'NORIKS_BF_POPUST' ) ) { define( 'NORIKS_BF_POPUST', 35 ); }   /
  * na kartici in kosarica, zato se prikazana in zaracunana cena vedno ujemata.
  */
 function noriks_bf_cena( $cena ) {
-    $cena = (float) $cena;
-    $pct  = (float) apply_filters( 'noriks_bf_popust', NORIKS_BF_POPUST );
+    return noriks_bf_lepa_cena( $cena, (float) apply_filters( 'noriks_bf_popust', NORIKS_BF_POPUST ), 5.5 );
+}
+
+/**
+ * Ceno zniza za $pct odstotkov in jo zaokrozi na lepo ceno v slogu izhodiscne; ce bi lepa cena
+ * od cilja odstopala za vec kot $odstop odstotnih tock, vrne natancno zaokrozen izracun.
+ */
+function noriks_bf_lepa_cena( $cena, $pct, $odstop ) {
+    $cena = (float) $cena; $pct = (float) $pct;
     if ( $cena <= 0 || $pct <= 0 || $pct >= 100 ) { return $cena; }
     $dec  = function_exists( 'wc_get_price_decimals' ) ? (int) wc_get_price_decimals() : 2;
     $cilj = $cena * ( 1 - $pct / 100 );
@@ -149,9 +160,28 @@ function noriks_bf_cena( $cena ) {
     foreach ( $kand as $k ) {
         if ( $k <= 0 ) { continue; }
         $d = ( 1 - $k / $cena ) * 100;
-        if ( $d >= $pct - 5.5 && $d <= $pct + 5.5 ) { return round( $k, $dec ); }
+        if ( $d >= $pct - $odstop && $d <= $pct + $odstop ) { return round( $k, $dec ); }
     }
     return round( $cilj, $dec );
+}
+
+/**
+ * Kolicinski popust pri izdelkih brez izbirnika paketov (paketi majic/bokseric, 1x-4x):
+ * cena za kos pri $n kosih. Odstotki so v NORIKS_BF_KOLICINA (2 kosa, 3 kosi, 4 in vec).
+ * Isto funkcijo uporabljata kartica in kosarica (tudi ko kupec kolicino spremeni v kosarici).
+ */
+function noriks_bf_cena_kolicina( $enota, $n ) {
+    $enota = (float) $enota; $n = max( 1, (int) $n );
+    $st    = (array) apply_filters( 'noriks_bf_kolicina', array( 2 => NORIKS_BF_KOL_2, 3 => NORIKS_BF_KOL_3, 4 => NORIKS_BF_KOL_4 ) );
+    $dec   = function_exists( 'wc_get_price_decimals' ) ? (int) wc_get_price_decimals() : 2;
+    $cena  = $enota;
+    for ( $i = 2; $i <= min( $n, 4 ); $i++ ) {
+        $pct = isset( $st[ $i ] ) ? (float) $st[ $i ] : 0;
+        if ( $pct <= 0 || $pct >= 100 ) { continue; }
+        $c = round( $enota * ( 1 - $pct / 100 ), $dec );
+        if ( $c > 0 && $c < $cena ) { $cena = $c; }     // cena za kos z vecjo kolicino nikoli ne naraste
+    }
+    return $cena;
 }
 
 /** Slug pristajalne strani, s katere tece trenutno dodajanje v kosarico ('' = ni s teh strani). */
@@ -176,14 +206,15 @@ function noriks_bf_cart_item_data( $data, $product_id, $variation_id ) {
         $data['_orto_bundle_total']      = $nova;
     } else {
         $p = wc_get_product( $variation_id ? $variation_id : $product_id );
-        if ( $p ) { $data['_noriks_bf_cena'] = noriks_bf_cena( (float) $p->get_price() ); }
+        if ( $p ) { $data['_noriks_bf_cena'] = noriks_bf_cena( (float) $p->get_price() ); }   // cena za 1 kos; kolicinski popust se doda po kolicini v kosarici
     }
     return $data;
 }
 
 function noriks_bf_uveljavi_ceno( $item ) {
     if ( isset( $item['_noriks_bf_cena'], $item['data'] ) && $item['data'] instanceof WC_Product && (float) $item['_noriks_bf_cena'] > 0 ) {
-        $item['data']->set_price( (float) $item['_noriks_bf_cena'] );
+        $kol = isset( $item['quantity'] ) ? (int) $item['quantity'] : 1;
+        $item['data']->set_price( noriks_bf_cena_kolicina( (float) $item['_noriks_bf_cena'], $kol ) );
     }
     return $item;
 }
@@ -278,7 +309,7 @@ function noriks_bf_kartica( $p ) {
     if ( ! $p || $p->get_status() !== 'publish' || ! $p->is_in_stock() ) { return null; }
     $id = $p->get_id();
     $k  = array( 'p' => $p, 'nacin' => 'ogled', 'attrs' => array(), 'offer' => '', 'kos' => 1, 'paket' => '', 'ponudbe' => array(), 'vsebina' => false );
-    $red = 0; $akc = 0; $orto = false;
+    $red = 0; $akc = 0; $orto = false; $enota = 0;
 
     if ( function_exists( 'gck_is_orto_bundle_enabled' ) && function_exists( 'gck_get_bundle_offers' ) && gck_is_orto_bundle_enabled( $id ) ) {
         $ponudbe = gck_get_bundle_offers( $id );
@@ -321,7 +352,8 @@ function noriks_bf_kartica( $p ) {
     if ( ! $orto ) {
         if ( $p->is_type( 'variable' ) ) {
             $red = (float) $p->get_variation_regular_price( 'min', true );
-            $akc = (float) wc_get_price_to_display( $p, array( 'price' => noriks_bf_cena( (float) $p->get_variation_price( 'min', false ) ) ) );
+            $enota = noriks_bf_cena( (float) $p->get_variation_price( 'min', false ) );
+            $akc   = (float) wc_get_price_to_display( $p, array( 'price' => $enota ) );
             $va  = $p->get_variation_attributes();
             if ( count( $va ) >= 1 && count( $va ) <= 2 ) {
                 $vsi = true;
@@ -342,7 +374,8 @@ function noriks_bf_kartica( $p ) {
         } else {
             if ( $p->get_regular_price() === '' || $p->get_price() === '' ) { return null; }
             $red = (float) wc_get_price_to_display( $p, array( 'price' => $p->get_regular_price() ) );
-            $akc = (float) wc_get_price_to_display( $p, array( 'price' => noriks_bf_cena( (float) $p->get_price() ) ) );
+            $enota = noriks_bf_cena( (float) $p->get_price() );
+            $akc   = (float) wc_get_price_to_display( $p, array( 'price' => $enota ) );
             if ( $p->is_type( 'simple' ) && $p->is_purchasable() ) { $k['nacin'] = 'simple'; }
         }
     }
@@ -352,7 +385,11 @@ function noriks_bf_kartica( $p ) {
     $k['pop'] = (int) round( ( 1 - $akc / $red ) * 100 );
     // Kolicine: pri izbirniku paketov prave ponudbe izdelka, sicer 1x-4x iste cene.
     if ( ! $orto && in_array( $k['nacin'], array( 'var', 'simple' ), true ) ) {
-        for ( $n = 1; $n <= 4; $n++ ) { $k['ponudbe'][] = array( 'id' => '', 'kos' => $n, 'paket' => '', 'red' => $red * $n, 'akc' => $akc * $n ); }
+        // $enota = znizana cena za 1 kos (brez davcnega prikaza), da kartica racuna enako kot kosarica
+        for ( $n = 1; $n <= 4; $n++ ) {
+            $kos = (float) wc_get_price_to_display( $p, array( 'price' => noriks_bf_cena_kolicina( $enota, $n ) ) );
+            $k['ponudbe'][] = array( 'id' => '', 'kos' => $n, 'paket' => '', 'red' => $red * $n, 'akc' => $kos * $n );
+        }
     }
     if ( empty( $k['ponudbe'] ) ) { $k['ponudbe'][] = array( 'id' => $k['offer'], 'kos' => $k['kos'], 'paket' => $k['paket'], 'red' => $red, 'akc' => $akc ); }
     // Paketi majic brez imena ponudbe: v vrstici pod naslovom pise vsebina paketa (barve).

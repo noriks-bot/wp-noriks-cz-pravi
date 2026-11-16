@@ -68,7 +68,7 @@ $trak[] = $l['trak_30'];
 $js = array( 'dodajam' => $l['dodajam'], 'dodano' => $l['dodano'], 'dodaj' => $l['dodaj'], 'izberi' => $l['izberi'], 'napaka' => $l['napaka'], 'zapri' => $l['zapri'], 'nalagam' => $l['nalagam'], 'poglej' => $l['poglej'], 'placilo' => $l['placilo'] );
 $st = 0;
 ?>
-<!-- nbf 2026-11-16-l -->
+<!-- nbf 2026-11-16-m -->
 <div class="nbf nbf--<?php echo esc_attr( $stran['slog'] ); ?> nbf--<?php echo esc_attr( $tip ); ?> nbf--<?php echo $cm ? 'cm' : 'bf'; ?>" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" data-stran="<?php echo esc_attr( $stran['slug'] ); ?>" data-t="<?php echo esc_attr( wp_json_encode( $js ) ); ?>">
 
   <section class="nbf-hero">
@@ -250,12 +250,10 @@ $st = 0;
 .nbf-k.je-dd{z-index:30}
 .nbf-dd{position:relative;flex:1 1 0;min-width:0}
 .nbf .nbf-dd select.nbf-sel{position:absolute;left:0;bottom:0;width:1px;height:1px;min-height:0;padding:0;margin:0;border:0;opacity:0;pointer-events:none;flex:none}
-.nbf .nbf-dd button.nbf-dd__g{position:relative;display:flex;align-items:center;gap:8px;width:100%;height:44px;min-height:0;padding:0 32px 0 11px;margin:0;border:1.5px solid #d3d5d9;border-radius:5px;background:#fff;color:#6b7078;font-family:inherit;font-size:14px;font-weight:600;line-height:1.2;text-align:left;text-transform:none;letter-spacing:0;cursor:pointer;box-shadow:none;transition:border-color .12s}
+.nbf .nbf-dd button.nbf-dd__g{position:relative;display:flex;align-items:center;gap:8px;width:100%;height:44px;min-height:0;padding:0 32px 0 11px;margin:0;border:1.5px solid #d3d5d9;border-radius:5px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1.5 1.5l5.5 5.5 5.5-5.5' fill='none' stroke='%2316181d' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center;background-size:13px 8px;color:#6b7078;font-family:inherit;font-size:14px;font-weight:600;line-height:1.2;text-align:left;text-transform:none;letter-spacing:0;cursor:pointer;box-shadow:none;transition:border-color .12s}
 .nbf .nbf-dd.je-izbrano button.nbf-dd__g{color:#16181d;font-weight:700}
-.nbf .nbf-dd button.nbf-dd__g::after{content:"";position:absolute;right:13px;top:50%;width:7px;height:7px;border-right:2px solid #16181d;border-bottom:2px solid #16181d;transform:translateY(-70%) rotate(45deg);transition:transform .12s}
-.nbf .nbf-dd.je-odprt button.nbf-dd__g::after{transform:translateY(-25%) rotate(225deg)}
-.nbf .nbf-dd button.nbf-dd__g:hover,.nbf .nbf-dd button.nbf-dd__g:focus,.nbf .nbf-dd.je-odprt button.nbf-dd__g{outline:none;border-color:#16181d;background:#fff}
-.nbf .nbf-dd select.nbf-sel--err ~ button.nbf-dd__g{border-color:#d92d20;background:#fff5f4}
+.nbf .nbf-dd button.nbf-dd__g:hover,.nbf .nbf-dd button.nbf-dd__g:focus,.nbf .nbf-dd.je-odprt button.nbf-dd__g{outline:none;border-color:#16181d;background-color:#fff;color:#16181d}
+.nbf .nbf-dd select.nbf-sel--err ~ button.nbf-dd__g{border-color:#d92d20;background-color:#fff5f4}
 .nbf-dd__b{flex:0 0 20px;width:20px;height:20px;border-radius:4px;border:1px solid rgba(0,0,0,.2);display:block;box-sizing:border-box}
 .nbf-dd__b[hidden]{display:none}
 .nbf-dd__n{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
