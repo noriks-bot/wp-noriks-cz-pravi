@@ -53,7 +53,7 @@ $trak[] = $l['trak_30'];
 $js = array( 'dodajam' => $l['dodajam'], 'dodano' => $l['dodano'], 'dodaj' => $l['dodaj'], 'izberi' => $l['izberi'], 'napaka' => $l['napaka'] );
 $st = 0;
 ?>
-<!-- nbf 2026-11-16-c -->
+<!-- nbf 2026-11-16-d -->
 <div class="nbf nbf--<?php echo esc_attr( $stran['slog'] ); ?> nbf--<?php echo esc_attr( $tip ); ?>" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" data-t="<?php echo esc_attr( wp_json_encode( $js ) ); ?>">
 
   <section class="nbf-hero">
@@ -133,7 +133,7 @@ $st = 0;
 .nbf-hero>*{position:relative;z-index:1}
 .nbf-okvir{display:inline-block;border:2px solid var(--a);border-radius:12px;padding:20px 46px 18px;margin:0 0 30px;box-shadow:0 0 26px rgba(var(--ar),.55),inset 0 0 26px rgba(var(--ar),.22)}
 .nbf-okvir b{display:block;font-size:clamp(42px,8vw,86px);font-weight:900;letter-spacing:5px;line-height:1;color:#fff}
-.nbf-okvir i{display:block;font-style:normal;font-size:clamp(38px,7.3vw,78px);font-weight:900;letter-spacing:7px;line-height:1.08;color:transparent;-webkit-text-stroke:2px var(--a)}
+.nbf-okvir i{display:block;font-style:normal;font-size:clamp(38px,7.3vw,78px);font-weight:900;letter-spacing:7px;line-height:1.08;color:#0d0a09;-webkit-text-stroke:4px var(--a);paint-order:stroke fill}
 .nbf h1.nbf-h1{font-size:clamp(27px,5vw,56px);font-weight:900;line-height:1.12;margin:0 0 16px;color:#fff;letter-spacing:.5px;text-transform:none}
 .nbf h1.nbf-h1 em{font-style:normal;color:var(--a);white-space:nowrap}
 .nbf p.nbf-sub{max-width:640px;margin:0 auto 28px;font-size:17px;line-height:1.55;color:#d9d9dc}
@@ -157,7 +157,7 @@ $st = 0;
 .nbf a.nbf-k__s img{width:100%;height:100%;object-fit:cover;display:block;margin:0;border-radius:0}
 .nbf-k__t{padding:16px 16px 18px;display:flex;flex-direction:column;flex:1}
 .nbf h3.nbf-k__n{font-size:16px;font-weight:800;line-height:1.3;margin:0 0 14px;min-height:42px;text-transform:none;letter-spacing:0}
-.nbf h3.nbf-k__n a{color:#16181d;text-decoration:none;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.nbf h3.nbf-k__n a{color:#16181d;font-weight:800;font-size:inherit;line-height:inherit;text-decoration:none;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .nbf-k__c{margin-top:auto;border-top:1px solid #ececee;padding-top:12px}
 .nbf-r{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:14px;color:#55595f;margin:0 0 7px}
 .nbf-r s{color:#8a8e95;text-decoration:line-through}
@@ -187,7 +187,7 @@ $st = 0;
 .nbf button.nbf-k__g{font-size:12.5px;padding:12px 4px;letter-spacing:.2px}.nbf a.nbf-k__o{font-size:12px;margin-top:8px}.nbf-k__err{font-size:11.5px}}
 @media (max-width:1180px){.nbf-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:860px){.nbf-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.nbf-hero{padding:54px 16px 50px}.nbf-sek{padding:44px 14px 56px}}
-@media (max-width:560px){.nbf-okvir{padding:14px 26px 12px;margin-bottom:22px}.nbf-okvir i{-webkit-text-stroke:1.5px var(--a)}.nbf p.nbf-sub{font-size:15.5px}
+@media (max-width:560px){.nbf-okvir{padding:14px 26px 12px;margin-bottom:22px}.nbf-okvir i{-webkit-text-stroke:3px var(--a)}.nbf p.nbf-sub{font-size:15.5px}
 .nbf-k__t{padding:12px 11px 14px}.nbf h3.nbf-k__n{font-size:14px;min-height:37px;margin-bottom:10px}.nbf-r{font-size:12px;margin-bottom:5px;gap:6px}
 .nbf-r--p b{font-size:11.5px;padding:1px 7px;margin-left:2px}.nbf-r--z{font-size:12.5px}.nbf-r--z strong{font-size:17px}
 .nbf a.nbf-k__g{font-size:13px;padding:12px 6px;letter-spacing:.3px}.nbf-k__d{font-size:11.5px}.nbf-trak{font-size:12.5px;padding:11px 0}}
