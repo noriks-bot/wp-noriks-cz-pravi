@@ -30,6 +30,13 @@ switch ( $tip ) {
         $sub = $l['sub_box'];
         $razdelki[] = array( 'k' => 'BLACK FRIDAY · ' . $l['w_box'], 'a' => $l['w_box'], 'b' => $l['akcija'], 'izdelki' => noriks_bf_oblacila( array( 'bokserice' ) ) );
         break;
+    case 'novi':
+        $razdelki[] = array( 'k' => $l['sek_k'], 'a' => $l['sek_a'], 'b' => $l['sek_b'], 'izdelki' => noriks_bf_novi() );
+        break;
+    case 'oblacila':
+        $sub = $l['sub_ob'];
+        $razdelki[] = array( 'k' => $l['b_k'], 'a' => $l['b_a'], 'b' => $l['b_b'], 'izdelki' => noriks_bf_oblacila() );
+        break;
     case 'top9':
         $sub  = $l['sub_top'];
         $rang = true;
@@ -45,7 +52,15 @@ foreach ( $razdelki as $r ) { foreach ( $r['izdelki'] as $x ) { if ( $x['pop_max
 $P = sprintf( $l['pct'], $najvec );
 $D = $prag > 0 ? trim( html_entity_decode( wp_strip_all_tags( wc_price( $prag, array( 'decimals' => ( floor( $prag ) == $prag ? 0 : wc_get_price_decimals() ) ) ) ), ENT_QUOTES, 'UTF-8' ) ) : '';
 
-$trak = array( 'BLACK FRIDAY 2026' );
+// Cyber Monday: isti izbor in besedila, drug napis dogodka.
+$cm      = ( isset( $stran['dogodek'] ) && $stran['dogodek'] === 'cm' );
+$dogodek = $cm ? 'CYBER MONDAY' : 'BLACK FRIDAY';
+if ( $cm ) {
+    $l['popust'] = str_replace( 'BF', 'CM', $l['popust'] );
+    foreach ( $razdelki as $ri => $r ) { $razdelki[ $ri ]['k'] = str_replace( 'BLACK FRIDAY', 'CYBER MONDAY', $r['k'] ); }
+}
+
+$trak = array( $dogodek . ' 2026' );
 if ( $najvec > 0 ) { $trak[] = str_replace( '{P}', $P, $l['trak_p'] ); }
 if ( $D !== '' )   { $trak[] = str_replace( '{D}', $D, $l['trak_d'] ); }
 $trak[] = $l['trak_30'];
@@ -53,11 +68,11 @@ $trak[] = $l['trak_30'];
 $js = array( 'dodajam' => $l['dodajam'], 'dodano' => $l['dodano'], 'dodaj' => $l['dodaj'], 'izberi' => $l['izberi'], 'napaka' => $l['napaka'], 'zapri' => $l['zapri'], 'nalagam' => $l['nalagam'], 'poglej' => $l['poglej'], 'placilo' => $l['placilo'] );
 $st = 0;
 ?>
-<!-- nbf 2026-11-16-g -->
-<div class="nbf nbf--<?php echo esc_attr( $stran['slog'] ); ?> nbf--<?php echo esc_attr( $tip ); ?>" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" data-t="<?php echo esc_attr( wp_json_encode( $js ) ); ?>">
+<!-- nbf 2026-11-16-h -->
+<div class="nbf nbf--<?php echo esc_attr( $stran['slog'] ); ?> nbf--<?php echo esc_attr( $tip ); ?> nbf--<?php echo $cm ? 'cm' : 'bf'; ?>" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" data-t="<?php echo esc_attr( wp_json_encode( $js ) ); ?>">
 
   <section class="nbf-hero">
-    <div class="nbf-okvir"><b>BLACK</b><i>FRIDAY</i></div>
+    <div class="nbf-okvir"><b><?php echo $cm ? 'CYBER' : 'BLACK'; ?></b><i><?php echo $cm ? 'MONDAY' : 'FRIDAY'; ?></i></div>
     <h1 class="nbf-h1"><?php echo wp_kses( str_replace( '{P}', '<em>' . esc_html( $P ) . '</em>', esc_html( $l['h1'] ) ), array( 'em' => array() ) ); ?></h1>
     <p class="nbf-sub"><?php echo esc_html( $sub ); ?></p>
     <a class="nbf-gumb" href="#nbf-ponudbe"><?php echo esc_html( $l['gumb_hero'] ); ?></a>
@@ -244,6 +259,14 @@ $st = 0;
 .nbf--modra{--a:#2f7bff;--a2:#1f65e0;--ar:47,123,255;--hg:#0a1f47;--at:#fff;--tt:#fff;--bb:#e8f0ff;--bt:#1f5fd6}
 .nbf--zelena{--a:#19c37d;--a2:#12a468;--ar:25,195,125;--hg:#06301f;--at:#06231a;--tt:#06231a;--bb:#e3f8ee;--bt:#0d7f52}
 .nbf--rdeca{--a:#ff2d46;--a2:#e01a33;--ar:255,45,70;--hg:#3d0710;--at:#fff;--tt:#fff;--bb:#ffe9ec;--bt:#d0162e}
+.nbf--cian{--a:#00d9ff;--a2:#00b9da;--ar:0,217,255;--hg:#04283c;--at:#04121a;--tt:#04121a;--bb:#e0f9ff;--bt:#007e99}
+.nbf--vijola{--a:#a855f7;--a2:#9333ea;--ar:168,85,247;--hg:#260b4a;--at:#fff;--tt:#fff;--bb:#f1e6ff;--bt:#7e22ce}
+.nbf--cm .nbf-hero{background-image:linear-gradient(rgba(var(--ar),.075) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--ar),.075) 1px,transparent 1px),radial-gradient(70% 90% at 50% 0%,var(--hg) 0%,#0a0a0b 72%);background-size:46px 46px,46px 46px,auto}
+.nbf--cian .nbf-okvir{border-radius:3px;box-shadow:0 0 34px rgba(var(--ar),.6),inset 0 0 30px rgba(var(--ar),.22)}
+.nbf--cian .nbf-k{border-radius:8px}.nbf--cian a.nbf-k__g,.nbf--cian button.nbf-k__g,.nbf--cian a.nbf-gumb{border-radius:6px}.nbf--cian select.nbf-sel,.nbf--cian .nbf-kol button.nbf-kol__g{border-radius:6px}
+.nbf--vijola .nbf-okvir{transform:skewX(-7deg);border-radius:6px;border-width:3px}
+.nbf--vijola .nbf-okvir i{color:var(--a);-webkit-text-stroke:0}
+.nbf--vijola .nbf-k{border-bottom:5px solid var(--a)}
 .nbf--zlata .nbf-okvir{transform:rotate(-2deg);border-width:3px}
 .nbf--zlata .nbf-okvir i{color:var(--a);-webkit-text-stroke:0}
 .nbf--zlata .nbf-kol button.nbf-kol__g{border-radius:8px}.nbf--zelena .nbf-kol button.nbf-kol__g{border-radius:999px}

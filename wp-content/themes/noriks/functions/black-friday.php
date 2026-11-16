@@ -7,6 +7,8 @@
  *   /black-friday-shirts/  samo majice                                    (modra)
  *   /black-friday-boxers/  samo bokserice                                 (zelena)
  *   /black-friday-top9/    9 najbolj prodajanih izdelkov nasploh          (rdeca)
+ *   /cyber-monday/         Cyber Monday: ostali (novi) izdelki            (cian)
+ *   /cyber-monday-basics/  Cyber Monday: majice in bokserice              (vijola)
  *
  * Po vzoru fitocanin.com/pages/black-friday-2026: temen hero, tekoci trak, kartice
  * z redno ceno, BF popustom in koncno ceno. Cen NE spreminjamo — stran prikaze
@@ -23,14 +25,16 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 const NORIKS_BF_NAJVEC = 30;   // najvec kartic v enem razdelku
 
-/** Pet pristajalnih strani: slug => (naslov strani, tip vsebine, slog). */
+/** Pristajalne strani: slug => (naslov strani, tip vsebine, slog, dogodek bf = Black Friday / cm = Cyber Monday). */
 function noriks_bf_strani() {
     return array(
-        'black-friday'        => array( 'naslov' => 'Black Friday',        'tip' => 'vse',       'slog' => 'oranzna' ),
-        'black-friday-basics' => array( 'naslov' => 'Black Friday Basics', 'tip' => 'basics',    'slog' => 'zlata' ),
-        'black-friday-shirts' => array( 'naslov' => 'Black Friday Shirts', 'tip' => 'majice',    'slog' => 'modra' ),
-        'black-friday-boxers' => array( 'naslov' => 'Black Friday Boxers', 'tip' => 'bokserice', 'slog' => 'zelena' ),
-        'black-friday-top9'   => array( 'naslov' => 'Black Friday Top 9',  'tip' => 'top9',      'slog' => 'rdeca' ),
+        'black-friday'        => array( 'naslov' => 'Black Friday',        'tip' => 'vse',       'slog' => 'oranzna', 'dogodek' => 'bf' ),
+        'black-friday-basics' => array( 'naslov' => 'Black Friday Basics', 'tip' => 'basics',    'slog' => 'zlata',   'dogodek' => 'bf' ),
+        'black-friday-shirts' => array( 'naslov' => 'Black Friday Shirts', 'tip' => 'majice',    'slog' => 'modra',   'dogodek' => 'bf' ),
+        'black-friday-boxers' => array( 'naslov' => 'Black Friday Boxers', 'tip' => 'bokserice', 'slog' => 'zelena',  'dogodek' => 'bf' ),
+        'black-friday-top9'   => array( 'naslov' => 'Black Friday Top 9',  'tip' => 'top9',      'slog' => 'rdeca',   'dogodek' => 'bf' ),
+        'cyber-monday'        => array( 'naslov' => 'Cyber Monday',        'tip' => 'novi',      'slog' => 'cian',    'dogodek' => 'cm' ),
+        'cyber-monday-basics' => array( 'naslov' => 'Cyber Monday Basics', 'tip' => 'oblacila',  'slog' => 'vijola',  'dogodek' => 'cm' ),
     );
 }
 
@@ -81,6 +85,7 @@ function noriks_bf_l() {
         'vec'        => 'Zobrazit více',
         'zapri'      => 'Zavřít',
         'nalagam'    => 'Načítám…',
+        'sub_ob'     => 'Trička a boxerky za akční ceny – na jednom místě.',
     );
 }
 
