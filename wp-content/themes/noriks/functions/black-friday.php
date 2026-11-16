@@ -78,6 +78,9 @@ function noriks_bf_l() {
         'sub_maj'    => 'Trička za akční ceny – vyberte si velikost a objednejte.',
         'sub_box'    => 'Boxerky za akční ceny – vyberte si velikost a objednejte.',
         'sub_top'    => 'Devět nejprodávanějších produktů za akční ceny.',
+        'vec'        => 'Zobrazit více',
+        'zapri'      => 'Zavřít',
+        'nalagam'    => 'Načítám…',
     );
 }
 
@@ -115,7 +118,7 @@ function noriks_bf_prag() {
 function noriks_bf_kartica( $p ) {
     if ( ! $p || $p->get_status() !== 'publish' || ! $p->is_in_stock() ) { return null; }
     $id = $p->get_id();
-    $k  = array( 'p' => $p, 'nacin' => 'ogled', 'attrs' => array(), 'offer' => '', 'kos' => 1, 'paket' => '' );
+    $k  = array( 'p' => $p, 'nacin' => 'ogled', 'attrs' => array(), 'offer' => '', 'kos' => 1, 'paket' => '', 'ponudbe' => array() );
     $red = 0; $akc = 0; $orto = false;
 
     if ( function_exists( 'gck_is_orto_bundle_enabled' ) && function_exists( 'gck_get_bundle_offers' ) && gck_is_orto_bundle_enabled( $id ) ) {
@@ -128,6 +131,11 @@ function noriks_bf_kartica( $p ) {
             $k['offer'] = (string) $o['id'];
             $k['kos']   = max( 1, (int) $o['qty'] );
             $k['paket'] = trim( (string) $o['title'] );
+            foreach ( $ponudbe as $po ) {
+                $pr = (float) $po['regular']; $pa = (float) $po['total'];
+                if ( $pr <= 0 || $pa <= 0 || $pa >= $pr ) { continue; }
+                $k['ponudbe'][] = array( 'id' => (string) $po['id'], 'kos' => max( 1, (int) $po['qty'] ), 'paket' => trim( (string) $po['title'] ), 'red' => $pr, 'akc' => $pa );
+            }
             $lastni = function_exists( 'gck_get_custom_attributes_in_order' ) ? gck_get_custom_attributes_in_order( $p ) : array();
             if ( count( $lastni ) <= 2 && function_exists( 'gck_split_attrs_color_size' ) && ! has_term( 'orto-majica-darila', 'product_cat', $id ) ) {
                 $deli = gck_split_attrs_color_size( $lastni );
@@ -173,6 +181,17 @@ function noriks_bf_kartica( $p ) {
     if ( $red <= 0 || $akc <= 0 || $akc >= $red ) { return null; }
     $k['red'] = $red; $k['akc'] = $akc;
     $k['pop'] = (int) round( ( 1 - $akc / $red ) * 100 );
+    // Kolicine: pri izbirniku paketov prave ponudbe izdelka, sicer 1x-4x iste cene.
+    if ( ! $orto && in_array( $k['nacin'], array( 'var', 'simple' ), true ) ) {
+        for ( $n = 1; $n <= 4; $n++ ) { $k['ponudbe'][] = array( 'id' => '', 'kos' => $n, 'paket' => '', 'red' => $red * $n, 'akc' => $akc * $n ); }
+    }
+    if ( empty( $k['ponudbe'] ) ) { $k['ponudbe'][] = array( 'id' => $k['offer'], 'kos' => $k['kos'], 'paket' => $k['paket'], 'red' => $red, 'akc' => $akc ); }
+    $k['pop_max'] = $k['pop'];
+    foreach ( $k['ponudbe'] as $i => $po ) {
+        $pp = (int) round( ( 1 - $po['akc'] / $po['red'] ) * 100 );
+        $k['ponudbe'][ $i ]['pop'] = $pp;
+        if ( $k['nacin'] !== 'ogled' && $pp > $k['pop_max'] ) { $k['pop_max'] = $pp; }
+    }
     $k['prodaja'] = (int) $p->get_total_sales();
     return $k;
 }
@@ -262,6 +281,29 @@ function noriks_bf_top( $n = 9 ) {
     return noriks_bf_uredi( $vsi, $n );
 }
 
+/** Podatki za modal "Poglej vec": slike galerije in opis izdelka. */
+add_action( 'wp_ajax_noriks_bf_info', 'noriks_bf_info' );
+add_action( 'wp_ajax_nopriv_noriks_bf_info', 'noriks_bf_info' );
+function noriks_bf_info() {
+    $id = isset( $_REQUEST['id'] ) ? absint( $_REQUEST['id'] ) : 0;
+    $p  = $id ? wc_get_product( $id ) : null;
+    if ( ! $p || $p->get_status() !== 'publish' ) { wp_send_json_error(); }
+    $slike = array();
+    $ids   = array_values( array_unique( array_filter( array_merge( array( (int) $p->get_image_id() ), array_map( 'intval', (array) $p->get_gallery_image_ids() ) ) ) ) );
+    foreach ( array_slice( $ids, 0, 8 ) as $iid ) {
+        $v = wp_get_attachment_image_url( $iid, 'woocommerce_single' );
+        $m = wp_get_attachment_image_url( $iid, 'woocommerce_thumbnail' );
+        if ( $v ) { $slike[] = array( $v, $m ? $m : $v ); }
+    }
+    wp_send_json_success( array(
+        'ime'    => $p->get_name(),
+        'url'    => get_permalink( $id ),
+        'slike'  => $slike,
+        'kratek' => wp_kses_post( wpautop( (string) $p->get_short_description() ) ),
+        'opis'   => wp_kses_post( wpautop( (string) $p->get_description() ) ),
+    ) );
+}
+
 /** Dodajanje v kosarico s kartice (isti podatki kot obrazec na strani izdelka). */
 add_action( 'wp_ajax_noriks_bf_add', 'noriks_bf_add' );
 add_action( 'wp_ajax_nopriv_noriks_bf_add', 'noriks_bf_add' );
@@ -274,6 +316,7 @@ function noriks_bf_add() {
         wp_send_json_error( array( 'message' => $l['napaka'] ) );
     }
     $nacin  = isset( $_POST['nacin'] ) ? sanitize_key( wp_unslash( $_POST['nacin'] ) ) : '';
+    $kol    = isset( $_POST['quantity'] ) ? min( 10, max( 1, absint( $_POST['quantity'] ) ) ) : 1;
     $kljuc  = false;
 
     if ( $nacin === 'orto' ) {
@@ -289,9 +332,9 @@ function noriks_bf_add() {
         }
         $vid = $atr ? WC_Data_Store::load( 'product' )->find_matching_product_variation( $p, $atr ) : 0;
         if ( ! $vid ) { wp_send_json_error( array( 'message' => $l['napaka'] ) ); }
-        $kljuc = WC()->cart->add_to_cart( $id, 1, $vid, $atr );
+        $kljuc = WC()->cart->add_to_cart( $id, $kol, $vid, $atr );
     } elseif ( $nacin === 'simple' && $p->is_type( 'simple' ) ) {
-        $kljuc = WC()->cart->add_to_cart( $id, 1 );
+        $kljuc = WC()->cart->add_to_cart( $id, $kol );
     }
 
     if ( ! $kljuc ) {

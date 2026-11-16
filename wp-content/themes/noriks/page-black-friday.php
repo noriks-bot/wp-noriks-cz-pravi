@@ -40,7 +40,7 @@ switch ( $tip ) {
         $razdelki[] = array( 'k' => $l['b_k'],   'a' => $l['b_a'],   'b' => $l['b_b'],   'izdelki' => noriks_bf_oblacila() );
 }
 $najvec = 0;
-foreach ( $razdelki as $r ) { foreach ( $r['izdelki'] as $x ) { if ( $x['pop'] > $najvec ) { $najvec = $x['pop']; } } }
+foreach ( $razdelki as $r ) { foreach ( $r['izdelki'] as $x ) { if ( $x['pop_max'] > $najvec ) { $najvec = $x['pop_max']; } } }
 
 $P = sprintf( $l['pct'], $najvec );
 $D = $prag > 0 ? trim( html_entity_decode( wp_strip_all_tags( wc_price( $prag, array( 'decimals' => ( floor( $prag ) == $prag ? 0 : wc_get_price_decimals() ) ) ) ), ENT_QUOTES, 'UTF-8' ) ) : '';
@@ -50,10 +50,10 @@ if ( $najvec > 0 ) { $trak[] = str_replace( '{P}', $P, $l['trak_p'] ); }
 if ( $D !== '' )   { $trak[] = str_replace( '{D}', $D, $l['trak_d'] ); }
 $trak[] = $l['trak_30'];
 
-$js = array( 'dodajam' => $l['dodajam'], 'dodano' => $l['dodano'], 'dodaj' => $l['dodaj'], 'izberi' => $l['izberi'], 'napaka' => $l['napaka'] );
+$js = array( 'dodajam' => $l['dodajam'], 'dodano' => $l['dodano'], 'dodaj' => $l['dodaj'], 'izberi' => $l['izberi'], 'napaka' => $l['napaka'], 'zapri' => $l['zapri'], 'nalagam' => $l['nalagam'], 'poglej' => $l['poglej'], 'placilo' => $l['placilo'] );
 $st = 0;
 ?>
-<!-- nbf 2026-11-16-d -->
+<!-- nbf 2026-11-16-g -->
 <div class="nbf nbf--<?php echo esc_attr( $stran['slog'] ); ?> nbf--<?php echo esc_attr( $tip ); ?>" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" data-t="<?php echo esc_attr( wp_json_encode( $js ) ); ?>">
 
   <section class="nbf-hero">
@@ -82,20 +82,34 @@ $st = 0;
           $slika = $p->get_image( 'woocommerce_single', array( 'loading' => $st < 4 ? 'eager' : 'lazy', 'alt' => $p->get_name() ) );
           $st++;
           $hitro = in_array( $x['nacin'], array( 'orto', 'var', 'simple' ), true );
-          $cfg   = array( 'id' => $p->get_id(), 'nacin' => $x['nacin'], 'offer' => $x['offer'], 'kos' => $x['kos'], 'attrs' => array() );
+          $cfg   = array( 'id' => $p->get_id(), 'nacin' => $x['nacin'], 'attrs' => array(), 'pon' => array() );
           foreach ( $x['attrs'] as $a ) { $cfg['attrs'][] = array( 'p' => $a['p'], 'v' => array_map( function ( $v ) { return $v[0]; }, $a['v'] ) ); }
+          foreach ( $x['ponudbe'] as $po ) {
+              $cfg['pon'][] = array(
+                  'id'  => $po['id'], 'kos' => $po['kos'], 'pk' => ( $po['kos'] > 1 ? $po['paket'] : '' ),
+                  'red' => wc_price( $po['red'] ), 'pri' => '−' . wc_price( $po['red'] - $po['akc'] ), 'akc' => wc_price( $po['akc'] ),
+                  'pc'  => '−' . sprintf( $l['pct'], $po['pop'] ),
+                  'd'   => $prag > 0 ? ( $po['akc'] >= $prag ? $l['d_free'] : str_replace( '{D}', $D, $l['d_nad'] ) ) : '',
+              );
+          }
+          $vec = $hitro && count( $x['ponudbe'] ) > 1;
           ?>
         <article class="nbf-k"<?php if ( $hitro ) : ?> data-bf="<?php echo esc_attr( wp_json_encode( $cfg ) ); ?>"<?php endif; ?>>
           <a class="nbf-k__s" href="<?php echo esc_url( $url ); ?>"><?php echo $slika; // phpcs:ignore -- WooCommerce vrne varen <img> ?></a>
           <div class="nbf-k__t">
             <?php if ( $rang ) : ?><div class="nbf-k__rang">#<?php echo (int) $st; ?></div><?php endif; ?>
             <h3 class="nbf-k__n"><a href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( $p->get_name() ); ?></a></h3>
-            <?php if ( $x['paket'] !== '' && $x['kos'] > 1 ) : ?><div class="nbf-k__pk"><?php echo esc_html( $x['paket'] ); ?></div><?php endif; ?>
+            <div class="nbf-k__pk"><?php echo esc_html( $x['kos'] > 1 ? $x['paket'] : '' ); ?></div>
             <div class="nbf-k__c">
-              <div class="nbf-r"><span><?php echo esc_html( $l['redna'] ); ?></span><s><?php echo wp_kses_post( wc_price( $x['red'] ) ); ?></s></div>
-              <div class="nbf-r nbf-r--p"><span><?php echo esc_html( $l['popust'] ); ?><b>−<?php echo esc_html( $pc ); ?></b></span><em>−<?php echo wp_kses_post( wc_price( $x['red'] - $x['akc'] ) ); ?></em></div>
-              <div class="nbf-r nbf-r--z"><span><?php echo esc_html( $l['placilo'] ); ?></span><strong><?php echo wp_kses_post( wc_price( $x['akc'] ) ); ?></strong></div>
+              <div class="nbf-r"><span><?php echo esc_html( $l['redna'] ); ?></span><s class="nbf-c-red"><?php echo wp_kses_post( wc_price( $x['red'] ) ); ?></s></div>
+              <div class="nbf-r nbf-r--p"><span><?php echo esc_html( $l['popust'] ); ?><b class="nbf-c-pc">−<?php echo esc_html( $pc ); ?></b></span><em class="nbf-c-pri">−<?php echo wp_kses_post( wc_price( $x['red'] - $x['akc'] ) ); ?></em></div>
+              <div class="nbf-r nbf-r--z"><span><?php echo esc_html( $l['placilo'] ); ?></span><strong class="nbf-c-akc"><?php echo wp_kses_post( wc_price( $x['akc'] ) ); ?></strong></div>
             </div>
+            <?php if ( $vec ) : ?>
+              <div class="nbf-kol" role="group">
+                <?php foreach ( $x['ponudbe'] as $pi => $po ) : ?><button type="button" class="nbf-kol__g<?php echo $pi === 0 ? ' je-izbran' : ''; ?>" data-i="<?php echo (int) $pi; ?>"><?php echo (int) $po['kos']; ?>×</button><?php endforeach; ?>
+              </div>
+            <?php endif; ?>
             <?php if ( $hitro ) : ?>
               <?php $izbirni = array_filter( $x['attrs'], function ( $a ) { return count( $a['v'] ) > 1; } ); ?>
               <?php if ( $izbirni ) : ?>
@@ -110,12 +124,12 @@ $st = 0;
               <?php endif; ?>
               <button type="button" class="nbf-k__g nbf-k__add"><?php echo esc_html( $l['dodaj'] ); ?></button>
               <div class="nbf-k__err" role="alert"></div>
-              <a class="nbf-k__o" href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( $l['poglej'] ); ?></a>
             <?php else : ?>
               <a class="nbf-k__g" href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( $l['gumb'] ); ?></a>
             <?php endif; ?>
+            <a class="nbf-k__o nbf-k__vec" href="<?php echo esc_url( $url ); ?>" data-id="<?php echo (int) $p->get_id(); ?>"><?php echo esc_html( $l['vec'] ); ?></a>
             <?php if ( $prag > 0 ) : ?>
-              <div class="nbf-k__d">🚚 <?php echo esc_html( $x['akc'] >= $prag ? $l['d_free'] : str_replace( '{D}', $D, $l['d_nad'] ) ); ?></div>
+              <div class="nbf-k__d">🚚 <span class="nbf-c-d"><?php echo esc_html( $x['akc'] >= $prag ? $l['d_free'] : str_replace( '{D}', $D, $l['d_nad'] ) ); ?></span></div>
             <?php endif; ?>
           </div>
         </article>
@@ -170,7 +184,40 @@ $st = 0;
 .nbf a.nbf-k__g:hover{background:var(--a2);color:var(--at)}
 .nbf-k__d{text-align:center;font-size:13px;color:#55595f;margin-top:10px}
 .nbf-k__pk{font-size:13px;color:#6b7078;margin:-8px 0 12px;font-weight:600}
-.nbf-k__izb{display:flex;gap:8px;margin-top:12px}
+.nbf-brez-drsenja{overflow:hidden}
+.nbf-m{position:fixed;inset:0;z-index:999990;background:rgba(8,8,10,.72);display:none;align-items:center;justify-content:center;padding:24px;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.nbf-m.je-odprt{display:flex}
+.nbf-m__p{position:relative;background:#fff;color:#16181d;border-radius:20px;width:100%;max-width:980px;max-height:calc(100vh - 48px);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.nbf .nbf-m button.nbf-m__x{position:absolute;right:12px;top:12px;z-index:3;width:38px;height:38px;border-radius:50%;border:0;background:#16181d;color:#fff;font-size:24px;line-height:1;cursor:pointer;padding:0;margin:0;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.nbf-m__g{background:#f4f4f5;display:flex;flex-direction:column;min-height:0}
+.nbf-m__sl{flex:1 1 auto;min-height:0;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center}
+.nbf-m__sl img{width:100%;height:100%;object-fit:contain;display:block;margin:0}
+.nbf-m__sm{display:flex;gap:8px;padding:10px;overflow-x:auto;scrollbar-width:thin}
+.nbf-m__sm:empty{display:none}
+.nbf .nbf-m__sm button{flex:0 0 62px;width:62px;height:62px;padding:0;margin:0;border:2px solid transparent;border-radius:10px;overflow:hidden;background:#fff;cursor:pointer;box-shadow:none}
+.nbf .nbf-m__sm button.je-izbran{border-color:var(--a)}
+.nbf-m__sm img{width:100%;height:100%;object-fit:cover;display:block;margin:0}
+.nbf-m__b{display:flex;flex-direction:column;min-height:0;padding:26px 26px 0}
+.nbf .nbf-m h3.nbf-m__n{font-size:22px;font-weight:800;line-height:1.25;margin:0 44px 14px 0;color:#16181d;text-transform:none;letter-spacing:0}
+.nbf-m__c{border:1px solid #ececee;border-radius:14px;padding:12px 14px 12px;margin-bottom:14px}
+.nbf-m__c .nbf-r:last-child{margin-bottom:0}
+.nbf-m__o{flex:1 1 auto;min-height:60px;overflow-y:auto;font-size:15px;line-height:1.6;color:#33363b;padding-right:6px}
+.nbf-m__o p{margin:0 0 12px;font-size:15px;line-height:1.6;color:#33363b}
+.nbf-m__o ul{list-style:none;margin:0 0 12px;padding:0}.nbf-m__o li{margin:0 0 7px;padding:0;list-style:none}
+.nbf-m__o strong{color:#16181d}
+.nbf-m__nal{color:#8a8e95}
+.nbf-m__f{padding:14px 0 20px;background:#fff;border-top:1px solid #ececee;margin-top:8px}
+.nbf-m__ctrl .nbf-kol{margin-top:0}.nbf .nbf-m__ctrl .nbf-k__izb{margin-top:8px;flex-direction:row;gap:8px}.nbf .nbf-m .nbf-m__ctrl select.nbf-sel{flex:1 1 0;min-width:0;width:auto}.nbf-m__ctrl:not(:empty){margin-bottom:10px}
+.nbf-m__f .nbf-k__g{margin-top:0}
+@media (max-width:760px){.nbf-m{padding:0;align-items:flex-end}.nbf-m__p{grid-template-columns:1fr;max-width:none;max-height:94vh;border-radius:20px 20px 0 0;overflow-y:auto;display:block}
+.nbf-m__sl{aspect-ratio:1/1;max-height:46vh}.nbf-m__b{padding:18px 16px 0}.nbf .nbf-m h3.nbf-m__n{font-size:18px;margin-bottom:12px}.nbf-m__o{overflow:visible;font-size:14.5px}
+.nbf-m__f{position:sticky;bottom:0;padding:12px 0 14px}.nbf-m__f a.nbf-k__o{margin-top:8px}.nbf .nbf-m__sm button{flex-basis:54px;width:54px;height:54px}}
+.nbf-kol{display:flex;gap:6px;margin-top:12px}
+.nbf .nbf-kol button.nbf-kol__g{flex:1 1 0;min-width:0;height:38px;border:1.5px solid #d3d5d9;background:#fff;color:#16181d;border-radius:10px;font-weight:800;font-size:14px;line-height:1;cursor:pointer;padding:0;margin:0;font-family:inherit;box-shadow:none;transition:background .12s,border-color .12s,color .12s;text-transform:none;letter-spacing:0}
+.nbf .nbf-kol button.nbf-kol__g:hover{border-color:#16181d}
+.nbf .nbf-kol button.nbf-kol__g.je-izbran{background:#16181d;border-color:#16181d;color:#fff}
+.nbf-k__pk:empty{display:none}
+.nbf-k__izb{display:flex;gap:8px;margin-top:8px}
 .nbf select.nbf-sel{flex:1 1 0;min-width:0;width:100%;height:44px;border:1.5px solid #d3d5d9;border-radius:10px;background:#fff;color:#16181d;font-size:14px;font-weight:600;padding:0 28px 0 11px;margin:0;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%2316181d' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;cursor:pointer;box-shadow:none;line-height:1.2}
 .nbf select.nbf-sel:focus{outline:none;border-color:var(--a)}
 .nbf select.nbf-sel.nbf-sel--err{border-color:#d92d20;background-color:#fff5f4}
@@ -183,7 +230,7 @@ $st = 0;
 .nbf a.nbf-k__o{display:block;text-align:center;font-size:13.5px;font-weight:700;color:#16181d;text-decoration:underline;text-underline-offset:3px;margin-top:10px}
 .nbf a.nbf-k__o:hover{color:var(--bt)}
 .nbf-sek + .nbf-trak + .nbf-sek{padding-top:60px}
-@media (max-width:560px){.nbf-k__pk{font-size:11.5px;margin:-5px 0 8px}.nbf-k__izb{gap:6px;margin-top:9px;flex-direction:column}.nbf select.nbf-sel{flex:0 0 auto;height:42px;min-height:42px;font-size:13.5px;padding-left:10px}
+@media (max-width:560px){.nbf-k__pk{font-size:11.5px;margin:-5px 0 8px}.nbf-kol{gap:5px;margin-top:9px}.nbf .nbf-kol button.nbf-kol__g{height:36px;font-size:13px}.nbf-k__izb{gap:6px;margin-top:6px;flex-direction:column}.nbf select.nbf-sel{flex:0 0 auto;height:42px;min-height:42px;font-size:13.5px;padding-left:10px}
 .nbf button.nbf-k__g{font-size:12.5px;padding:12px 4px;letter-spacing:.2px}.nbf a.nbf-k__o{font-size:12px;margin-top:8px}.nbf-k__err{font-size:11.5px}}
 @media (max-width:1180px){.nbf-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:860px){.nbf-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.nbf-hero{padding:54px 16px 50px}.nbf-sek{padding:44px 14px 56px}}
@@ -199,6 +246,7 @@ $st = 0;
 .nbf--rdeca{--a:#ff2d46;--a2:#e01a33;--ar:255,45,70;--hg:#3d0710;--at:#fff;--tt:#fff;--bb:#ffe9ec;--bt:#d0162e}
 .nbf--zlata .nbf-okvir{transform:rotate(-2deg);border-width:3px}
 .nbf--zlata .nbf-okvir i{color:var(--a);-webkit-text-stroke:0}
+.nbf--zlata .nbf-kol button.nbf-kol__g{border-radius:8px}.nbf--zelena .nbf-kol button.nbf-kol__g{border-radius:999px}
 .nbf--zlata .nbf-k{border-radius:10px}.nbf--zlata a.nbf-k__g,.nbf--zlata button.nbf-k__g{border-radius:8px}.nbf--zlata select.nbf-sel{border-radius:8px}
 .nbf--modra .nbf-okvir{border:0;border-bottom:5px solid var(--a);border-radius:0;box-shadow:none;padding:0 6px 16px}
 .nbf--modra .nbf-okvir i{color:var(--a);-webkit-text-stroke:0}
@@ -219,10 +267,108 @@ $st = 0;
   try { T = JSON.parse(koren.getAttribute('data-t')) || {}; } catch (e) {}
 
   koren.addEventListener('change', function (e) {
-    if (e.target.classList && e.target.classList.contains('nbf-sel')) {
-      e.target.classList.remove('nbf-sel--err');
-      var n = e.target.closest('.nbf-k').querySelector('.nbf-k__err'); if (n) { n.textContent = ''; }
+    if (!(e.target.classList && e.target.classList.contains('nbf-sel'))) { return; }
+    e.target.classList.remove('nbf-sel--err');
+    var vModalu = e.target.closest('.nbf-m'), k = vModalu ? odprtaKartica : e.target.closest('.nbf-k');
+    if (!k) { return; }
+    if (vModalu) {
+      var polje = e.target.getAttribute('data-polje'), ciljni = null;
+      k.querySelectorAll('select.nbf-sel').forEach(function (s) { if (s.getAttribute('data-polje') === polje) { ciljni = s; } });
+      if (ciljni) { ciljni.value = e.target.value; ciljni.classList.remove('nbf-sel--err'); }
+      var nm = vModalu.querySelector('.nbf-m__err'); if (nm) { nm.textContent = ''; }
     }
+    var n = k.querySelector('.nbf-k__err'); if (n) { n.textContent = ''; }
+  });
+
+  // ---- modal "Poglej vec" ----
+  var modal = null, predpomnilnik = {}, odprtaKartica = null;
+  function zapriModal() { if (modal) { modal.classList.remove('je-odprt'); document.documentElement.classList.remove('nbf-brez-drsenja'); } odprtaKartica = null; }
+  function narediModal() {
+    modal = document.createElement('div'); modal.className = 'nbf-m'; modal.setAttribute('role', 'dialog'); modal.setAttribute('aria-modal', 'true');
+    modal.innerHTML = '<div class="nbf-m__p"><button type="button" class="nbf-m__x" aria-label="' + (T.zapri || '') + '">&times;</button>' +
+      '<div class="nbf-m__g"><div class="nbf-m__sl"></div><div class="nbf-m__sm"></div></div>' +
+      '<div class="nbf-m__b"><h3 class="nbf-m__n"></h3><div class="nbf-m__c"></div><div class="nbf-m__o"></div>' +
+      '<div class="nbf-m__f"><div class="nbf-m__ctrl"></div><button type="button" class="nbf-k__g nbf-m__dodaj"></button><div class="nbf-k__err nbf-m__err" role="alert"></div><a class="nbf-k__o nbf-m__stran" href="#"></a></div></div></div>';
+    koren.appendChild(modal);
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal || (e.target.closest && e.target.closest('.nbf-m__x'))) { zapriModal(); return; }
+      var m = e.target.closest ? e.target.closest('.nbf-m__sm button') : null;
+      if (m) { modal.querySelector('.nbf-m__sl').innerHTML = '<img src="' + m.getAttribute('data-v') + '" alt="">'; modal.querySelectorAll('.nbf-m__sm button').forEach(function (x) { x.classList.toggle('je-izbran', x === m); }); return; }
+      var gm = e.target.closest ? e.target.closest('.nbf-m__dodaj') : null;
+      if (gm) {
+        var k = odprtaKartica, g = k ? k.querySelector('.nbf-k__add') : null, nm = modal.querySelector('.nbf-m__err');
+        if (!g || gm.classList.contains('je-zaseden')) { return; }
+        nm.textContent = '';
+        var manjka = null;
+        modal.querySelectorAll('.nbf-m__ctrl select.nbf-sel').forEach(function (s) { if (!s.value && !manjka) { manjka = s; } });
+        if (manjka) { manjka.classList.add('nbf-sel--err'); nm.textContent = (T.izberi || '{A}').replace('{A}', manjka.getAttribute('data-ime')); try { manjka.focus(); } catch (x) {} return; }
+        gm.classList.add('je-zaseden'); gm.textContent = T.dodajam || '…';
+        g.click();
+        var n = 0, cakaj = setInterval(function () {
+          n++;
+          var napaka = k.querySelector('.nbf-k__err').textContent;
+          if (g.classList.contains('je-dodano')) { clearInterval(cakaj); gm.classList.remove('je-zaseden'); gm.textContent = T.dodaj || ''; zapriModal(); }
+          else if (napaka || (!g.classList.contains('je-zaseden') && n > 3) || n > 150) { clearInterval(cakaj); gm.classList.remove('je-zaseden'); gm.textContent = T.dodaj || ''; nm.textContent = napaka || T.napaka || ''; }
+        }, 100);
+      }
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { zapriModal(); } });
+  }
+  function napolniModal(d) {
+    var sl = modal.querySelector('.nbf-m__sl'), sm = modal.querySelector('.nbf-m__sm');
+    sl.innerHTML = d.slike && d.slike.length ? '<img src="' + d.slike[0][0] + '" alt="">' : '';
+    sm.innerHTML = '';
+    if (d.slike && d.slike.length > 1) { d.slike.forEach(function (s, i) { var b = document.createElement('button'); b.type = 'button'; b.setAttribute('data-v', s[0]); if (i === 0) { b.className = 'je-izbran'; } b.innerHTML = '<img src="' + s[1] + '" alt="" loading="lazy">'; sm.appendChild(b); }); }
+    modal.querySelector('.nbf-m__o').innerHTML = (d.kratek || '') + (d.opis || '');
+    modal.querySelector('.nbf-m__stran').href = d.url || '#';
+  }
+  koren.addEventListener('click', function (e) {
+    var v = e.target.closest ? e.target.closest('.nbf-k__vec') : null; if (!v) { return; }
+    if (e.metaKey || e.ctrlKey || e.shiftKey) { return; }
+    e.preventDefault();
+    if (!modal) { narediModal(); }
+    var k = v.closest('.nbf-k'), id = v.getAttribute('data-id'); odprtaKartica = k;
+    modal.querySelector('.nbf-m__n').textContent = k.querySelector('.nbf-k__n').textContent.trim();
+    var c = k.querySelector('.nbf-k__c'); modal.querySelector('.nbf-m__c').innerHTML = c ? c.innerHTML : '';
+    var gk = k.querySelector('.nbf-k__add'), gm = modal.querySelector('.nbf-m__dodaj'), ctrl = modal.querySelector('.nbf-m__ctrl');
+    gm.style.display = gk ? '' : 'none'; gm.textContent = T.dodaj || ''; gm.classList.remove('je-zaseden');
+    modal.querySelector('.nbf-m__err').textContent = ''; ctrl.innerHTML = '';
+    if (gk) {
+      ['.nbf-kol', '.nbf-k__izb'].forEach(function (sel) {
+        var izv = k.querySelector(sel); if (!izv) { return; }
+        var kop = izv.cloneNode(true);
+        var s1 = izv.querySelectorAll('select'), s2 = kop.querySelectorAll('select');
+        for (var i = 0; i < s1.length; i++) { s2[i].value = s1[i].value; s2[i].classList.remove('nbf-sel--err'); }
+        ctrl.appendChild(kop);
+      });
+    }
+    var st = modal.querySelector('.nbf-m__stran'); st.textContent = T.poglej || ''; st.href = v.href;
+    modal.querySelector('.nbf-m__sl').innerHTML = ''; modal.querySelector('.nbf-m__sm').innerHTML = '';
+    modal.querySelector('.nbf-m__o').innerHTML = '<p class="nbf-m__nal">' + (T.nalagam || '') + '</p>';
+    modal.classList.add('je-odprt'); document.documentElement.classList.add('nbf-brez-drsenja');
+    if (predpomnilnik[id]) { napolniModal(predpomnilnik[id]); return; }
+    fetch(ajax + '?action=noriks_bf_info&id=' + encodeURIComponent(id), { credentials: 'same-origin' })
+      .then(function (r) { return r.json(); })
+      .then(function (res) { if (res && res.success && res.data) { predpomnilnik[id] = res.data; if (odprtaKartica === k) { napolniModal(res.data); } } else { window.location.href = v.href; } })
+      .catch(function () { window.location.href = v.href; });
+  });
+
+  // izbira kolicine / ponudbe: preracuna cene na kartici
+  koren.addEventListener('click', function (e) {
+    var q = e.target.closest ? e.target.closest('.nbf-kol__g') : null; if (!q) { return; }
+    e.preventDefault();
+    var vModalu = q.closest('.nbf-m'), k = vModalu ? odprtaKartica : q.closest('.nbf-k'), cfg, i = parseInt(q.getAttribute('data-i'), 10) || 0;
+    if (!k) { return; }
+    try { cfg = JSON.parse(k.getAttribute('data-bf')); } catch (x) { return; }
+    var po = cfg.pon[i]; if (!po) { return; }
+    k.setAttribute('data-izb', i);
+    function oznaci(koren2) { koren2.querySelectorAll('.nbf-kol__g').forEach(function (b) { b.classList.toggle('je-izbran', (parseInt(b.getAttribute('data-i'), 10) || 0) === i); }); }
+    oznaci(k); if (modal && odprtaKartica === k) { oznaci(modal); }
+    function html(s, h) { var el = k.querySelector(s); if (el) { el.innerHTML = h; } }
+    function txt(s, t) { var el = k.querySelector(s); if (el) { el.textContent = t; } }
+    html('.nbf-c-red', po.red); html('.nbf-c-pri', po.pri); html('.nbf-c-akc', po.akc);
+    txt('.nbf-c-pc', po.pc); txt('.nbf-k__pk', po.pk || ''); if (po.d) { txt('.nbf-c-d', po.d); }
+    if (modal && odprtaKartica === k) { var c = k.querySelector('.nbf-k__c'); modal.querySelector('.nbf-m__c').innerHTML = c ? c.innerHTML : ''; }
   });
 
   koren.addEventListener('click', function (e) {
@@ -245,15 +391,16 @@ $st = 0;
       return;
     }
 
+    var po = cfg.pon[parseInt(k.getAttribute('data-izb'), 10) || 0] || cfg.pon[0];
     var fd = new FormData();
     fd.append('action', 'noriks_bf_add');
     fd.append('product_id', cfg.id);
     fd.append('nacin', cfg.nacin);
-    if (cfg.nacin === 'orto') { fd.append('bundle_option', cfg.offer); }
+    if (cfg.nacin === 'orto') { fd.append('bundle_option', po.id); } else { fd.append('quantity', po.kos); }
     (cfg.attrs || []).forEach(function (a) {
       var v = a.v.length === 1 ? a.v[0] : izbrano[a.p];
       if (cfg.nacin === 'orto') {
-        for (var i = 1; i <= cfg.kos; i++) { fd.append('pairs[' + cfg.offer + '][' + i + '][' + a.p + ']', v); }
+        for (var i = 1; i <= po.kos; i++) { fd.append('pairs[' + po.id + '][' + i + '][' + a.p + ']', v); }
       } else { fd.append(a.p, v); }
     });
 
