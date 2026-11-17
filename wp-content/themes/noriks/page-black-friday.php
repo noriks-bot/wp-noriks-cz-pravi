@@ -4,7 +4,7 @@
  *
  * Pristajalna stran: hero pasica, tekoci trak, kartice izdelkov z akcijskimi cenami,
  * izbira velikosti in dodajanje v kosarico neposredno s kartice.
- * Ista predloga za vseh pet strani (glej noriks_bf_strani()); slog in vsebino doloci
+ * Ista predloga za vse strani (glej noriks_bf_strani()); slog in vsebino doloci
  * slug strani. Besedila in izbor izdelkov: functions/black-friday.php.
  */
 get_header();
@@ -37,6 +37,11 @@ switch ( $tip ) {
         $sub = $l['sub_ob'];
         $razdelki[] = array( 'k' => $l['b_k'], 'a' => $l['b_a'], 'b' => $l['b_b'], 'izdelki' => noriks_bf_oblacila() );
         break;
+    case 'enojne':
+        $C   = trim( html_entity_decode( wp_strip_all_tags( wc_price( noriks_bf_kos_cena() ) ), ENT_QUOTES, 'UTF-8' ) );
+        $sub = str_replace( '{C}', $C, $l['sub_kos'] );
+        $razdelki[] = array( 'k' => 'BLACK FRIDAY · ' . $l['w_maj'], 'a' => $l['w_maj'], 'b' => str_replace( '{C}', $C, $l['kos_b'] ), 'izdelki' => noriks_bf_enojne() );
+        break;
     case 'top9':
         $sub  = $l['sub_top'];
         $rang = true;
@@ -68,7 +73,7 @@ $trak[] = $l['trak_30'];
 $js = array( 'dodajam' => $l['dodajam'], 'dodano' => $l['dodano'], 'dodaj' => $l['dodaj'], 'izberi' => $l['izberi'], 'napaka' => $l['napaka'], 'zapri' => $l['zapri'], 'nalagam' => $l['nalagam'], 'poglej' => $l['poglej'], 'placilo' => $l['placilo'] );
 $st = 0;
 ?>
-<!-- nbf 2026-11-17-s -->
+<!-- nbf 2026-11-17-t -->
 <div class="nbf nbf--<?php echo esc_attr( $stran['slog'] ); ?> nbf--<?php echo esc_attr( $tip ); ?> nbf--<?php echo $cm ? 'cm' : 'bf'; ?>" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" data-stran="<?php echo esc_attr( $stran['slug'] ); ?>" data-t="<?php echo esc_attr( wp_json_encode( $js ) ); ?>">
 
   <section class="nbf-hero">
@@ -298,6 +303,7 @@ $st = 0;
 .nbf--zelena{--a:#19c37d;--a2:#12a468;--ar:25,195,125;--hg:#06301f;--at:#06231a;--tt:#06231a;--bb:#e3f8ee;--bt:#0d7f52}
 .nbf--rdeca{--a:#ff2d46;--a2:#e01a33;--ar:255,45,70;--hg:#3d0710;--at:#fff;--tt:#fff;--bb:#ffe9ec;--bt:#d0162e}
 .nbf--cian{--a:#00d9ff;--a2:#00b9da;--ar:0,217,255;--hg:#04283c;--at:#04121a;--tt:#04121a;--bb:#e0f9ff;--bt:#007e99}
+.nbf--limeta{--a:#c6f432;--a2:#a9d61c;--ar:198,244,50;--hg:#27310a;--at:#141b02;--tt:#141b02;--bb:#f3fcd4;--bt:#5c7700}
 .nbf--vijola{--a:#a855f7;--a2:#9333ea;--ar:168,85,247;--hg:#260b4a;--at:#fff;--tt:#fff;--bb:#f1e6ff;--bt:#7e22ce}
 .nbf--cm .nbf-hero{background-image:linear-gradient(rgba(var(--ar),.075) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--ar),.075) 1px,transparent 1px),radial-gradient(70% 90% at 50% 0%,var(--hg) 0%,#0a0a0b 72%);background-size:46px 46px,46px 46px,auto}
 .nbf--cian .nbf-okvir{border-radius:2px;box-shadow:0 0 34px rgba(var(--ar),.6),inset 0 0 30px rgba(var(--ar),.22)}
@@ -318,6 +324,11 @@ $st = 0;
 .nbf--rdeca .nbf-okvir i{color:#fff;-webkit-text-stroke:0}
 .nbf-k__rang{align-self:flex-start;background:var(--a);color:var(--at);font-weight:900;font-size:13px;line-height:1;border-radius:6px;padding:6px 11px;margin:0 0 10px;letter-spacing:.6px}
 .nbf--top9 .nbf-grid{grid-template-columns:repeat(3,minmax(0,1fr));max-width:1060px;margin-left:auto;margin-right:auto}
+.nbf--enojne .nbf-grid{display:flex;flex-wrap:wrap;justify-content:center}.nbf--enojne .nbf-grid>.nbf-k{flex:0 0 calc((100% - 66px)/4);max-width:calc((100% - 66px)/4)}
+.nbf--limeta .nbf-okvir i{color:var(--a);-webkit-text-stroke:0}.nbf--limeta .nbf-k{border-radius:7px}
+@media (max-width:1180px){.nbf--enojne .nbf-grid>.nbf-k{flex-basis:calc((100% - 44px)/3);max-width:calc((100% - 44px)/3)}}
+@media (max-width:860px){.nbf--enojne .nbf-grid>.nbf-k{flex-basis:calc((100% - 14px)/2);max-width:calc((100% - 14px)/2)}}
+@media (max-width:359px){.nbf--enojne .nbf-grid>.nbf-k{flex-basis:100%;max-width:100%}}
 @media (max-width:860px){.nbf--top9 .nbf-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:560px){.nbf-k__rang{font-size:11.5px;padding:5px 9px;margin-bottom:8px}.nbf--modra .nbf-okvir{padding:0 4px 12px}}
 @media (max-width:359px){.nbf--top9 .nbf-grid{grid-template-columns:1fr}}</style>

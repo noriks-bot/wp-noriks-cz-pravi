@@ -7,6 +7,7 @@
  *   /black-friday-shirts/  samo majice                                    (modra)
  *   /black-friday-boxers/  samo bokserice                                 (zelena)
  *   /black-friday-top9/    9 najbolj prodajanih izdelkov nasploh          (rdeca)
+ *   /black-friday-tees/    enojne majice, vsaka barva svoj izdelek, ena cena za kos + SlabProof (limeta)
  *   /cyber-monday/         Cyber Monday: ostali (novi) izdelki            (cian)
  *   /cyber-monday-basics/  Cyber Monday: majice in bokserice              (vijola)
  *
@@ -33,6 +34,7 @@ function noriks_bf_strani() {
         'black-friday-shirts' => array( 'naslov' => 'Black Friday Shirts', 'tip' => 'majice',    'slog' => 'modra',   'dogodek' => 'bf' ),
         'black-friday-boxers' => array( 'naslov' => 'Black Friday Boxers', 'tip' => 'bokserice', 'slog' => 'zelena',  'dogodek' => 'bf' ),
         'black-friday-top9'   => array( 'naslov' => 'Black Friday Top 9',  'tip' => 'top9',      'slog' => 'rdeca',   'dogodek' => 'bf' ),
+        'black-friday-tees'   => array( 'naslov' => 'Black Friday Tees',   'tip' => 'enojne',    'slog' => 'limeta',  'dogodek' => 'bf' ),
         'cyber-monday'        => array( 'naslov' => 'Cyber Monday',        'tip' => 'novi',      'slog' => 'cian',    'dogodek' => 'cm' ),
         'cyber-monday-basics' => array( 'naslov' => 'Cyber Monday Basics', 'tip' => 'oblacila',  'slog' => 'vijola',  'dogodek' => 'cm' ),
     );
@@ -87,6 +89,8 @@ function noriks_bf_l() {
         'zapri'      => 'Zavřít',
         'nalagam'    => 'Načítám…',
         'sub_ob'     => 'Trička a boxerky za akční ceny – na jednom místě.',
+        'sub_kos'    => 'Všechna trička po {C} za kus – barvy a velikosti kombinujte libovolně.',
+        'kos_b'      => 'PO {C}',
     );
 }
 
@@ -183,6 +187,26 @@ function noriks_bf_cena_kolicina( $enota, $n ) {
     return $cena;
 }
 
+/** Cena za kos na strani enojnih majic (/black-friday-tees/), v valuti trga. */
+function noriks_bf_kos_cena() {
+    return (float) apply_filters( 'noriks_bf_kos_cena', 139 );
+}
+
+/** Ali je izdelek enojna majica (vsaka barva svoj izdelek: NORIKS-ONE-BLACK, -WHITE ...). */
+function noriks_bf_je_enojna( $p ) {
+    return $p && preg_match( '/^NORIKS-ONE-[A-Z]+$/', strtoupper( (string) $p->get_sku() ) ) === 1;
+}
+
+/**
+ * Fiksna cena za kos, ce je nakup s strani enojnih majic IN je izdelek res enojna majica
+ * (stran pride iz zahteve, zato izdelek preverimo — drug izdelek te cene ne dobi). Sicer 0.
+ */
+function noriks_bf_fiksna_cena( $slug, $product_id ) {
+    $strani = noriks_bf_strani();
+    if ( ! isset( $strani[ $slug ] ) || $strani[ $slug ]['tip'] !== 'enojne' ) { return 0.0; }
+    return noriks_bf_je_enojna( wc_get_product( $product_id ) ) ? noriks_bf_kos_cena() : 0.0;
+}
+
 /** Slug pristajalne strani, s katere tece trenutno dodajanje v kosarico ('' = ni s teh strani). */
 function noriks_bf_trenutna_stran( $nastavi = null ) {
     static $s = '';
@@ -204,8 +228,15 @@ function noriks_bf_cart_item_data( $data, $product_id, $variation_id ) {
         $data['_orto_bundle_unit_price'] = $nova;
         $data['_orto_bundle_total']      = $nova;
     } else {
-        $p = wc_get_product( $variation_id ? $variation_id : $product_id );
-        if ( $p ) { $data['_noriks_bf_cena'] = noriks_bf_cena( (float) $p->get_price() ); }   // cena za 1 kos; kolicinski popust se doda po kolicini v kosarici
+        $fiksna = noriks_bf_fiksna_cena( $slug, $product_id );
+        if ( $fiksna > 0 ) {
+            // enojne majice: ena cena za kos, brez kolicinskih stopenj
+            $data['_noriks_bf_cena']   = $fiksna;
+            $data['_noriks_bf_fiksna'] = 1;
+        } else {
+            $p = wc_get_product( $variation_id ? $variation_id : $product_id );
+            if ( $p ) { $data['_noriks_bf_cena'] = noriks_bf_cena( (float) $p->get_price() ); }   // cena za 1 kos; kolicinski popust se doda po kolicini v kosarici
+        }
     }
     return $data;
 }
@@ -213,14 +244,14 @@ function noriks_bf_cart_item_data( $data, $product_id, $variation_id ) {
 function noriks_bf_uveljavi_ceno( $item ) {
     if ( isset( $item['_noriks_bf_cena'], $item['data'] ) && $item['data'] instanceof WC_Product && (float) $item['_noriks_bf_cena'] > 0 ) {
         $kol = isset( $item['quantity'] ) ? (int) $item['quantity'] : 1;
-        $item['data']->set_price( noriks_bf_cena_kolicina( (float) $item['_noriks_bf_cena'], $kol ) );
+        $item['data']->set_price( ! empty( $item['_noriks_bf_fiksna'] ) ? (float) $item['_noriks_bf_cena'] : noriks_bf_cena_kolicina( (float) $item['_noriks_bf_cena'], $kol ) );
     }
     return $item;
 }
 add_filter( 'woocommerce_add_cart_item', 'noriks_bf_uveljavi_ceno', 30 );
 add_filter( 'woocommerce_get_cart_item_from_session', 'noriks_bf_iz_seje', 30, 2 );
 function noriks_bf_iz_seje( $item, $values ) {
-    foreach ( array( '_noriks_bf', '_noriks_bf_stran', '_noriks_bf_cena' ) as $k ) {
+    foreach ( array( '_noriks_bf', '_noriks_bf_stran', '_noriks_bf_cena', '_noriks_bf_fiksna' ) as $k ) {
         if ( isset( $values[ $k ] ) ) { $item[ $k ] = $values[ $k ]; }
     }
     return noriks_bf_uveljavi_ceno( $item );
@@ -369,8 +400,9 @@ function noriks_bf_sestava( $sku ) {
  *        var   = variabilen izdelek z enim atributom (posljemo atribut)
  *        simple= navaden izdelek brez izbire
  *        ogled = prevec izbir za kartico -> samo povezava na izdelek
+ * $fiksna > 0: ena cena za kos (stran enojnih majic) namesto odstotnega znizanja in kolicinskih stopenj.
  */
-function noriks_bf_kartica( $p ) {
+function noriks_bf_kartica( $p, $fiksna = 0 ) {
     if ( ! $p || $p->get_status() !== 'publish' || ! $p->is_in_stock() ) { return null; }
     $id = $p->get_id();
     $k  = array( 'p' => $p, 'nacin' => 'ogled', 'attrs' => array(), 'offer' => '', 'kos' => 1, 'paket' => '', 'ponudbe' => array(), 'vsebina' => false );
@@ -417,7 +449,7 @@ function noriks_bf_kartica( $p ) {
     if ( ! $orto ) {
         if ( $p->is_type( 'variable' ) ) {
             $red = (float) $p->get_variation_regular_price( 'min', true );
-            $enota = noriks_bf_cena( (float) $p->get_variation_price( 'min', false ) );
+            $enota = $fiksna > 0 ? (float) $fiksna : noriks_bf_cena( (float) $p->get_variation_price( 'min', false ) );
             $akc   = (float) wc_get_price_to_display( $p, array( 'price' => $enota ) );
             $va  = $p->get_variation_attributes();
             if ( count( $va ) >= 1 && count( $va ) <= 2 ) {
@@ -452,7 +484,7 @@ function noriks_bf_kartica( $p ) {
     if ( ! $orto && in_array( $k['nacin'], array( 'var', 'simple' ), true ) ) {
         // $enota = znizana cena za 1 kos (brez davcnega prikaza), da kartica racuna enako kot kosarica
         for ( $n = 1; $n <= 4; $n++ ) {
-            $kos = (float) wc_get_price_to_display( $p, array( 'price' => noriks_bf_cena_kolicina( $enota, $n ) ) );
+            $kos = (float) wc_get_price_to_display( $p, array( 'price' => ( $fiksna > 0 ? $enota : noriks_bf_cena_kolicina( $enota, $n ) ) ) );
             $k['ponudbe'][] = array( 'id' => '', 'kos' => $n, 'paket' => '', 'red' => $red * $n, 'akc' => $kos * $n );
         }
     }
@@ -464,7 +496,9 @@ function noriks_bf_kartica( $p ) {
         $vs = noriks_bf_sestava( $p->get_sku() );
         if ( $vs !== '' ) {
             $k['paket'] = $vs; $k['vsebina'] = true;
-            foreach ( $k['ponudbe'] as $i => $po ) { $k['ponudbe'][ $i ]['paket'] = $vs; }
+            // en kos ene barve ("1x crna"): pri vecji kolicini se stevilo ujema z izbrano kolicino ("3x crna")
+            $en_kos = ! $orto && preg_match( '/^1x [^+·]+$/u', $vs ) === 1;
+            foreach ( $k['ponudbe'] as $i => $po ) { $k['ponudbe'][ $i ]['paket'] = $en_kos ? preg_replace( '/^1x /', (int) $po['kos'] . 'x ', $vs ) : $vs; }
         }
     }
     $k['pop_max'] = $k['pop'];
@@ -560,6 +594,28 @@ function noriks_bf_oblacila( $tipi = null, $s_slabproof = false ) {
             }
         }
     }
+    return $ven;
+}
+
+/** Enojne majice (vsaka barva svoj izdelek) po eni ceni za kos, po prodaji padajoce; na koncu SlabProof nogavice. */
+function noriks_bf_enojne() {
+    $ven = array();
+    if ( ! function_exists( 'wc_get_product_id_by_sku' ) ) { return $ven; }
+    $cena = noriks_bf_kos_cena();
+    foreach ( array( 'BLACK', 'DARKBLUE', 'WHITE', 'GRAY', 'BROWN', 'GREEN', 'BEIGE' ) as $i => $barva ) {
+        $id = wc_get_product_id_by_sku( 'NORIKS-ONE-' . $barva );
+        $p  = $id ? wc_get_product( $id ) : null;
+        if ( ! $p || ! $p->is_type( 'variable' ) ) { continue; }
+        $k = noriks_bf_kartica( $p, $cena );
+        if ( ! $k || $k['nacin'] !== 'var' ) { continue; }
+        $k['vrsta'] = $i;
+        $ven[] = $k;
+    }
+    $ven = noriks_bf_uredi( $ven );
+    // osmi izdelek (polna zadnja vrsta): SlabProof nogavice po Black Friday ceni kot na ostalih straneh
+    $sid = wc_get_product_id_by_sku( 'NORIKS-SLABPROOF' );
+    $sk  = $sid ? noriks_bf_kartica( wc_get_product( $sid ) ) : null;
+    if ( $sk ) { $sk['vrsta'] = -1; $ven[] = $sk; }
     return $ven;
 }
 
@@ -671,7 +727,7 @@ function noriks_bf_add() {
     WC_AJAX::get_refreshed_fragments();   // poslje fragmente (tudi stranske kosarice) in konca
 }
 
-/** Enkrat ustvari vseh pet WP strani in jim dodeli predlogo page-black-friday.php. */
+/** Enkrat ustvari vse WP strani in jim dodeli predlogo page-black-friday.php. */
 function noriks_bf_ensure_page() {
     foreach ( noriks_bf_strani() as $slug => $nast ) {
         $naslov = $nast['naslov'];
