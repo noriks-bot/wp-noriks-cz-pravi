@@ -293,6 +293,7 @@ function noriks_bf_sestava( $sku ) {
         'NORIKS-MONOCHROME-6-PACK'    => array( 'K2 S2 W2', '' ),
         'NORIKS-MONOCHROME-9-PACK'    => array( 'K3 S3 W3', '' ),
         'NORIKS-MONOCHROME-DOZEN'     => array( 'K4 S4 W4', '' ),
+        'NORIKS-ALL-BLACK-9-PACK-2'   => array( 'K3 S3 W3', '' ),   // SK/CZ/GR: Monochrome mix 9 (SKU je zavajajoc)
         'NORIKS-MIDNIGHT-3-PACK'      => array( 'K1 S1 B1', '' ),
         'NORIKS-URBAN-3-PACK'         => array( 'G1 S1 B1', '' ),
         'NORIKS-COASTAL-3-PACK'       => array( 'K1 W1 B1', '' ),
@@ -326,6 +327,7 @@ function noriks_bf_sestava( $sku ) {
         'NORIKS-BUNDLE-SHIRTS-BOX-P-3'  => array( 'S1 W1', $b5 ),
         'NORIKS-BUNDLE-SHIRTS-BOX-P-4'  => array( 'K1 S1', $b5 ),
         'NORIKS-BUNDLE-SHIRTS-BOX-P-5'  => array( 'K1 S1', $b5 ),
+        'NORIKS-BUNDLE-SHIRTS-BOX-P-4-1' => array( 'K1 S1', $b5 ),   // PL: ponudba za obstojece kupce
         'NORIKS-BUNDLE-SH-BOX-5-5-P-1'  => array( 'K2 S2 B1', $b5 ),
         'NORIKS-BUNDLE-SH-BOX-5-5-P-2'  => array( 'K2 W2 S1', $b5 ),
         'NORIKS-BUNDLE-SH-BOX-5-5-P-3'  => array( 'K1 R1 E1 G1 W1', $b5 ),
