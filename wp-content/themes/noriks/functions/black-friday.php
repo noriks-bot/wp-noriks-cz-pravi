@@ -231,6 +231,20 @@ function noriks_bf_pred_izracunom( $cart ) {
     foreach ( $cart->get_cart() as $item ) { noriks_bf_uveljavi_ceno( $item ); }
 }
 
+/**
+ * Kosarica: pri izdelkih brez izbire barve/velikosti (RedRelief, Bunion ...) vticnik v vrstici ne
+ * pokaze, kateri paket je kupec izbral (kolicina vrstice ostane 1, cena je paketna). Za nakupe s
+ * pristajalnih strani zato pod imenom izpisemo ime paketa, npr. "3x NORIKS RedRelief".
+ */
+add_filter( 'woocommerce_get_item_data', 'noriks_bf_prikaz_paketa', 20, 2 );
+function noriks_bf_prikaz_paketa( $item_data, $cart_item ) {
+    if ( empty( $cart_item['_noriks_bf'] ) || ! empty( $cart_item['_orto_lines'] ) || empty( $cart_item['_orto_bundle_pairs'] ) ) { return $item_data; }
+    $naslov = isset( $cart_item['_orto_offer_title'] ) ? trim( (string) $cart_item['_orto_offer_title'] ) : '';
+    if ( $naslov === '' ) { $naslov = (int) $cart_item['_orto_bundle_pairs'] . 'x'; }
+    $item_data[] = array( 'name' => false, 'display' => esc_html( $naslov ) );
+    return $item_data;
+}
+
 /** Meta v narocilu: na postavki (_noriks_bf) in na narocilu (_noriks_bf + stran, s katere je kupec kupil). */
 add_action( 'woocommerce_checkout_create_order_line_item', 'noriks_bf_meta_postavke', 20, 4 );
 function noriks_bf_meta_postavke( $item, $cart_item_key, $values, $order ) {
