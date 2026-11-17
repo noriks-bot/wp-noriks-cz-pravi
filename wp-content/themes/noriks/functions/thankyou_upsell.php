@@ -333,19 +333,20 @@ function noriks_handle_add_upsell() {
     }
 
     $quantity = max( 1, absint( $_POST['quantity'] ?? 3 ) );
-    // Prices depend on product type (bokserice vs majice)
-    $bokserice_prices = array( 1 => 119, 3 => 357, 5 => 595 );
-    $majice_prices    = array( 1 => 329, 3 => 749, 6 => 999 );
-    // ─── Detect product type: exact same logic as frontend thankyou.php ───
-    $_detect_id = $product_id ?: $product->get_id();
-    $_detect_prod = wc_get_product( $_detect_id );
-    $name = strtolower( $_detect_prod ? $_detect_prod->get_name() : '' );
-    $sku = strtolower( $_detect_prod ? $_detect_prod->get_sku() : '' );
-    $cats = wp_get_post_terms( $_detect_id, 'product_cat', array( 'fields' => 'slugs' ) );
-    $cat_str = is_array( $cats ) ? strtolower( implode( ' ', $cats ) ) : '';
-    $is_majice = ( strpos($cat_str, 'orto-majice') !== false || strpos($cat_str, 'tricka') !== false || strpos($name, 'trička') !== false || strpos($name, 'tričk') !== false || strpos($cat_str, 'majic') !== false || strpos($name, 'majic') !== false );
-    $qty_prices = $is_majice ? $majice_prices : $bokserice_prices;
-    $total_price = isset( $qty_prices[$quantity] ) ? $qty_prices[$quantity] : $active_price;
+    // Korak 1 ponuja samo crno majico (250) v kolicinah iz cenika. Vse drugo zavrnemo -
+    // sicer bi se z rocno zahtevo dal dodati poljuben izdelek ali poljubna kolicina
+    // po ceni enega kosa. Bokseric v ponudbi ni vec (17. 11. 2026).
+    if ( $product_id !== 250 ) {
+        wp_send_json_error( 'Tento produkt není v nabídce' );
+    }
+    if ( ! $variation_id || (int) wp_get_post_parent_id( $variation_id ) !== $product_id ) {
+        wp_send_json_error( 'Neplatná varianta' );
+    }
+    $qty_prices = array( 1 => 199, 3 => 499, 6 => 829 );
+    if ( ! isset( $qty_prices[ $quantity ] ) ) {
+        wp_send_json_error( 'Neplatné množství' );
+    }
+    $total_price = $qty_prices[ $quantity ];
     $upsell_price = $total_price / $quantity;
 
     // Add to order

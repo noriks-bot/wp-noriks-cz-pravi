@@ -2,7 +2,7 @@
 /**
  * Thankyou page — Post-purchase upsell with two-step flow
  *
- * Step 1: Single product offer (bokserice)
+ * Step 1: Single product offer (crna majica)
  * Step 2: 6-product grid (after "Nechci" or after adding 1 item)
  *
  * Style: Red background, no border-radius, red buttons
@@ -13,55 +13,21 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-// ─── Upsell product config — detect what to offer ───
-// Check if order has ONLY bokserice (no majice, no komplet)
-$has_only_bokserice = true;
-$has_bokserice = false;
-foreach ( $order->get_items() as $item ) {
-    $name = strtolower( $item->get_name() );
-    $product = $item->get_product();
-    $sku = $product ? strtolower( $product->get_sku() ) : '';
-    // Check if item is majica
-    // Categories are the source of truth
-    $cats = wp_get_post_terms( $item->get_product_id(), 'product_cat', array('fields' => 'slugs') );
-    $cat_str = is_array($cats) ? strtolower(implode(' ', $cats)) : '';
-    // Majica: category has "majic" OR name has "majic"
-    $is_majica = ( strpos($cat_str, 'orto-majice') !== false || strpos($cat_str, 'tricka') !== false || strpos($name, 'trička') !== false || strpos($name, 'tričk') !== false || strpos($cat_str, 'majic') !== false || strpos($name, 'majic') !== false );
-    // Bokserice: category has "boxer/bokser/orto" OR SKU has "box" OR name has "bokser/airflow"
-    $is_boks = ( strpos($cat_str, 'boxer') !== false || strpos($cat_str, 'bokser') !== false || strpos($cat_str, 'orto') !== false || strpos($sku, 'box') !== false || strpos($name, 'bokser') !== false || strpos($name, 'airflow') !== false );
-    // Komplet
-    $is_komplet = ( strpos($cat_str, 'sady') !== false || strpos($name, 'sada') !== false || strpos($cat_str, 'orto-starter') !== false || strpos($cat_str, 'orto-majica-bokserica') !== false || strpos($name, 'komplet') !== false || strpos($cat_str, 'komplet') !== false );
-    if ( $is_boks ) $has_bokserice = true;
-    if ( $is_majica || $is_komplet ) $has_only_bokserice = false;
-}
-if ( !$has_bokserice ) $has_only_bokserice = false;
+// ─── Korak 1: kaj ponudimo ───
+// Vedno CRNA MAJICA (17. 11. 2026). Prej: samo kupci bokseric so dobili majice,
+// vsi ostali sive bokserice - bokseric v ponudbi po nakupu ni vec.
+$upsell_is_majice = true;
 
-// ONLY bokserice in order → upsell MAJICE, else → upsell BOKSERICE
-$upsell_is_majice = $has_only_bokserice;
-
-if ( $upsell_is_majice ) {
-    $upsell_product_id = 250; // Crna majica (variable)
-    $upsell_name       = 'Černá trička';
-    $upsell_qty_prices = array( 1 => 329, 3 => 749, 6 => 999 );
-    $upsell_qty_names  = array( 1 => '1x Černé tričko', 3 => '3x Černá trička', 6 => '6x Černých triček' );
-    $upsell_qty_images = array(
-        1 => 'https://noriks.com/hr/wp-content/uploads/2025/09/black-1.jpg',
-        3 => 'https://noriks.com/hr/wp-content/uploads/2025/09/black-3x.jpg',
-        6 => 'https://noriks.com/hr/wp-content/uploads/2026/01/15xcrnamajica.png',
-    );
-    $upsell_title_text = 'Přidejte trička teď – 50% sleva';
-} else {
-    $upsell_product_id = 4766; // Šedé boxerky (siva verzija, ista struktura kot crna)
-    $upsell_name       = 'Šedé boxerky';
-    $upsell_qty_prices = array( 1 => 119, 3 => 357, 5 => 595 );
-    $upsell_qty_names  = array( 1 => '1x Šedé boxerky', 3 => '3x Šedé boxerky', 5 => '5x Šedých boxerek' );
-    $upsell_qty_images = array(
-        1 => get_template_directory_uri() . '/img/upsell/siva-1x-v2.webp',
-        3 => get_template_directory_uri() . '/img/upsell/siva-3x-v2.png',
-        5 => get_template_directory_uri() . '/img/upsell/siva-5x-v2.png',
-    );
-    $upsell_title_text = 'Přidejte boxerky teď – 50% sleva';
-}
+$upsell_product_id = 250; // Crna majica (variable)
+$upsell_name       = 'Černá trička';
+$upsell_qty_prices = array( 1 => 199, 3 => 499, 6 => 829 );
+$upsell_qty_names  = array( 1 => '1x Černé tričko', 3 => '3x Černá trička', 6 => '6x Černých triček' );
+$upsell_qty_images = array(
+    1 => 'https://noriks.com/hr/wp-content/uploads/2025/09/black-1.jpg',
+    3 => 'https://noriks.com/hr/wp-content/uploads/2025/09/black-3x.jpg',
+    6 => 'https://noriks.com/hr/wp-content/uploads/2026/01/15xcrnamajica.png',
+);
+$upsell_title_text = 'Přidejte trička teď – 50% sleva';
 $upsell_product    = wc_get_product( $upsell_product_id );
 $upsell_image      = $upsell_qty_images[1];
 // Get unit price from first variation (variable products have empty parent price)
