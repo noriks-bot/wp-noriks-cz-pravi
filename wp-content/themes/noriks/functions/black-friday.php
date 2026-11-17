@@ -726,13 +726,12 @@ function noriks_bf_top( $n = 9 ) {
     return $top;
 }
 
-/** Podatki za modal "Poglej vec": slike galerije in opis izdelka. */
-add_action( 'wp_ajax_noriks_bf_info', 'noriks_bf_info' );
-add_action( 'wp_ajax_nopriv_noriks_bf_info', 'noriks_bf_info' );
-function noriks_bf_info() {
-    $id = isset( $_REQUEST['id'] ) ? absint( $_REQUEST['id'] ) : 0;
-    $p  = $id ? wc_get_product( $id ) : null;
-    if ( ! $p || $p->get_status() !== 'publish' ) { wp_send_json_error(); }
+/**
+ * Podatki za modal "Poglej vec": slike galerije in opis izdelka.
+ * Vgradijo se ze v stran (page-black-friday.php), da se modal odpre takoj — klic
+ * admin-ajax je trajal 0,7–1,3 s na odpiranje (izmerjeno 17. 11. 2026) in ostane le kot rezerva.
+ */
+function noriks_bf_info_podatki( $p ) {
     $slike = array();
     $ids   = array_values( array_unique( array_filter( array_merge( array( (int) $p->get_image_id() ), array_map( 'intval', (array) $p->get_gallery_image_ids() ) ) ) ) );
     foreach ( array_slice( $ids, 0, 8 ) as $iid ) {
@@ -740,13 +739,19 @@ function noriks_bf_info() {
         $m = wp_get_attachment_image_url( $iid, 'woocommerce_thumbnail' );
         if ( $v ) { $slike[] = array( $v, $m ? $m : $v ); }
     }
-    wp_send_json_success( array(
-        'ime'    => $p->get_name(),
-        'url'    => get_permalink( $id ),
+    return array(
         'slike'  => $slike,
         'kratek' => wp_kses_post( wpautop( (string) $p->get_short_description() ) ),
         'opis'   => wp_kses_post( wpautop( (string) $p->get_description() ) ),
-    ) );
+    );
+}
+add_action( 'wp_ajax_noriks_bf_info', 'noriks_bf_info' );
+add_action( 'wp_ajax_nopriv_noriks_bf_info', 'noriks_bf_info' );
+function noriks_bf_info() {
+    $id = isset( $_REQUEST['id'] ) ? absint( $_REQUEST['id'] ) : 0;
+    $p  = $id ? wc_get_product( $id ) : null;
+    if ( ! $p || $p->get_status() !== 'publish' ) { wp_send_json_error(); }
+    wp_send_json_success( array( 'ime' => $p->get_name(), 'url' => get_permalink( $id ) ) + noriks_bf_info_podatki( $p ) );
 }
 
 /** Dodajanje v kosarico s kartice (isti podatki kot obrazec na strani izdelka). */

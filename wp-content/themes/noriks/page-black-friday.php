@@ -73,7 +73,7 @@ $trak[] = $l['trak_30'];
 $js = array( 'dodajam' => $l['dodajam'], 'dodano' => $l['dodano'], 'dodaj' => $l['dodaj'], 'izberi' => $l['izberi'], 'napaka' => $l['napaka'], 'zapri' => $l['zapri'], 'nalagam' => $l['nalagam'], 'poglej' => $l['poglej'], 'placilo' => $l['placilo'] );
 $st = 0;
 ?>
-<!-- nbf 2026-11-17-v -->
+<!-- nbf 2026-11-17-w -->
 <div class="nbf nbf--<?php echo esc_attr( $stran['slog'] ); ?> nbf--<?php echo esc_attr( $tip ); ?> nbf--<?php echo $cm ? 'cm' : 'bf'; ?>" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" data-stran="<?php echo esc_attr( $stran['slug'] ); ?>" data-t="<?php echo esc_attr( wp_json_encode( $js ) ); ?>">
 
   <section class="nbf-hero">
@@ -103,6 +103,9 @@ $st = 0;
           $slika = $p->get_image( 'woocommerce_single', array( 'loading' => $st < 4 ? 'eager' : 'lazy', 'alt' => $ime ) );
 
           $st++;
+          // podatki za modal gredo v stran (brez cakanja na streznik ob kliku)
+          if ( ! isset( $nbf_info ) || ! is_array( $nbf_info ) ) { $nbf_info = array(); }
+          if ( ! isset( $nbf_info[ $p->get_id() ] ) ) { $nbf_info[ $p->get_id() ] = noriks_bf_info_podatki( $p ); }
           $hitro = in_array( $x['nacin'], array( 'orto', 'var', 'simple' ), true );
           $cfg   = array( 'id' => $p->get_id(), 'nacin' => $x['nacin'], 'attrs' => array(), 'pon' => array() );
           foreach ( $x['attrs'] as $a ) { $cfg['attrs'][] = array( 'p' => $a['p'], 'v' => array_map( function ( $v ) { return $v[0]; }, $a['v'] ) ); }
@@ -171,6 +174,7 @@ $st = 0;
   <?php endforeach; ?>
 
 </div>
+<script type="application/json" id="nbf-info" data-no-optimize="1" data-no-defer="1" data-cfasync="false"><?php echo wp_json_encode( isset( $nbf_info ) && is_array( $nbf_info ) && $nbf_info ? $nbf_info : new stdClass(), JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ); // phpcs:ignore ?></script>
 <style>.nbf{--a:#ff6d2e;--a2:#e85a1c;--ar:255,109,46;--hg:#3a1a08;--at:#fff;--tt:#0a0a0b;--bb:#fff0e8;--bt:#e2530f;background:#0a0a0b;color:#fff;font-family:inherit;line-height:1.4}
 .nbf *{box-sizing:border-box}
 .nbf-hero{position:relative;overflow:hidden;text-align:center;padding:76px 20px 68px;background:radial-gradient(70% 90% at 50% 0%,var(--hg) 0%,#0a0a0b 72%)}
@@ -217,7 +221,7 @@ $st = 0;
 .nbf-k__d{text-align:center;font-size:13px;color:#55595f;margin-top:10px}
 .nbf-k__pk{font-size:13px;line-height:1.35;color:#6b7078;margin:-8px 0 12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nbf-brez-drsenja{overflow:hidden}
-.nbf-m{position:fixed;inset:0;z-index:999990;background:rgba(8,8,10,.72);display:none;align-items:center;justify-content:center;padding:24px;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.nbf-m{position:fixed;inset:0;z-index:999990;background:rgba(8,8,10,.8);display:none;align-items:center;justify-content:center;padding:24px}
 .nbf-m.je-odprt{display:flex}
 .nbf-m__p{position:relative;background:#fff;color:#16181d;border-radius:10px;width:100%;max-width:980px;max-height:calc(100vh - 48px);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5)}
 .nbf .nbf-m button.nbf-m__x{position:absolute;right:12px;top:12px;z-index:3;width:38px;height:38px;border-radius:50%;border:0;background:#16181d;color:#fff;font-size:24px;line-height:1;cursor:pointer;padding:0;margin:0;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.25)}
@@ -339,6 +343,9 @@ $st = 0;
   var koren = document.querySelector('.nbf'); if (!koren) { return; }
   var ajax = koren.getAttribute('data-ajax'), T = {};
   try { T = JSON.parse(koren.getAttribute('data-t')) || {}; } catch (e) {}
+  // slike in opisi za modal so ze v strani
+  var INFO = {};
+  try { var ie = document.getElementById('nbf-info'); if (ie) { INFO = JSON.parse(ie.textContent) || {}; } } catch (e) { INFO = {}; }
 
   // ---- izbirniki (kot na straneh majic in bokseric): gumb z barvnim vzorcem + seznam; pravi <select> ostane vir vrednosti ----
   function osvezi(sel) {
@@ -391,7 +398,7 @@ $st = 0;
   });
 
   // ---- modal "Poglej vec" ----
-  var modal = null, predpomnilnik = {}, odprtaKartica = null;
+  var modal = null, predpomnilnik = INFO, odprtaKartica = null;
   function zapriModal() { if (modal) { modal.classList.remove('je-odprt'); document.documentElement.classList.remove('nbf-brez-drsenja'); } odprtaKartica = null; }
   function narediModal() {
     modal = document.createElement('div'); modal.className = 'nbf-m'; modal.setAttribute('role', 'dialog'); modal.setAttribute('aria-modal', 'true');
@@ -457,10 +464,17 @@ $st = 0;
     }
     // povezava na stran izdelka ostane samo pri izdelkih, ki jih s te strani ni mogoce dodati
     var st = modal.querySelector('.nbf-m__stran'); st.textContent = T.poglej || ''; st.href = href; st.style.display = gk ? 'none' : '';
-    modal.querySelector('.nbf-m__sl').innerHTML = ''; modal.querySelector('.nbf-m__sm').innerHTML = '';
+    modal.querySelector('.nbf-m__sm').innerHTML = '';
+    if (predpomnilnik[id]) {
+      napolniModal(predpomnilnik[id]);
+      modal.classList.add('je-odprt'); document.documentElement.classList.add('nbf-brez-drsenja');
+      return;
+    }
+    // rezerva (podatkov ni v strani): takoj pokazi sliko s kartice, opis pride s streznika
+    var ks = k.querySelector('.nbf-k__s img'), ksrc = ks ? (ks.currentSrc || ks.src || '') : '';
+    modal.querySelector('.nbf-m__sl').innerHTML = ksrc && ksrc.indexOf('data:') !== 0 ? '<img src="' + ksrc + '" alt="">' : '';
     modal.querySelector('.nbf-m__o').innerHTML = '<p class="nbf-m__nal">' + (T.nalagam || '') + '</p>';
     modal.classList.add('je-odprt'); document.documentElement.classList.add('nbf-brez-drsenja');
-    if (predpomnilnik[id]) { napolniModal(predpomnilnik[id]); return; }
     fetch(ajax + '?action=noriks_bf_info&id=' + encodeURIComponent(id) + '&stran=' + encodeURIComponent(koren.getAttribute('data-stran') || ''), { credentials: 'same-origin' })
       .then(function (r) { return r.json(); })
       .then(function (res) { if (res && res.success && res.data) { predpomnilnik[id] = res.data; if (odprtaKartica === k) { napolniModal(res.data); } } else if (odprtaKartica === k) { modal.querySelector('.nbf-m__o').innerHTML = ''; } })
