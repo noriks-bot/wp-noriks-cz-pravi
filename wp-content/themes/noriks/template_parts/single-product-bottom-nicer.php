@@ -1999,7 +1999,28 @@ $winecooler_faq = array(
     'answer'    => 'Právo na vrácení do 30 dnů. Pokud nejste s nákupem zcela spokojeni, ozvěte se nám do 30 dnů od převzetí objednávky a rádi vám pomůžeme s vrácením zboží nebo peněz.'),
 );
 
-$faq_pick = function( $title, $list ) use ( $is_winecooler, $winecooler_faq, $is_slim, $slim_faq, $is_tradesman, $tradesman_faq, $is_slabproof, $slabproof_faq, $is_bowl, $bowl_faq, $is_snug, $snug_faq, $is_kompwom, $kompwom_faq, $is_pal, $pal_faq, $is_red, $red_faq, $is_kneeheat, $kneeheat_faq, $is_hyd_faq, $hyd_faq, $is_cloud_faq, $cloud_faq, $is_cloath_faq, $cloath_faq, $is_controlpro_faq, $controlpro_faq, $is_ortopas_faq, $ortopas_faq, $is_bunion_faq, $bunion_faq, $is_fisiorest_faq, $fisiorest_faq, $is_norikshers_faq, $norikshers_faq, $is_leakboxers_faq, $leakboxers_faq, $is_kompmajice_faq, $kompmajice_faq, $is_kidsnest_faq, $kidsnest_faq, $is_jastuk_faq, $jastuk_faq, $is_kneefix_faq, $kneefix_faq ) {
+// NORIKS MamaBelt: pogosta vprasanja (kot HR auto_reviews/FAQ_HR_mamabelt.php).
+$is_mamabelt = ( function_exists('noriks_is_type') && noriks_is_type('mamabelt') );
+$mamabelt_faq = array(
+  array('questioon' => 'Jak se adaptér montuje?',
+    'answer'    => 'Ve čtyřech krocích: popruh adaptéru protáhněte mezi sedákem a opěradlem, veďte ho pod sedákem (aby nebyl překroucený), konec provlékněte horním a dolním otvorem přezky a zatáhněte směrem dolů, aby adaptér pevně držel.'),
+  array('questioon' => 'Jak se potom zapíná pás?',
+    'answer'    => 'Stejně jako obvykle – jen spodní část bezpečnostního pásu před zapnutím provlékněte háčkem adaptéru. Spodní část pásu tak zůstává nízko, přes stehna.'),
+  array('questioon' => 'Neuvolní se na sedadle?',
+    'answer'    => 'Popruh adaptéru má nastavitelnou délku a po utažení pevně drží. Vnitřní vrstva adaptéru je z oceli, vnější z termoplastické gumy.'),
+  array('questioon' => 'Hodí se do mého auta?',
+    'answer'    => 'Adaptér se nasazuje na sedadlo a délku popruhu lze nastavit, proto se hodí na většinu standardních autosedadel.'),
+  array('questioon' => 'Mohu ho používat i po těhotenství?',
+    'answer'    => 'Ano. Ačkoli je navržen pro těhotenství, vyhovuje každému, komu spodní část pásu přes břicho vadí.'),
+  array('questioon' => 'Jaké barvy jsou k dispozici?',
+    'answer'    => 'Černá a růžová.'),
+  array('questioon' => 'Je sleva při koupi více kusů?',
+    'answer'    => 'Ano – při koupi 2 nebo 3 kusů je cena za kus nižší. Nabídky najdete nad tlačítkem objednávky.'),
+  array('questioon' => 'Co když mi nebude vyhovovat?',
+    'answer'    => 'Máte 30 dní na vrácení peněz. Doprava je zdarma při objednávce nad 1700 Kč a platíte na dobírku, až přijde balík.'),
+);
+
+$faq_pick = function( $title, $list ) use ( $is_mamabelt, $mamabelt_faq, $is_winecooler, $winecooler_faq, $is_slim, $slim_faq, $is_tradesman, $tradesman_faq, $is_slabproof, $slabproof_faq, $is_bowl, $bowl_faq, $is_snug, $snug_faq, $is_kompwom, $kompwom_faq, $is_pal, $pal_faq, $is_red, $red_faq, $is_kneeheat, $kneeheat_faq, $is_hyd_faq, $hyd_faq, $is_cloud_faq, $cloud_faq, $is_cloath_faq, $cloath_faq, $is_controlpro_faq, $controlpro_faq, $is_ortopas_faq, $ortopas_faq, $is_bunion_faq, $bunion_faq, $is_fisiorest_faq, $fisiorest_faq, $is_norikshers_faq, $norikshers_faq, $is_leakboxers_faq, $leakboxers_faq, $is_kompmajice_faq, $kompmajice_faq, $is_kidsnest_faq, $kidsnest_faq, $is_jastuk_faq, $jastuk_faq, $is_kneefix_faq, $kneefix_faq ) {
   $is_info = ( stripos( (string) $title, 'produktu' ) !== false );
   if ( $is_snug && $is_info ) { return $snug_faq; }
   if ( $is_kompwom && $is_info ) { return $kompwom_faq; }
@@ -2007,6 +2028,7 @@ $faq_pick = function( $title, $list ) use ( $is_winecooler, $winecooler_faq, $is
   if ( $is_slim && $is_info ) { return $slim_faq; }
   if ( $is_slabproof && $is_info ) { return $slabproof_faq; }
   if ( $is_bowl && $is_info ) { return $bowl_faq; }
+  if ( $is_mamabelt && $is_info ) { return $mamabelt_faq; }
   if ( $is_winecooler && $is_info ) { return $winecooler_faq; }
   if ( $is_pal && $is_info ) { return $pal_faq; }
   if ( $is_red && $is_info ) { return $red_faq; }
