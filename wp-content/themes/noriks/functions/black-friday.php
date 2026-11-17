@@ -277,38 +277,88 @@ function noriks_bf_barva( $vrednost ) {
 }
 
 /**
- * Vsebina paketa majic po SKU (npr. "2x siva + 1x crna"). Sestave so preverjene po
- * produktnih slikah (ista tabela kot v dash/fetch-sales.js PACK_COLORS); za pakete,
- * ki jih v tabeli ni, se ne izpise nic.  K=crna S=siva W=bela B=temno modra G=zelena R=rjava E=bez
+ * Vsebina paketa po SKU: majice (npr. "2x siva + 1x crna"), bokserice ("2x crne + 3x plave")
+ * in kompleti ("Majice: ... · Bokserice: ..."). Sestave so preverjene po produktnih slikah
+ * (tabela iz dash/fetch-sales.js PACK_COLORS + pregled slik 17. 11.); za SKU, ki ga tu ni, se ne izpise nic.
+ * Majice:   K=crna S=siva W=bela B=temno modra G=zelena R=rjava E=bez
+ * Bokserice: K=crne S=sive B=modre G=zelene D=rdece
  */
 function noriks_bf_sestava( $sku ) {
     $sku = strtoupper( trim( (string) $sku ) );
     if ( $sku === '' ) { return ''; }
+    $b5 = 'K1 S1 B1 G1 D1'; $b10 = 'K2 S2 B2 G2 D2';
     $t = array(
-        'NORIKS-MONOCHROME-3-PACK'    => 'K1 S1 W1',
-        'NORIKS-MONOCHROME-6-PACK'    => 'K2 S2 W2',
-        'NORIKS-MONOCHROME-9-PACK'    => 'K3 S3 W3',
-        'NORIKS-MIDNIGHT-3-PACK'      => 'K1 S1 B1',
-        'NORIKS-URBAN-3-PACK'         => 'G1 S1 B1',
-        'NORIKS-COASTAL-3-PACK'       => 'K1 W1 B1',
-        'NORIKS-CITY-COMBO-6-PACK'    => 'K2 W2 S1 B1',
-        'NORIKS-EVERYDAY-6-PACK'      => 'K1 S1 B1 G1 E1 W1',
-        'NORIKS-EARTH-TONES-6-PACK'   => 'K3 B1 G1 E1',
-        'NORIKS-EVERYDAY-MIX-12-PACK' => 'K2 S2 B2 G2 E2 W2',
-        'NORIKS-NEUTRAL-MIX-9-PACK'   => 'S2 B2 G2 K1 R1 W1',
-        'NORIKS-FULL-SPECTRUM-9-PACK' => 'K2 W2 S1 B1 G1 R1 E1',
-        'NORIKS-STREET-PACK-9-PACK'   => 'K3 S1 B1 G1 R1 E1 W1',
+        // majice
+        'NORIKS-MONOCHROME-3-PACK'    => array( 'K1 S1 W1', '' ),
+        'NORIKS-MONOCHROME-6-PACK'    => array( 'K2 S2 W2', '' ),
+        'NORIKS-MONOCHROME-9-PACK'    => array( 'K3 S3 W3', '' ),
+        'NORIKS-MONOCHROME-DOZEN'     => array( 'K4 S4 W4', '' ),
+        'NORIKS-MIDNIGHT-3-PACK'      => array( 'K1 S1 B1', '' ),
+        'NORIKS-URBAN-3-PACK'         => array( 'G1 S1 B1', '' ),
+        'NORIKS-COASTAL-3-PACK'       => array( 'K1 W1 B1', '' ),
+        'NORIKS-CITY-COMBO-6-PACK'    => array( 'K2 W2 S1 B1', '' ),
+        'NORIKS-EVERYDAY-6-PACK'      => array( 'K1 S1 B1 G1 E1 W1', '' ),
+        'NORIKS-EVERYDAY-MIX-12-PACK' => array( 'K2 S2 B2 G2 E2 W2', '' ),
+        'NORIKS-EARTH-TONES-6-PACK'   => array( 'K3 B1 G1 E1', '' ),
+        'NORIKS-EARTH-DOZEN'          => array( 'K6 B2 G2 E2', '' ),
+        'NORIKS-NEUTRAL-MIX-9-PACK'   => array( 'S2 B2 G2 K1 R1 W1', '' ),
+        'NORIKS-FULL-SPECTRUM-9-PACK' => array( 'K2 W2 S1 B1 G1 R1 E1', '' ),
+        'NORIKS-STREET-PACK-9-PACK'   => array( 'K3 S1 B1 G1 R1 E1 W1', '' ),
+        'NORIKS-FULL-BASICS-12-PACK'  => array( 'K3 S2 B2 W2 G1 R1 E1', '' ),
+        'NORIKS-FULL-BASICS-15-PACK'  => array( 'K3 S2 B2 G2 R2 E2 W2', '' ),
+        // bokserice
+        'NORIKS-BOX-BUNDLE-3-FIRST'   => array( '', 'K1 S1 B1' ),
+        'NORIKS-BOX-BUNDLE-3-SECOND'  => array( '', 'K1 S1 G1' ),
+        'NORIKS-BOX-BUNDLE-3-THIRD'   => array( '', 'K1 B2' ),
+        'NORIKS-BOX-BUNDLE-5-FIRST'   => array( '', 'K2 B3' ),
+        'NORIKS-BOX-BUNDLE-5-SECOND'  => array( '', 'K2 S2 G1' ),
+        'NORIKS-BOX-BUNDLE-7-FIRST'   => array( '', 'K2 B2 G2 S1' ),
+        'NORIKS-BOX-BUNDLE-7-SECOND'  => array( '', 'K2 S2 B3' ),
+        'NORIKS-BOX-BUNDLE-10-FIRST'  => array( '', 'K2 S2 B3 G2 D1' ),
+        'NORIKS-BOX-BUNDLE-10-SECOND' => array( '', 'K5 B5' ),
+        'NORIKS-BOX-BLACK-7-PACK-2'   => array( '', 'K2 S2 B3 G2 D1' ),
+        'NORIKS-BOX-BLACK-7-PACK-3'   => array( '', 'K5 B5' ),
+        'NORIKS-BOX-BUNDLE-15-FIRST'  => array( '', 'K5 B3 G3 S2 D2' ),
+        'NORIKS-BOX-BUNDLE-15-SECOND' => array( '', 'K10 B5' ),
+        // kompleti majice + bokserice
+        'NORIKS-BUNDLE-SHIRTS-BOX-P-1'  => array( 'K1 W1', $b5 ),
+        'NORIKS-BUNDLE-SHIRTS-BOX-P-2'  => array( 'K1 B1', $b5 ),
+        'NORIKS-BUNDLE-SHIRTS-BOX-P-3'  => array( 'S1 W1', $b5 ),
+        'NORIKS-BUNDLE-SHIRTS-BOX-P-4'  => array( 'K1 S1', $b5 ),
+        'NORIKS-BUNDLE-SHIRTS-BOX-P-5'  => array( 'K1 S1', $b5 ),
+        'NORIKS-BUNDLE-SH-BOX-5-5-P-1'  => array( 'K2 S2 B1', $b5 ),
+        'NORIKS-BUNDLE-SH-BOX-5-5-P-2'  => array( 'K2 W2 S1', $b5 ),
+        'NORIKS-BUNDLE-SH-BOX-5-5-P-3'  => array( 'K1 R1 E1 G1 W1', $b5 ),
+        'NORIKS-BUNDLE-SH-BOX-5-5-P-4'  => array( 'K5', 'K5' ),
+        'NORIKS-BUNDLE-SH-BOX-4-10-P-1' => array( 'K2 W2', $b10 ),
+        'NORIKS-BUNDLE-SH-BOX-4-10-P-2' => array( 'K2 B2', $b10 ),
+        'NORIKS-BUNDLE-SH-BOX-4-10-P-3' => array( 'K2 S2', $b10 ),
+        'NORIKS-BUNDLE-SH-BOX-4-10-P-4' => array( 'K1 S1 B1 W1', $b10 ),
     );
-    $zapis = isset( $t[ $sku ] ) ? $t[ $sku ] : '';
-    if ( $zapis === '' && preg_match( '/^NORIKS-ALL-(BLACK|WHITE)-(\d+)-PACK$/', $sku, $m ) ) { $zapis = ( $m[1] === 'BLACK' ? 'K' : 'W' ) . (int) $m[2]; }
-    if ( $zapis === '' ) { return ''; }
-    $b   = array( 'K' => 'černé', 'S' => 'šedé', 'W' => 'bílé', 'B' => 'tmavě modré', 'G' => 'zelené', 'R' => 'hnědé', 'E' => 'béžové' );
-    $deli = array();
-    foreach ( explode( ' ', $zapis ) as $d ) {
-        $crka = substr( $d, 0, 1 ); $n = (int) substr( $d, 1 );
-        if ( $n > 0 && isset( $b[ $crka ] ) ) { $deli[] = $n . 'x ' . $b[ $crka ]; }
+    $z = isset( $t[ $sku ] ) ? $t[ $sku ] : null;
+    if ( ! $z ) {
+        $enobarvne_m = array( 'BLACK' => 'K', 'WHITE' => 'W', 'GRAY' => 'S', 'GREY' => 'S', 'DARKBLUE' => 'B', 'GREEN' => 'G', 'BROWN' => 'R', 'BEIGE' => 'E' );
+        $enobarvne_b = array( 'BLACK' => 'K', 'GRAY' => 'S', 'GREY' => 'S', 'BLUE' => 'B', 'GREEN' => 'G', 'RED' => 'D' );
+        if ( preg_match( '/^NORIKS-ALL-(BLACK|WHITE)-(\d+)-PACK$/', $sku, $m ) ) { $z = array( $enobarvne_m[ $m[1] ] . (int) $m[2], '' ); }
+        elseif ( preg_match( '/^NORIKS-BOX-BLACK-(\d+)-PACK$/', $sku, $m ) ) { $z = array( '', 'K' . (int) $m[1] ); }
+        elseif ( preg_match( '/^NORIKS-ONE-([A-Z]+)$/', $sku, $m ) && isset( $enobarvne_m[ $m[1] ] ) ) { $z = array( $enobarvne_m[ $m[1] ] . '1', '' ); }
+        elseif ( preg_match( '/^NORIKS-BOXERS-([A-Z]+)$/', $sku, $m ) && isset( $enobarvne_b[ $m[1] ] ) ) { $z = array( '', $enobarvne_b[ $m[1] ] . '1' ); }
     }
-    return implode( ' + ', $deli );
+    if ( ! $z ) { return ''; }
+    $barve = array( array( 'K' => 'černé', 'S' => 'šedé', 'W' => 'bílé', 'B' => 'tmavě modré', 'G' => 'zelené', 'R' => 'hnědé', 'E' => 'béžové' ), array( 'K' => 'černé', 'S' => 'šedé', 'B' => 'modré', 'G' => 'zelené', 'D' => 'červené' ) );
+    $vrsti = array( 'Trička', 'Boxerky' );
+    $deli  = array();
+    foreach ( array( 0, 1 ) as $v ) {
+        if ( $z[ $v ] === '' ) { $deli[ $v ] = ''; continue; }
+        $kosi = array();
+        foreach ( explode( ' ', $z[ $v ] ) as $d ) {
+            $crka = substr( $d, 0, 1 ); $n = (int) substr( $d, 1 );
+            if ( $n > 0 && isset( $barve[ $v ][ $crka ] ) ) { $kosi[] = $n . 'x ' . $barve[ $v ][ $crka ]; }
+        }
+        $deli[ $v ] = implode( ' + ', $kosi );
+    }
+    if ( $deli[0] !== '' && $deli[1] !== '' ) { return $vrsti[0] . ': ' . $deli[0] . ' · ' . $vrsti[1] . ': ' . $deli[1]; }
+    return $deli[0] !== '' ? $deli[0] : $deli[1];
 }
 
 /**
@@ -405,7 +455,7 @@ function noriks_bf_kartica( $p ) {
         }
     }
     if ( empty( $k['ponudbe'] ) ) { $k['ponudbe'][] = array( 'id' => $k['offer'], 'kos' => $k['kos'], 'paket' => $k['paket'], 'red' => $red, 'akc' => $akc ); }
-    // Paketi majic brez imena ponudbe: v vrstici pod naslovom pise vsebina paketa (barve).
+    // Izdelki brez imena ponudbe (paketi majic, bokseric, kompleti): v vrstici pod naslovom pise vsebina paketa (barve).
     $brez_imena = true;
     foreach ( $k['ponudbe'] as $po ) { if ( $po['paket'] !== '' ) { $brez_imena = false; } }
     if ( $brez_imena ) {
