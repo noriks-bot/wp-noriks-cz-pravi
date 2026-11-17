@@ -73,7 +73,7 @@ $trak[] = $l['trak_30'];
 $js = array( 'dodajam' => $l['dodajam'], 'dodano' => $l['dodano'], 'dodaj' => $l['dodaj'], 'izberi' => $l['izberi'], 'napaka' => $l['napaka'], 'zapri' => $l['zapri'], 'nalagam' => $l['nalagam'], 'poglej' => $l['poglej'], 'placilo' => $l['placilo'] );
 $st = 0;
 ?>
-<!-- nbf 2026-11-17-t -->
+<!-- nbf 2026-11-17-u -->
 <div class="nbf nbf--<?php echo esc_attr( $stran['slog'] ); ?> nbf--<?php echo esc_attr( $tip ); ?> nbf--<?php echo $cm ? 'cm' : 'bf'; ?>" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" data-stran="<?php echo esc_attr( $stran['slug'] ); ?>" data-t="<?php echo esc_attr( wp_json_encode( $js ) ); ?>">
 
   <section class="nbf-hero">
@@ -131,7 +131,7 @@ $st = 0;
               <div class="nbf-r nbf-r--z"><span><?php echo esc_html( $l['placilo'] ); ?></span><strong class="nbf-c-akc"><?php echo wp_kses_post( wc_price( $x['akc'] ) ); ?></strong></div>
             </div>
             <?php if ( $vec ) : ?>
-              <div class="nbf-kol" role="group">
+              <div class="nbf-kol<?php echo count( $x['ponudbe'] ) > 5 ? ' nbf-kol--vec' : ''; ?>" role="group">
                 <?php foreach ( $x['ponudbe'] as $pi => $po ) : ?><button type="button" class="nbf-kol__g<?php echo $pi === 0 ? ' je-izbran' : ''; ?>" data-i="<?php echo (int) $pi; ?>"><?php echo (int) $po['kos']; ?>×</button><?php endforeach; ?>
               </div>
             <?php endif; ?>
@@ -247,6 +247,7 @@ $st = 0;
 .nbf-kol{display:flex;gap:6px;margin-top:12px}
 .nbf .nbf-kol button.nbf-kol__g{flex:1 1 0;min-width:0;height:38px;border:1.5px solid #d3d5d9;background:#fff;color:#16181d;border-radius:5px;font-weight:800;font-size:14px;line-height:1;cursor:pointer;padding:0;margin:0;font-family:inherit;box-shadow:none;transition:background .12s,border-color .12s,color .12s;text-transform:none;letter-spacing:0}
 .nbf .nbf-kol button.nbf-kol__g:hover{border-color:#16181d}
+.nbf-kol.nbf-kol--vec{flex-wrap:wrap}.nbf .nbf-kol.nbf-kol--vec button.nbf-kol__g{flex:0 0 calc((100% - 24px)/5);max-width:calc((100% - 24px)/5)}
 .nbf .nbf-kol button.nbf-kol__g.je-izbran{background:#16181d;border-color:#16181d;color:#fff}
 .nbf-k.je-dd{z-index:30}
 .nbf-dd{position:relative;flex:1 1 0;min-width:0}
@@ -329,6 +330,7 @@ $st = 0;
 @media (max-width:1180px){.nbf--enojne .nbf-grid>.nbf-k{flex-basis:calc((100% - 44px)/3);max-width:calc((100% - 44px)/3)}}
 @media (max-width:860px){.nbf--enojne .nbf-grid>.nbf-k{flex-basis:calc((100% - 14px)/2);max-width:calc((100% - 14px)/2)}}
 @media (max-width:359px){.nbf--enojne .nbf-grid>.nbf-k{flex-basis:100%;max-width:100%}}
+@media (max-width:560px){.nbf .nbf-kol.nbf-kol--vec button.nbf-kol__g{flex-basis:calc((100% - 20px)/5);max-width:calc((100% - 20px)/5);font-size:12.5px;letter-spacing:-.2px}}
 @media (max-width:860px){.nbf--top9 .nbf-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:560px){.nbf-k__rang{font-size:11.5px;padding:5px 9px;margin-bottom:8px}.nbf--modra .nbf-okvir{padding:0 4px 12px}}
 @media (max-width:359px){.nbf--top9 .nbf-grid{grid-template-columns:1fr}}</style>

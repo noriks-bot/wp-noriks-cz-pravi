@@ -269,11 +269,32 @@ function noriks_bf_pred_izracunom( $cart ) {
  */
 add_filter( 'woocommerce_get_item_data', 'noriks_bf_prikaz_paketa', 20, 2 );
 function noriks_bf_prikaz_paketa( $item_data, $cart_item ) {
-    if ( empty( $cart_item['_noriks_bf'] ) || ! empty( $cart_item['_orto_lines'] ) || empty( $cart_item['_orto_bundle_pairs'] ) ) { return $item_data; }
+    if ( empty( $cart_item['_noriks_bf'] ) ) { return $item_data; }
+    if ( isset( $cart_item['_noriks_bf_cena'] ) ) {
+        // navaden izdelek (enojna majica, paket majic/bokseric): stevilo kosov in barve, npr. "4x siva"; sledi kolicini v kosarici
+        $vrstica = noriks_bf_vrstica_kosov( isset( $cart_item['product_id'] ) ? (int) $cart_item['product_id'] : 0, isset( $cart_item['quantity'] ) ? (int) $cart_item['quantity'] : 1 );
+        if ( $vrstica !== '' ) { $item_data[] = array( 'name' => false, 'display' => esc_html( $vrstica ) ); }
+        return $item_data;
+    }
+    if ( ! empty( $cart_item['_orto_lines'] ) || empty( $cart_item['_orto_bundle_pairs'] ) ) { return $item_data; }
     $naslov = isset( $cart_item['_orto_offer_title'] ) ? trim( (string) $cart_item['_orto_offer_title'] ) : '';
     if ( $naslov === '' ) { $naslov = (int) $cart_item['_orto_bundle_pairs'] . 'x'; }
     $item_data[] = array( 'name' => false, 'display' => esc_html( $naslov ) );
     return $item_data;
+}
+
+/**
+ * Vrstica "koliko kosov in kaj" za navaden izdelek s teh strani: enojna majica "4x siva",
+ * paket pri vec kosih "2x (1x crna + 1x siva + 1x bijela)". Prazno, ce sestave izdelka ne poznamo.
+ */
+function noriks_bf_vrstica_kosov( $product_id, $kol ) {
+    $p = $product_id ? wc_get_product( $product_id ) : null;
+    if ( ! $p ) { return ''; }
+    $vs  = noriks_bf_sestava( $p->get_sku() );
+    $kol = max( 1, (int) $kol );
+    if ( $vs === '' ) { return ''; }
+    if ( preg_match( '/^1x [^+·]+$/u', $vs ) === 1 ) { return preg_replace( '/^1x /', $kol . 'x ', $vs ); }
+    return $kol > 1 ? $kol . 'x (' . $vs . ')' : $vs;
 }
 
 /** Meta v narocilu: na postavki (_noriks_bf) in na narocilu (_noriks_bf + stran, s katere je kupec kupil). */
@@ -483,7 +504,7 @@ function noriks_bf_kartica( $p, $fiksna = 0 ) {
     // Kolicine: pri izbirniku paketov prave ponudbe izdelka, sicer 1x-4x iste cene.
     if ( ! $orto && in_array( $k['nacin'], array( 'var', 'simple' ), true ) ) {
         // $enota = znizana cena za 1 kos (brez davcnega prikaza), da kartica racuna enako kot kosarica
-        for ( $n = 1; $n <= 4; $n++ ) {
+        for ( $n = 1; $n <= ( $fiksna > 0 ? 10 : 4 ); $n++ ) {      // enojne majice: 1-10 kosov (dve vrstici po 5)
             $kos = (float) wc_get_price_to_display( $p, array( 'price' => ( $fiksna > 0 ? $enota : noriks_bf_cena_kolicina( $enota, $n ) ) ) );
             $k['ponudbe'][] = array( 'id' => '', 'kos' => $n, 'paket' => '', 'red' => $red * $n, 'akc' => $kos * $n );
         }
