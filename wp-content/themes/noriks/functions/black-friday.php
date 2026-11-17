@@ -118,7 +118,6 @@ function noriks_bf_prag() {
  * Dejansko znizanje — SAMO za nakupe s teh pristajalnih strani.
  * Strani izdelkov, katalog in cene izdelkov ostanejo nespremenjeni.
  * ------------------------------------------------------------------ */
-if ( ! defined( 'NORIKS_BF_MAJICA_SKU' ) ) { define( 'NORIKS_BF_MAJICA_SKU', 'NORIKS-SHIRTS-ORTO-BF' ); }   // Black Friday kopija ORTO majice
 // Dodatni kolicinski popust (v %) na ceno za kos pri 2, 3 ter 4 in vec kosih — velja za izdelke brez izbirnika paketov.
 if ( ! defined( 'NORIKS_BF_KOL_2' ) ) { define( 'NORIKS_BF_KOL_2', 5 ); }
 if ( ! defined( 'NORIKS_BF_KOL_3' ) ) { define( 'NORIKS_BF_KOL_3', 10 ); }
@@ -457,8 +456,8 @@ function noriks_bf_je_tipa( $id, $tipi ) {
 /**
  * Majice, bokserice in kompleti: objavljeni, z akcijsko ceno. Vkljuceni so tudi
  * izdelki, skriti iz kataloga — glavne strani ponudb (SHIRTS-ORTO, BOXERS-ORTO, SHBOX)
- * Izloceni so izdelki za upsell (SKU z UPSELL/MYSTERY), starter paketi in vse ORTO strani ponudb;
- * namesto njih je med majicami Black Friday kopija ORTO majice (NORIKS_BF_MAJICA_SKU);
+ * Izloceni so izdelki za upsell (SKU z UPSELL/MYSTERY), starter paketi in vse ORTO strani ponudb
+ * (tudi Black Friday kopija ORTO majice, ki je samostojen izdelek zunaj teh strani);
  * po prodaji padajoce. $tipi = kateri tipi (privzeto vsi), $s_slabproof = dodaj se
  * SlabProof nogavice (tudi ce so skrite).
  */
@@ -476,7 +475,7 @@ function noriks_bf_oblacila( $tipi = null, $s_slabproof = false ) {
         $videni[ $pid ] = true;
         if ( preg_match( '/UPSELL|MYSTERY|STARTER/i', (string) $p->get_sku() ) || ! noriks_bf_je_tipa( $pid, $tipi ) ) { continue; }
         if ( has_term( array( 'starter-paketi', 'orto-starter' ), 'product_cat', $pid ) ) { continue; }   // starter paketov na teh straneh ni
-        // ORTO strani ponudb (izbirnik paketov) niso na teh straneh; edina izjema je Black Friday kopija majice, ki se doda spodaj.
+        // ORTO strani ponudb (izbirnik paketov) niso na teh straneh — tudi Black Friday kopija majice (NORIKS-SHIRTS-ORTO-BF) ne; ta je samostojen izdelek.
         if ( function_exists( 'gck_is_orto_bundle_enabled' ) && gck_is_orto_bundle_enabled( $pid ) ) { continue; }
         $k = noriks_bf_kartica( $p );
         if ( ! $k ) { continue; }
@@ -485,14 +484,6 @@ function noriks_bf_oblacila( $tipi = null, $s_slabproof = false ) {
         $dodani[ $pid ] = true;
     }
     $ven = noriks_bf_uredi( $ven );
-    // Black Friday kopija najbolje prodajane ORTO majice (SKU NORIKS-SHIRTS-ORTO-BF) — vedno prva med majicami.
-    if ( in_array( 'majice', $tipi, true ) && function_exists( 'wc_get_product_id_by_sku' ) ) {
-        $bid = wc_get_product_id_by_sku( NORIKS_BF_MAJICA_SKU );
-        if ( $bid && ! isset( $dodani[ $bid ] ) ) {
-            $k = noriks_bf_kartica( wc_get_product( $bid ) );
-            if ( $k ) { $k['vrsta'] = -2; array_unshift( $ven, $k ); $dodani[ $bid ] = true; }
-        }
-    }
     if ( $s_slabproof && function_exists( 'wc_get_product_id_by_sku' ) ) {
         $sid = wc_get_product_id_by_sku( 'NORIKS-SLABPROOF' );
         if ( $sid && ! isset( $dodani[ $sid ] ) ) {
@@ -506,13 +497,37 @@ function noriks_bf_oblacila( $tipi = null, $s_slabproof = false ) {
 /** Najbolj prodajani izdelki nasploh (novi + majice in bokserice skupaj). */
 function noriks_bf_top( $n = 9 ) {
     $vsi = array(); $videni = array();
-    foreach ( array_merge( noriks_bf_novi(), noriks_bf_oblacila() ) as $k ) {
+    $oblacila = noriks_bf_oblacila();
+    foreach ( array_merge( noriks_bf_novi(), $oblacila ) as $k ) {
         $id = $k['p']->get_id();
         if ( isset( $videni[ $id ] ) ) { continue; }
         $videni[ $id ] = true;
         $vsi[] = $k;
     }
-    return noriks_bf_uredi( $vsi, $n );
+    $top = noriks_bf_uredi( $vsi, $n );
+    // Za najboljsimi $n se trije stalni: najbolje prodajani 6-paket majic, najbolje prodajani
+    // paket bokseric in Tradesman nogavice (brez podvajanja, ce je kateri ze med najboljsimi).
+    $v_top = array();
+    foreach ( $top as $k ) { $v_top[ $k['p']->get_id() ] = true; }
+    $dodatni = array(); $majice = null; $bokserice = null;
+    foreach ( $oblacila as $k ) {      // ze urejeno po prodaji padajoce
+        $sku = (string) $k['p']->get_sku(); $id = $k['p']->get_id();
+        if ( ! $majice && preg_match( '/-6-PACK/i', $sku ) && noriks_bf_je_tipa( $id, array( 'majice' ) ) ) { $majice = $k; }
+        if ( ! $bokserice && preg_match( '/PACK|BUNDLE/i', $sku ) && noriks_bf_je_tipa( $id, array( 'bokserice' ) ) && ! noriks_bf_je_tipa( $id, array( 'majice' ) ) ) { $bokserice = $k; }
+    }
+    if ( $majice ) { $dodatni[] = $majice; }
+    if ( $bokserice ) { $dodatni[] = $bokserice; }
+    if ( function_exists( 'wc_get_product_id_by_sku' ) ) {
+        $tid = wc_get_product_id_by_sku( 'NORIKS-SLABPROOF-2' );   // NORIKS Tradesman
+        $tk  = $tid ? noriks_bf_kartica( wc_get_product( $tid ) ) : null;
+        if ( $tk ) { $tk['vrsta'] = 0; $dodatni[] = $tk; }
+    }
+    foreach ( $dodatni as $k ) {
+        $id = $k['p']->get_id();
+        if ( isset( $v_top[ $id ] ) ) { continue; }
+        $v_top[ $id ] = true; $k['dodatni'] = true; $top[] = $k;
+    }
+    return $top;
 }
 
 /** Podatki za modal "Poglej vec": slike galerije in opis izdelka. */
@@ -528,12 +543,6 @@ function noriks_bf_info() {
         $v = wp_get_attachment_image_url( $iid, 'woocommerce_single' );
         $m = wp_get_attachment_image_url( $iid, 'woocommerce_thumbnail' );
         if ( $v ) { $slike[] = array( $v, $m ? $m : $v ); }
-    }
-    $slug   = isset( $_REQUEST['stran'] ) ? sanitize_title( wp_unslash( $_REQUEST['stran'] ) ) : '';
-    $strani = noriks_bf_strani();
-    if ( $slike && isset( $strani[ $slug ]['dogodek'] ) && $strani[ $slug ]['dogodek'] === 'cm' && $p->get_sku() === NORIKS_BF_MAJICA_SKU ) {
-        $cm_slika = get_template_directory_uri() . '/img/bf/majica-cyber-monday.jpg';
-        $slike[0] = array( $cm_slika, $cm_slika );
     }
     wp_send_json_success( array(
         'ime'    => $p->get_name(),

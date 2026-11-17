@@ -68,7 +68,7 @@ $trak[] = $l['trak_30'];
 $js = array( 'dodajam' => $l['dodajam'], 'dodano' => $l['dodano'], 'dodaj' => $l['dodaj'], 'izberi' => $l['izberi'], 'napaka' => $l['napaka'], 'zapri' => $l['zapri'], 'nalagam' => $l['nalagam'], 'poglej' => $l['poglej'], 'placilo' => $l['placilo'] );
 $st = 0;
 ?>
-<!-- nbf 2026-11-16-m -->
+<!-- nbf 2026-11-17-n -->
 <div class="nbf nbf--<?php echo esc_attr( $stran['slog'] ); ?> nbf--<?php echo esc_attr( $tip ); ?> nbf--<?php echo $cm ? 'cm' : 'bf'; ?>" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" data-stran="<?php echo esc_attr( $stran['slug'] ); ?>" data-t="<?php echo esc_attr( wp_json_encode( $js ) ); ?>">
 
   <section class="nbf-hero">
@@ -96,11 +96,7 @@ $st = 0;
           $pc    = sprintf( $l['pct'], $x['pop'] );
           $ime   = $p->get_name();
           $slika = $p->get_image( 'woocommerce_single', array( 'loading' => $st < 4 ? 'eager' : 'lazy', 'alt' => $ime ) );
-          if ( $cm && $p->get_sku() === NORIKS_BF_MAJICA_SKU ) {
-              // Black Friday kopija majice na Cyber Monday strani: isto, z napisom Cyber Monday
-              $ime   = str_replace( 'Black Friday', 'Cyber Monday', $ime );
-              $slika = '<img src="' . esc_url( get_template_directory_uri() . '/img/bf/majica-cyber-monday.jpg' ) . '" alt="' . esc_attr( $ime ) . '" loading="' . ( $st < 4 ? 'eager' : 'lazy' ) . '" width="1272" height="1896">';
-          }
+
           $st++;
           $hitro = in_array( $x['nacin'], array( 'orto', 'var', 'simple' ), true );
           $cfg   = array( 'id' => $p->get_id(), 'nacin' => $x['nacin'], 'attrs' => array(), 'pon' => array() );
@@ -121,7 +117,7 @@ $st = 0;
         <article class="nbf-k" data-id="<?php echo (int) $p->get_id(); ?>"<?php if ( $hitro ) : ?> data-bf="<?php echo esc_attr( wp_json_encode( $cfg ) ); ?>"<?php endif; ?>>
           <a class="nbf-k__s" href="<?php echo esc_url( $url ); ?>"><?php echo $slika; // phpcs:ignore -- WooCommerce vrne varen <img> ?></a>
           <div class="nbf-k__t">
-            <?php if ( $rang ) : ?><div class="nbf-k__rang">#<?php echo (int) $st; ?></div><?php endif; ?>
+            <?php if ( $rang && empty( $x['dodatni'] ) ) : ?><div class="nbf-k__rang">#<?php echo (int) $st; ?></div><?php endif; ?>
             <h3 class="nbf-k__n"><a href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( $ime ); ?></a></h3>
             <div class="nbf-k__pk<?php echo ! empty( $x['vsebina'] ) ? ' nbf-k__pk--vs' : ''; ?>"><?php echo esc_html( $x['paket'] !== '' ? $x['paket'] : ( $ima_pk ? "\xC2\xA0" : '' ) ); ?></div>
             <div class="nbf-k__c">
@@ -325,7 +321,7 @@ $st = 0;
 @media (max-width:860px){.nbf--top9 .nbf-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:560px){.nbf-k__rang{font-size:11.5px;padding:5px 9px;margin-bottom:8px}.nbf--modra .nbf-okvir{padding:0 4px 12px}}
 @media (max-width:359px){.nbf--top9 .nbf-grid{grid-template-columns:1fr}}</style>
-<script>
+<script data-no-optimize="1" data-no-defer="1" data-cfasync="false">
 (function () {
   var koren = document.querySelector('.nbf'); if (!koren) { return; }
   var ajax = koren.getAttribute('data-ajax'), T = {};
