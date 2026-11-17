@@ -271,8 +271,22 @@ add_filter( 'woocommerce_get_item_data', 'noriks_bf_prikaz_paketa', 20, 2 );
 function noriks_bf_prikaz_paketa( $item_data, $cart_item ) {
     if ( empty( $cart_item['_noriks_bf'] ) ) { return $item_data; }
     if ( isset( $cart_item['_noriks_bf_cena'] ) ) {
-        // navaden izdelek (enojna majica, paket majic/bokseric): stevilo kosov in barve, npr. "4x siva"; sledi kolicini v kosarici
-        $vrstica = noriks_bf_vrstica_kosov( isset( $cart_item['product_id'] ) ? (int) $cart_item['product_id'] : 0, isset( $cart_item['quantity'] ) ? (int) $cart_item['quantity'] : 1 );
+        $pid = isset( $cart_item['product_id'] ) ? (int) $cart_item['product_id'] : 0;
+        $kol = isset( $cart_item['quantity'] ) ? max( 1, (int) $cart_item['quantity'] ) : 1;
+        // enojna majica: isti zapis kot pri orto izdelkih — ena ostevilcena vrstica na kos ("1: Siva - L")
+        $kosi = noriks_bf_vrstice_enojne( $pid, $kol, $cart_item );
+        if ( $kosi ) {
+            // velikost je ze v vsaki vrstici, zato loceno "Veličina: L" iz razlicice umaknemo
+            $vel = $kosi['velikost']; $ostalo = array();
+            foreach ( $item_data as $d ) {
+                if ( $vel !== '' && isset( $d['key'], $d['value'] ) && trim( wp_strip_all_tags( (string) $d['value'] ) ) === $vel ) { continue; }
+                $ostalo[] = $d;
+            }
+            $ostalo[] = array( 'name' => false, 'display' => implode( '<br>', array_map( 'esc_html', $kosi['vrstice'] ) ) );
+            return $ostalo;
+        }
+        // paket majic/bokseric: stevilo paketov in barve, npr. "2x (1x crna + 1x siva + 1x bijela)"
+        $vrstica = noriks_bf_vrstica_kosov( $pid, $kol );
         if ( $vrstica !== '' ) { $item_data[] = array( 'name' => false, 'display' => esc_html( $vrstica ) ); }
         return $item_data;
     }
@@ -281,6 +295,42 @@ function noriks_bf_prikaz_paketa( $item_data, $cart_item ) {
     if ( $naslov === '' ) { $naslov = (int) $cart_item['_orto_bundle_pairs'] . 'x'; }
     $item_data[] = array( 'name' => false, 'display' => esc_html( $naslov ) );
     return $item_data;
+}
+
+/**
+ * Enojna majica v kosarici po kosih, v zapisu orto izdelkov: "1: Siva - L", "2: Siva - L" ...
+ * Vrne array( 'vrstice' => [...], 'velikost' => 'L' ) ali null, ce izdelek ni en sam kos ene barve.
+ * Pri vec kot 12 kosih ena vrstica ("15x Siva - L"), da kosarica ostane pregledna.
+ */
+function noriks_bf_vrstice_enojne( $product_id, $kol, $cart_item ) {
+    $p  = $product_id ? wc_get_product( $product_id ) : null;
+    $vs = $p ? noriks_bf_sestava( $p->get_sku() ) : '';
+    if ( $vs === '' || preg_match( '/^1x ([^+·]+)$/u', $vs, $m ) !== 1 ) { return null; }
+    $barva = trim( $m[1] );
+    $barva = mb_strtoupper( mb_substr( $barva, 0, 1 ) ) . mb_substr( $barva, 1 );
+    $vel = '';
+    if ( ! empty( $cart_item['variation'] ) && is_array( $cart_item['variation'] ) ) {
+        foreach ( $cart_item['variation'] as $ime => $vrednost ) {
+            $vrednost = (string) $vrednost;
+            if ( $vrednost === '' ) { continue; }
+            $tax = str_replace( 'attribute_', '', urldecode( (string) $ime ) );
+            if ( taxonomy_exists( $tax ) ) {
+                $term = get_term_by( 'slug', $vrednost, $tax );
+                if ( $term && ! is_wp_error( $term ) ) { $vrednost = $term->name; }
+            }
+            $vel = trim( $vrednost );
+            break;
+        }
+    }
+    $kos = $vel !== '' ? $barva . ' - ' . $vel : $barva;
+    $kol = max( 1, (int) $kol );
+    $vrstice = array();
+    if ( $kol > 12 ) {
+        $vrstice[] = $kol . 'x ' . $kos;
+    } else {
+        for ( $i = 1; $i <= $kol; $i++ ) { $vrstice[] = $i . ': ' . $kos; }
+    }
+    return array( 'vrstice' => $vrstice, 'velikost' => $vel );
 }
 
 /**
