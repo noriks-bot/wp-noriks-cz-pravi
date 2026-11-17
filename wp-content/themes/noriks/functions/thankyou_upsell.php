@@ -239,6 +239,9 @@ function noriks_remove_upsell() {
     $order_id = absint( $_POST['order_id'] ?? 0 );
     $item_id  = absint( $_POST['item_id'] ?? 0 );
     if ( ! $order_id || ! $item_id ) wp_send_json_error( 'Missing data' );
+    if ( ! wp_verify_nonce( $_POST['nonce'] ?? '', 'noriks_upsell_' . $order_id ) ) {
+        wp_send_json_error( 'Neplatný požadavek' );
+    }
 
     $order = wc_get_order( $order_id );
     if ( ! $order ) wp_send_json_error( 'Order not found' );
@@ -247,7 +250,7 @@ function noriks_remove_upsell() {
     if ( ! $item ) wp_send_json_error( 'Item not found' );
 
     // Only allow removing upsell items
-    if ( $item->get_meta( '_noriks_upsell' ) !== 'thank you upsell' ) {
+    if ( ! $item->get_meta( '_noriks_upsell' ) ) {
         wp_send_json_error( 'Pouze upsell produkty mohou být odstraněny' );
     }
 
@@ -377,8 +380,146 @@ function noriks_handle_add_upsell() {
 
     wp_send_json_success( array(
         'message'      => 'Přidáno',
+        'item_id'      => $item_id,
         'product_name' => $product->get_name(),
         'upsell_price' => $upsell_price,
         'total'        => $order->get_formatted_order_total(),
     ));
+}
+
+
+// ─── 7. AJAX: korak 2 — dodaj ponudbo iz mreze ──────────────────────────
+//
+// Brskalnik poslje samo kljuc ponudbe ter izbrano barvo in velikost.
+// Izdelek, kolicina in cena se preberejo iz ponudbe na strezniku
+// (noriks_ty2_find_card), zato jih ni mogoce podtakniti.
+//
+// Metapodatki postavke so v ISTI obliki kot pri nakupu orto ponudbe na produktni
+// strani (gck_order_item_meta), da jih skladisce in Metakocka bereta enako:
+//   1, 2, … N          "Barva - Velikost" za vsak kos (brez atributov: ime izdelka)
+//   _bundle_pairs      N
+//   _offer_id          "N__ty2"
+// in dodatno kot ostali upselli (product_page_upsell):
+//   _noriks_upsell         post_purchase_step2
+//   _noriks_upsell_pieces  N
+//   _noriks_upsell_sku     SKU izdelka
+//   _noriks_upsell_label   naslov kartice
+//   _noriks_upsell_offer   kljuc ponudbe (za podvojitve in porocila)
+
+add_action( 'wp_ajax_noriks_add_upsell_step2', 'noriks_handle_add_upsell_step2' );
+add_action( 'wp_ajax_nopriv_noriks_add_upsell_step2', 'noriks_handle_add_upsell_step2' );
+
+function noriks_handle_add_upsell_step2() {
+    $order_id  = absint( $_POST['order_id'] ?? 0 );
+    $offer_key = sanitize_key( wp_unslash( $_POST['offer_key'] ?? '' ) );
+    $nonce     = $_POST['nonce'] ?? '';
+
+    if ( ! wp_verify_nonce( $nonce, 'noriks_upsell_' . $order_id ) ) {
+        wp_send_json_error( 'Neplatný požadavek' );
+    }
+    $order = wc_get_order( $order_id );
+    if ( ! $order ) { wp_send_json_error( 'Objednávka nenalezena' ); }
+    if ( $order->get_payment_method() !== 'cod' ) {
+        wp_send_json_error( 'Upsell je dostupný pouze při dobírce' );
+    }
+    if ( $order->get_status() !== 'primary-hold' ) {
+        wp_send_json_error( 'Čas na přidání vypršel' );
+    }
+    $created = $order->get_date_created();
+    if ( $created && ( time() - $created->getTimestamp() ) > 330 ) {
+        wp_send_json_error( 'Čas na přidání vypršel' );
+    }
+    if ( ! function_exists( 'noriks_ty2_find_card' ) ) {
+        wp_send_json_error( 'Nabídka není dostupná' );
+    }
+
+    $card = noriks_ty2_find_card( $offer_key, $order );
+    if ( ! $card ) { wp_send_json_error( 'Nabídka již není dostupná' ); }
+
+    // ista ponuda samo jednom
+    foreach ( $order->get_items() as $it ) {
+        if ( $it->get_meta( '_noriks_upsell_offer' ) === $offer_key ) {
+            wp_send_json_error( 'Tuto nabídku jste již přidali' );
+        }
+    }
+
+    $product = wc_get_product( $card['product_id'] );
+    if ( ! $product ) { wp_send_json_error( 'Produkt nenalezen' ); }
+
+    // boje odreduje ponuda (fiksna ili mijesane), kupac bira samo velicinu
+    $size = sanitize_text_field( wp_unslash( $_POST['upsell_size'] ?? '' ) );
+    if ( $card['sizes'] && ! in_array( $size, $card['sizes'], true ) ) { wp_send_json_error( 'Vyberte velikost' ); }
+    if ( ! $card['sizes'] ) { $size = ''; }
+    // izbira, ki je ponudba ne doloci namesto kupca (stran pri KneeFix)
+    $choice = sanitize_text_field( wp_unslash( $_POST['upsell_choice'] ?? '' ) );
+    if ( ! empty( $card['choice']['options'] ) ) {
+        if ( ! in_array( $choice, $card['choice']['options'], true ) ) { wp_send_json_error( 'Vyberte: ' . $card['choice']['name'] ); }
+    } else {
+        $choice = '';
+    }
+    $piece_colors = array_values( (array) $card['piece_colors'] );
+    $color = $piece_colors[0] ?? '';
+
+    // varijabilan proizvod: u narudžbu ide prava varijacija, ne prva po redu
+    $line_product = $product;
+    if ( $product->is_type( 'variable' ) ) {
+        $vid = noriks_ty2_match_variation( $product, $color, $size );
+        if ( ! $vid ) { wp_send_json_error( 'Tato kombinace není skladem' ); }
+        $line_product = wc_get_product( $vid );
+    }
+
+    $pieces = (int) $card['qty'];
+    $total  = (float) $card['new'];
+    $piece_labels = array();
+    for ( $i = 0; $i < $pieces; $i++ ) {
+        // isti zapis kot na produktni strani: "Crna - L", pri KneeFix "Desno - M (50–75 kg)"
+        $pl = implode( ' - ', array_filter( array( $choice !== '' ? $choice : ( $piece_colors[ $i ] ?? $color ), $size ) ) );
+        $piece_labels[] = $pl !== '' ? $pl : $product->get_name();
+    }
+    $piece_label = implode( ', ', array_unique( $piece_labels ) );
+
+    // kolicina stavke je 1, cijena je paketna — isto kao orto ponuda s produktne stranice
+    $item_id = $order->add_product( $line_product, 1, array(
+        'subtotal' => $total,
+        'total'    => $total,
+    ) );
+    if ( ! $item_id ) { wp_send_json_error( 'Chyba při přidávání' ); }
+
+    $item = $order->get_item( $item_id );
+    for ( $i = 1; $i <= $pieces; $i++ ) {
+        $item->add_meta_data( (string) $i, $piece_labels[ $i - 1 ], true );
+    }
+    $item->add_meta_data( '_bundle_pairs', $pieces, true );
+    $item->add_meta_data( '_offer_id', $pieces . '__ty2', true );
+    // kljuc "s1…" = korak 1 (+1 istega izdelka), npr. post_purchase_step1_kompsfit
+    $upsell_tip = ( strpos( $offer_key, 's1' ) === 0 )
+        ? 'post_purchase_step1_' . strtolower( preg_replace( '/[^A-Za-z0-9]/', '', str_replace( 'NORIKS-', '', strtoupper( (string) $card['sku'] ) ) ) )
+        : 'post_purchase_step2';
+    $item->add_meta_data( '_noriks_upsell', $upsell_tip, true );
+    $item->add_meta_data( '_noriks_upsell_pieces', $pieces, true );
+    $item->add_meta_data( '_noriks_upsell_sku', $card['sku'], true );
+    $item->add_meta_data( '_noriks_upsell_label', $card['label'], true );
+    $item->add_meta_data( '_noriks_upsell_offer', $offer_key, true );
+    $item->save();
+
+    $order->calculate_totals();
+    $order->save();
+
+    $order->add_order_note( sprintf(
+        'Thank you upsell (%s): %s [%s] — %d kom, %s, ukupno %s',
+        strpos( $offer_key, 's1' ) === 0 ? 'korak 1' : 'korak 2',
+        $product->get_name(),
+        $card['label'],
+        $pieces,
+        $piece_label,
+        wc_price( $total )
+    ) );
+
+    wp_send_json_success( array(
+        'message'      => 'Přidáno',
+        'item_id'      => $item_id,
+        'product_name' => $product->get_name(),
+        'price'        => $total,
+        'total'        => $order->get_formatted_order_total(),
+    ) );
 }
