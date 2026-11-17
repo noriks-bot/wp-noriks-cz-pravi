@@ -459,7 +459,7 @@ function noriks_bf_je_tipa( $id, $tipi ) {
  * Izloceni so izdelki za upsell (SKU z UPSELL/MYSTERY), starter paketi in vse ORTO strani ponudb
  * (tudi Black Friday kopija ORTO majice, ki je samostojen izdelek zunaj teh strani);
  * po prodaji padajoce. $tipi = kateri tipi (privzeto vsi), $s_slabproof = dodaj se
- * SlabProof nogavice (tudi ce so skrite).
+ * SlabProof in Tradesman nogavice (tudi ce so skrite).
  */
 function noriks_bf_oblacila( $tipi = null, $s_slabproof = false ) {
     if ( ! $tipi ) { $tipi = array( 'majice', 'bokserice', 'starter', 'majice-bokserice-paketi', 'majica-darila' ); }
@@ -485,10 +485,13 @@ function noriks_bf_oblacila( $tipi = null, $s_slabproof = false ) {
     }
     $ven = noriks_bf_uredi( $ven );
     if ( $s_slabproof && function_exists( 'wc_get_product_id_by_sku' ) ) {
-        $sid = wc_get_product_id_by_sku( 'NORIKS-SLABPROOF' );
-        if ( $sid && ! isset( $dodani[ $sid ] ) ) {
-            $k = noriks_bf_kartica( wc_get_product( $sid ) );
-            if ( $k ) { $k['vrsta'] = -1; $ven[] = $k; }
+        // na koncu se delovne nogavice: SlabProof in Tradesman (z njima je zadnja vrsta polna)
+        foreach ( array( 'NORIKS-SLABPROOF', 'NORIKS-SLABPROOF-2' ) as $ssku ) {
+            $sid = wc_get_product_id_by_sku( $ssku );
+            if ( $sid && ! isset( $dodani[ $sid ] ) ) {
+                $k = noriks_bf_kartica( wc_get_product( $sid ) );
+                if ( $k ) { $k['vrsta'] = -1; $ven[] = $k; $dodani[ $sid ] = true; }
+            }
         }
     }
     return $ven;
