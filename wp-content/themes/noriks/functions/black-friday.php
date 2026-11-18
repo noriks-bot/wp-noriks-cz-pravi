@@ -55,7 +55,7 @@ function noriks_bf_l() {
         'h1'         => 'NABÍDKY AŽ O {P} LEVNĚJI!',
         'sub'        => 'Naše nejprodávanější produkty za akční ceny – na jednom místě.',
         'gumb_hero'  => 'ZOBRAZIT NABÍDKY',
-        'trak_p'     => 'NABÍDKY AŽ O {P} LEVNĚJI',
+        'trak_p'     => 'Nabídka končí za',
         'trak_d'     => 'DOPRAVA ZDARMA NAD {D}',
         'trak_30'    => '30 DNÍ NA VRÁCENÍ PENĚZ',
         'sek_k'      => 'BLACK FRIDAY · NEJPRODÁVANĚJŠÍ',
@@ -752,6 +752,50 @@ function noriks_bf_info() {
     $p  = $id ? wc_get_product( $id ) : null;
     if ( ! $p || $p->get_status() !== 'publish' ) { wp_send_json_error(); }
     wp_send_json_success( array( 'ime' => $p->get_name(), 'url' => get_permalink( $id ) ) + noriks_bf_info_podatki( $p ) );
+}
+
+/**
+ * Stran izdelka Black Friday majice (kopija NORIKS-SHIRTS-ORTO-BF): crn trak z odstevalnikom na vrhu strani.
+ * Cas vzame iz odstevalnika, ki ga na strani ze izpise vticnik (oba kazeta isto); ce ga ni, odsteva do polnoci.
+ */
+add_action( 'woocommerce_before_main_content', 'noriks_bf_trak_izdelka', 4 );
+function noriks_bf_trak_izdelka() {
+    if ( ! function_exists( 'is_product' ) || ! is_product() ) { return; }
+    $p = wc_get_product( get_queried_object_id() );
+    if ( ! $p || $p->get_sku() !== 'NORIKS-SHIRTS-ORTO-BF' ) { return; }
+    $l = noriks_bf_l();
+    ?>
+    <div class="nbfp" role="region" aria-label="Black Friday">
+      <span class="nbfp__pika" aria-hidden="true"></span>
+      <span class="nbfp__bf">BLACK <b>FRIDAY</b></span>
+      <span class="nbfp__t"><?php echo esc_html( $l['trak_p'] ); ?></span>
+      <span class="nbfp__cas" id="nbfp-cas" aria-live="off">--:--</span>
+    </div>
+    <style>
+      .nbfp{background:#000;color:#fff;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 12px;padding:11px 14px;border-top:2px solid #ff8a00;border-bottom:2px solid #ff8a00;font-family:inherit;line-height:1.2;text-align:center}
+      .nbfp__pika{width:10px;height:10px;border-radius:50%;background:#ff3b30;box-shadow:0 0 0 0 rgba(255,59,48,.7);animation:nbfpPika 1.4s ease-out infinite;flex:none}
+      .nbfp__bf{font-weight:900;font-size:18px;letter-spacing:3px}
+      .nbfp__bf b{color:#ff8a00;font-weight:900}
+      .nbfp__t{font-weight:600;font-size:15px;color:#f1f1f1}
+      .nbfp__cas{background:#ffd400;color:#000;font-weight:900;font-size:19px;padding:4px 11px;border-radius:5px;font-variant-numeric:tabular-nums;letter-spacing:1px;min-width:74px}
+      @keyframes nbfpPika{0%{box-shadow:0 0 0 0 rgba(255,59,48,.7)}100%{box-shadow:0 0 0 12px rgba(255,59,48,0)}}
+      @media (prefers-reduced-motion:reduce){.nbfp__pika{animation:none}}
+      @media (max-width:560px){.nbfp{padding:9px 10px;gap:5px 9px}.nbfp__bf{font-size:15px;letter-spacing:2px}.nbfp__t{font-size:13px}.nbfp__cas{font-size:16px;padding:3px 9px;min-width:62px}}
+    </style>
+    <script data-no-optimize="1" data-no-defer="1" data-cfasync="false">
+    (function(){
+      var el = document.getElementById('nbfp-cas'); if (!el) { return; }
+      function p(n){ return (n < 10 ? '0' : '') + n; }
+      function tik(){
+        var v = document.querySelector('.gck-countdown__timer'), t = v ? (v.textContent || '').trim() : '';
+        if (/^\d{1,2}:\d{2}/.test(t)) { el.textContent = t; return; }
+        var d = new Date(), k = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1), s = Math.max(0, Math.floor((k - d) / 1000));
+        el.textContent = p(Math.floor(s / 3600)) + ':' + p(Math.floor(s % 3600 / 60)) + ':' + p(s % 60);
+      }
+      tik(); setInterval(tik, 500);
+    })();
+    </script>
+    <?php
 }
 
 /** Dodajanje v kosarico s kartice (isti podatki kot obrazec na strani izdelka). */
