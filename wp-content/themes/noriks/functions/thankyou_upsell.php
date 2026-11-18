@@ -459,6 +459,13 @@ function noriks_handle_add_upsell_step2() {
     }
     $piece_colors = array_values( (array) $card['piece_colors'] );
     $color = $piece_colors[0] ?? '';
+    // korak 1 z izbiro barve (npr. Slim): barvo izbere kupec, veljavna je samo barva izdelka
+    if ( ! empty( $card['pick_color'] ) ) {
+        $izbrana = sanitize_text_field( wp_unslash( $_POST['upsell_color'] ?? '' ) );
+        if ( ! in_array( $izbrana, (array) $card['colors'], true ) ) { wp_send_json_error( 'Vyberte barvu' ); }
+        $piece_colors = array_fill( 0, max( 1, (int) $card['qty'] ), $izbrana );
+        $color = $izbrana;
+    }
 
     // varijabilan proizvod: u narudžbu ide prava varijacija, ne prva po redu
     $line_product = $product;

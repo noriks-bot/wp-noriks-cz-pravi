@@ -23,7 +23,7 @@ if ( ! function_exists( 'noriks_ty_cena' ) ) {
 // (npr. KOMPSFIT), mu ponudimo se en kos ISTEGA izdelka. Bokseric v koraku 1 ni vec (17. 11. 2026).
 $s1_cards = function_exists( 'noriks_ty2_step1_cards' ) ? noriks_ty2_step1_cards( $order ) : array();
 $upsell_is_majice = empty( $s1_cards );
-$s1_keys = array(); $s1_regular = array(); $s1_color = ''; $s1_sizes = array();
+$s1_keys = array(); $s1_regular = array(); $s1_color = ''; $s1_sizes = array(); $s1_colors = array();
 
 if ( $s1_cards ) {
     // +1 istega izdelka: cene, slike in dodajanje gredo prek kartic (isti mehanizem kot korak 2)
@@ -40,6 +40,8 @@ if ( $s1_cards ) {
     }
     $s1_color = (string) ( $s1_first['piece_colors'][0] ?? '' );
     $s1_sizes = (array) $s1_first['sizes'];
+    // izdelki z izbiro barve (npr. Slim): kupec izbere barvo in velikost
+    $s1_colors = ! empty( $s1_first['pick_color'] ) ? (array) $s1_first['colors'] : array();
     $upsell_title_text = 'Přidejte ještě jeden kus – speciální cena';
 } else {
     $upsell_product_id = 250; // Crna majica (variable)
@@ -358,6 +360,7 @@ body.woocommerce-order-received .woocommerce {
 .tyu1 > .tyu1-bar { border-radius:10px 10px 0 0; }
 .tyu1-card__select .tyu2-dd__btn { min-height:42px; }
 .tyu1-card__select .tyu2-dd__list { max-height:262px; }
+.tyu1-card__select .tyu2-dd + select + .tyu2-dd { margin-top:8px; }
 .tyu1-bar { background:#fdecec; color:#111; text-align:center; padding:11px 14px; font-size:15px; line-height:1.3; }
 .tyu1-bar__hurry { color:#e02020; font-weight:800; }
 .tyu1-bar__txt { font-weight:600; }
@@ -745,11 +748,18 @@ body.woocommerce-order-received .woocommerce {
                                 <span class="tyu1-card__badge">-<?php echo (int) $upsell_badge_pct; ?>%</span>
                             </div>
                             <div class="tyu1-card__select">
+                                <?php if ( $s1_cards && $s1_colors ) : /* barva po izbiri kupca */ ?>
+                                <select class="variation-select" id="ty-color-select" data-dd="size">
+                                    <?php foreach ( $s1_colors as $s1_cl ) : ?>
+                                    <option value="<?php echo esc_attr( $s1_cl ); ?>" <?php selected( $s1_cl, $s1_color ); ?>><?php echo esc_html( $s1_cl ); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <?php endif; ?>
                                 <select class="variation-select" id="ty-variation-select" data-dd="size">
                                     <?php if ( $s1_cards ) : ?>
                                         <?php $s1_pick = function_exists( 'noriks_ty2_pick_size' ) ? noriks_ty2_pick_size( $s1_sizes, $customer_size ) : ''; ?>
                                         <?php foreach ( $s1_sizes as $s1_sz ) : ?>
-                                        <option value="<?php echo esc_attr( $s1_sz ); ?>" <?php selected( $s1_sz, $s1_pick ); ?>><?php echo esc_html( trim( $s1_color . ', ' . $s1_sz, ', ' ) ); ?></option>
+                                        <option value="<?php echo esc_attr( $s1_sz ); ?>" <?php selected( $s1_sz, $s1_pick ); ?>><?php echo esc_html( $s1_colors ? $s1_sz : trim( $s1_color . ', ' . $s1_sz, ', ' ) ); ?></option>
                                         <?php endforeach; ?>
                                     <?php elseif ( $upsell_variations ) : ?>
                                         <?php foreach ( $upsell_variations as $v ) : ?>
@@ -1126,6 +1136,8 @@ body.woocommerce-order-received .woocommerce {
             fd.append('order_id', orderId);
             fd.append('offer_key', s1Keys[qty] || '');
             fd.append('upsell_size', select ? select.value : '');
+            var colSel = document.getElementById('ty-color-select');
+            if (colSel) { fd.append('upsell_color', colSel.value); }
             fd.append('nonce', nonce);
             <?php else : ?>
             fd.append('action', 'noriks_add_upsell');
@@ -1152,6 +1164,7 @@ body.woocommerce-order-received .woocommerce {
                     addBtn.textContent = "✓ Přidáno";
                     addBtn.classList.add('added');
                     if (select) select.disabled = true;
+                    var colSelD = document.getElementById('ty-color-select'); if (colSelD) colSelD.disabled = true;
                     refreshOrderItems();
                     setTimeout(function() { if (overlay) { showGrid(); } else { closeAll(); } }, 700);
                 })
@@ -1254,6 +1267,8 @@ body.woocommerce-order-received .woocommerce {
     // korak 1: izbira velikosti z istim izbirnikom kot v koraku 2
     var s1Sel = document.getElementById('ty-variation-select');
     if (s1Sel && s1Sel.options.length) { tyDropdown(s1Sel); }
+    var s1Col = document.getElementById('ty-color-select');
+    if (s1Col && s1Col.options.length) { tyDropdown(s1Col); }
 
     if (overlay) {
         overlay.querySelectorAll('select[data-dd]').forEach(tyDropdown);
