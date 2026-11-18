@@ -353,7 +353,11 @@ body.woocommerce-order-received .woocommerce {
 /* ══════════════════════════════════════════════════════════════
    KORAK 1 — ponudba enega izdelka s 50 % popusta
    ══════════════════════════════════════════════════════════════ */
-.tyu1 { background:#fff; border-radius:10px; overflow:hidden; box-shadow:0 2px 14px rgba(0,0,0,.08); }
+.tyu1 { background:#fff; border-radius:10px; box-shadow:0 2px 14px rgba(0,0,0,.08); }
+/* brez overflow:hidden, da seznam izbirnika velikosti ni odrezan; zaobljen vrh dobi traka sama */
+.tyu1 > .tyu1-bar { border-radius:10px 10px 0 0; }
+.tyu1-card__select .tyu2-dd__btn { min-height:42px; }
+.tyu1-card__select .tyu2-dd__list { max-height:262px; }
 .tyu1-bar { background:#fdecec; color:#111; text-align:center; padding:11px 14px; font-size:15px; line-height:1.3; }
 .tyu1-bar__hurry { color:#e02020; font-weight:800; }
 .tyu1-bar__txt { font-weight:600; }
@@ -741,7 +745,7 @@ body.woocommerce-order-received .woocommerce {
                                 <span class="tyu1-card__badge">-<?php echo (int) $upsell_badge_pct; ?>%</span>
                             </div>
                             <div class="tyu1-card__select">
-                                <select class="variation-select" id="ty-variation-select">
+                                <select class="variation-select" id="ty-variation-select" data-dd="size">
                                     <?php if ( $s1_cards ) : ?>
                                         <?php $s1_pick = function_exists( 'noriks_ty2_pick_size' ) ? noriks_ty2_pick_size( $s1_sizes, $customer_size ) : ''; ?>
                                         <?php foreach ( $s1_sizes as $s1_sz ) : ?>
@@ -1158,9 +1162,8 @@ body.woocommerce-order-received .woocommerce {
         });
     }
 
-    // ─── Korak 2: izbirniki v enakem slogu kot na produktni strani ───
-    if (overlay) {
-        overlay.querySelectorAll('select[data-dd]').forEach(function(sel){
+    // ─── Izbirniki v enakem slogu kot na produktni strani (korak 1 in korak 2) ───
+    function tyDropdown(sel) {
             var isColor = sel.getAttribute('data-dd') === 'color';
 
             var wrap = document.createElement('span');
@@ -1239,7 +1242,21 @@ body.woocommerce-order-received .woocommerce {
             new MutationObserver(function(){
                 wrap.classList.toggle('is-locked', sel.disabled);
             }).observe(sel, { attributes: true, attributeFilter: ['disabled'] });
-        });
+
+            // ce se vrednost nastavi iz kode (ne s klikom), uskladi napis in oznaceno vrstico
+            sel._tySync = function(){
+                var o = sel.options[sel.selectedIndex]; if (!o) return;
+                lab.textContent = o.textContent;
+                list.querySelectorAll('[role=option]').forEach(function(it){ it.classList.toggle('is-on', it.dataset.val === o.value); });
+            };
+    }
+
+    // korak 1: izbira velikosti z istim izbirnikom kot v koraku 2
+    var s1Sel = document.getElementById('ty-variation-select');
+    if (s1Sel && s1Sel.options.length) { tyDropdown(s1Sel); }
+
+    if (overlay) {
+        overlay.querySelectorAll('select[data-dd]').forEach(tyDropdown);
 
         var addedItems = {};   // key -> { itemId, price, old, label }
 
@@ -1405,7 +1422,7 @@ body.woocommerce-order-received .woocommerce {
                 mainBtn.disabled = true;
                 var mainDd = document.getElementById('ty-variation-select');
                 var savedVal = addedMap[mainPid] || addedMap[String(mainPid)];
-                if (mainDd && savedVal) { mainDd.value = savedVal; mainDd.disabled = true; }
+                if (mainDd && savedVal) { mainDd.value = savedVal; if (mainDd._tySync) { mainDd._tySync(); } mainDd.disabled = true; }
             }
         }
     }, 100);
