@@ -15,7 +15,7 @@ $kn = get_template_directory_uri() . '/img/kidsnest/';
 <!-- ============ 1) Trust marquee (modrá lišta, roluje) ============ -->
 <div class="kn-marquee" aria-hidden="true">
   <div class="kn-marquee-track">
-    <?php $kn_ticker = array('DOPORUČENÍ PEDIATRŮ','OEKO-TEX® PAMĚŤOVÁ PĚNA','3ZÓNOVÁ STRUKTURA','90 NOCÍ NA VYZKOUŠENÍ','HYPOALERGENNÍ','PRODYŠNÁ PLETENINA');
+    <?php $kn_ticker = array('DOPORUČENÍ PEDIATRŮ','PAMĚŤOVÁ PĚNA','3ZÓNOVÁ STRUKTURA','90 NOCÍ NA VYZKOUŠENÍ','HYPOALERGENNÍ','PRODYŠNÁ PLETENINA');
     for ( $r = 0; $r < 2; $r++ ) { foreach ( $kn_ticker as $t ) { echo '<span class="kn-tick">'.esc_html($t).'</span><span class="kn-dot">•</span>'; } } ?>
   </div>
 </div>

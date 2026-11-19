@@ -1477,7 +1477,7 @@ $kompmajice_faq = array(
 $leakboxers_faq = array(
   array(
     'questioon' => 'Proč si NORIKS vybralo více než 123 000 mužů?',
-    'answer'    => 'NORIKS jsou nejsavější pratelné boxerky pro mužský únik moči: pojmou až 300 ml, mají certifikaci Oeko-Tex® a neobsahují škodlivé látky, jsou pratelné a opakovaně použitelné (ekologická alternativa jednorázových vložek), navržené pro celodenní pohodlí a sebevědomí. Celých 87 % zákazníků si po prvním nákupu objedná znovu.'
+    'answer'    => 'NORIKS jsou nejsavější pratelné boxerky pro mužský únik moči: pojmou až 300 ml, neobsahují škodlivé látky, jsou pratelné a opakovaně použitelné (ekologická alternativa jednorázových vložek), navržené pro celodenní pohodlí a sebevědomí. Celých 87 % zákazníků si po prvním nákupu objedná znovu.'
   ),
   array(
     'questioon' => 'Kolik absorbují?',
@@ -1536,7 +1536,7 @@ $kneefix_faq = array(
 $kidsnest_faq = array(
   array( 'questioon' => 'Jak rychle uvidím, že dýchání ústy přestává?', 'answer' => 'Většina rodičů si všimne tiššího dýchání a méně probouzení s otevřenými ústy během prvních 5–7 nocí. Do 14. noci se u většiny dětí zklidní chrápání a rty zůstávají zavřené. Plný rozdíl — viditelně lepší polohu a klidnější spánek — rodiče nejčastěji popisují kolem 21. až 30. dne. Používejte ho každou noc.' ),
   array( 'questioon' => 'Pro jaký věk je KidsNest určen?', 'answer' => 'KidsNest je k dispozici ve třech velikostech: 1–3, 3–9 a 9–14 let. Nejdůležitější okno je mezi 3. a 9. rokem, kdy se patro a čelist vyvíjejí nejintenzivněji — ale každý věk má svou velikost a svůj přínos.' ),
-  array( 'questioon' => 'Je bezpečný? Co je uvnitř?', 'answer' => 'KidsNest je vyroben z hypoalergenní paměťové pěny s certifikací OEKO-TEX® — bez formaldehydu, těžkých kovů a BPA. Je odolný vůči roztočům a prodyšný a potah se dá sundat a vyprat v pračce.' ),
+  array( 'questioon' => 'Je bezpečný? Co je uvnitř?', 'answer' => 'KidsNest je vyroben z hypoalergenní paměťové pěny — bez formaldehydu, těžkých kovů a BPA. Je odolný vůči roztočům a prodyšný a potah se dá sundat a vyprat v pračce.' ),
   array( 'questioon' => 'Bude ho mé dítě opravdu používat?', 'answer' => 'Ano. Ergonomický tvar působí jako opora, ne jako něco zvláštního — většina dětí si zvykne za 1–2 noci. Rodiče často hlásí, že děti po prvním týdnu nechtějí spát bez něj. 3zónová struktura přirozeně přijímá hlavu — neexistuje „správný způsob“, žádné boje před spaním.' ),
   array( 'questioon' => 'Funguje, i když mé dítě už dýchá ústy?', 'answer' => 'Ano — právě pro takové děti je navržen. 3zónová struktura pomáhá zabránit zaklánění hlavy, kvůli kterému se ústa ve spánku otevírají. U většiny dětí se během 7–14 nocí rty přirozeně zavřou a dýchání nosem se vrátí.' ),
   array( 'questioon' => 'Co když mému dítěti nepomůže?', 'answer' => 'Nechte dítě spát na KidsNestu 30 nocí. Pokud nevidíte rozdíl — méně dýchání ústy, tišší noci, klidnější spánek — ozvěte se nám a vrátíme vám peníze. Bez otázek a bez drobného písma.' ),
@@ -1547,7 +1547,7 @@ $jastuk_faq = array(
   array( 'questioon' => 'Jak NORIKS ErgoSit zmírňuje bolest při sezení?', 'answer' => 'ErgoSit má výřez pro kostrč, který odstraňuje přímý tlak na kostrční kost a sedací nerv, zatímco anatomický tvar z paměťové pěny s vysokou hustotou rovnoměrně rozkládá váhu na kyčle a stehna. Tím se odlehčí citlivá místa a podpoří zdravé, vzpřímené držení těla.' ),
   array( 'questioon' => 'Kde všude mohu polštář používat?', 'answer' => 'Kdekoli sedíte — v autě, na kancelářské židli, na jídelní židli, na invalidním vozíku nebo doma. Stabilní protiskluzová základna ho drží na místě, takže pohodlí jde s vámi celý den.' ),
   array( 'questioon' => 'Neproleží se pěna časem?', 'answer' => 'Ne. ErgoSit používá paměťovou pěnu s vysokou hustotou, která si udrží tvar a pevnost i po dlouhodobém každodenním používání — na rozdíl od levných polštářů, které se rychle proleží.' ),
-  array( 'questioon' => 'Dá se potah prát?', 'answer' => 'Ano. Potah se sundává a lze ho prát v pračce, takže polštář zůstává svěží a čistý. Tkanina je prodyšná, hypoalergenní a certifikovaná OEKO-TEX®.' ),
+  array( 'questioon' => 'Dá se potah prát?', 'answer' => 'Ano. Potah se sundává a lze ho prát v pračce, takže polštář zůstává svěží a čistý. Tkanina je prodyšná a hypoalergenní.' ),
   array( 'questioon' => 'Sedne na moji židli nebo sedadlo?', 'answer' => 'ErgoSit má univerzální tvar a sedne na většinu autosedadel, kancelářských a kuchyňských židlí i invalidních vozíků. Žádné velikosti — jeden model padne všem.' ),
   array( 'questioon' => 'Za jak dlouho pocítím rozdíl?', 'answer' => 'Většina uživatelů pocítí menší tlak na kostrč a pohodlnější sezení už od prvního dne. Lepší držení těla a méně bolesti zad se dále buduje pravidelným používáním.' ),
   array( 'questioon' => 'Existuje záruka vrácení peněz?', 'answer' => 'Ano, každý NORIKS ErgoSit přichází se zárukou pohodlí na 30 dní. Pokud nepocítíte méně bolesti a více pohodlí, kontaktujte nás a vyřešíme to.' ),
@@ -1665,7 +1665,7 @@ $cloud_faq = array(
   ),
   array(
     'questioon' => 'Z čeho je polštář vyrobený?',
-    'answer'    => 'Jádro je z paměťové pěny lékařské kvality s perforacemi, které zajišťují proudění vzduchu. Potah je z prodyšné tkaniny, dá se sundat a vyprat. Materiály jsou certifikované podle OEKO-TEX® STANDARD 100 a CertiPUR-EU.',
+    'answer'    => 'Jádro je z paměťové pěny lékařské kvality s perforacemi, které zajišťují proudění vzduchu. Potah je z prodyšné tkaniny, dá se sundat a vyprat. Pěna je certifikovaná podle CertiPUR-EU.',
   ),
   array(
     'questioon' => 'Je příliš tvrdý, nebo příliš měkký?',
