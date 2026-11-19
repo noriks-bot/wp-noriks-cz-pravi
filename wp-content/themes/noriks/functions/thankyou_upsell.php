@@ -131,26 +131,29 @@ function noriks_transition_to_processing( $order_id ) {
 }
 
 
-// ─── FAILSAFE: sweep stuck primary-hold orders ──────────────────────────
+// ─── FAILSAFE: sweep stuck primary-hold orders (2x na dan) ──────────────
 // Glavni mehanizem je en wp_cron dogodek na narocilo (zgoraj). Ta se obcasno
-// izgubi (vsi cron dogodki so v eni opciji; socasni zapisi pod obremenitvijo
-// drug drugega prepisejo) in narocilo bi ostalo v primary-hold za vedno
-// (19. 11. 2026: ~5-10 % COD narocil na HR/HU/SK/CZ/RO/GR).
-// Zato: najvec enkrat na minuto ob kateremkoli PHP zahtevku (frontend, admin,
-// AJAX, REST, cron) poberi narocila, starejsa od 7 min, in jih sprosti z istim
-// postopkom kot cron (processing + odlozeni maili).
+// izgubi in narocilo bi ostalo v primary-hold za vedno (19. 11. 2026:
+// ~5-10 % COD narocil). Zato 2x na dan (twicedaily) poberi narocila, starejsa
+// od 7 min, in jih sprosti z istim postopkom kot cron (processing + maili).
+// Brez dela ob obiskih strani: wp_next_scheduled bere ze nalozeno opcijo
+// 'cron' (brez poizvedbe v bazo); dogodek se samo ponovno doda, ce manjka.
 
-add_action( 'init', 'noriks_primary_hold_sweep', 20 );
-add_action( 'woocommerce_order_list_table_prepare_items_query_args', 'noriks_failsafe_on_admin_orders' );
+add_action( 'init', 'noriks_primary_hold_sweep_schedule', 20 );
+add_action( 'noriks_primary_hold_sweep_event', 'noriks_primary_hold_sweep' );
+
+function noriks_primary_hold_sweep_schedule() {
+    if ( ! wp_next_scheduled( 'noriks_primary_hold_sweep_event' ) ) {
+        wp_schedule_event( time() + 600, 'twicedaily', 'noriks_primary_hold_sweep_event' );
+    }
+}
 
 function noriks_primary_hold_sweep() {
     if ( ! function_exists( 'wc_get_orders' ) ) return;
-    if ( get_transient( 'noriks_ph_sweep_lock' ) ) return;
-    set_transient( 'noriks_ph_sweep_lock', 1, 60 );
 
     $ids = wc_get_orders( array(
         'status'       => 'primary-hold',
-        'limit'        => 20,
+        'limit'        => 50,
         'date_created' => '<' . ( time() - 420 ), // starejsa od 7 min
         'return'       => 'ids',
     ));
@@ -161,11 +164,6 @@ function noriks_primary_hold_sweep() {
         $order->add_order_note( 'Failsafe: primary-hold > 7 min (cron dogodek se ni izvedel) — sproscam.' );
         noriks_transition_to_processing( $order_id );
     }
-}
-
-function noriks_failsafe_on_admin_orders( $args ) {
-    noriks_primary_hold_sweep();
-    return $args;
 }
 
 
