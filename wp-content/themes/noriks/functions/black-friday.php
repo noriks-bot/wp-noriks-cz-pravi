@@ -189,7 +189,7 @@ function noriks_bf_cena_kolicina( $enota, $n ) {
 
 /** Cena za kos na strani enojnih majic (/black-friday-tees/), v valuti trga. */
 function noriks_bf_kos_cena() {
-    return (float) apply_filters( 'noriks_bf_kos_cena', 139 );
+    return (float) apply_filters( 'noriks_bf_kos_cena', 169 );
 }
 
 /** Ali je izdelek enojna majica (vsaka barva svoj izdelek: NORIKS-ONE-BLACK, -WHITE ...). */
