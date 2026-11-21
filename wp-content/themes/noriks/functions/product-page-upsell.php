@@ -35,10 +35,10 @@ function noriks_pp_upsell_register_fields() {
 		'fields' => array(
 			array(
 				'key'          => 'field_noriks_pp_upsell',
-				'label'        => 'Zobrazit upsell pod tlačítkem (4x Zelené boxerky)',
+				'label'        => 'Zobrazit upsell pod tlačítkem (2x černé zimní ponožky SlabProof)',
 				'name'         => 'noriks_pp_upsell',
 				'type'         => 'true_false',
-				'instructions' => 'Přidá rámeček "Kupte společně a ušetřete" hned pod tlačítko Přidat do košíku. Zákazník vybere velikost a 4 kusy se přidají za upsell cenu. Platí jen pro tento produkt.',
+				'instructions' => 'Přidá rámeček "Kupte společně a ušetřete" hned pod tlačítko Přidat do košíku. Zákazník vybere velikost a 2 páry se přidají za upsell cenu. Platí jen pro tento produkt.',
 				'ui'           => 1,
 			),
 			array(
@@ -70,18 +70,32 @@ function noriks_pp_upsell_register_fields() {
 /* ============================================================
  * 2) Konfiguracija upsell ponude
  * ============================================================ */
+/** ID izdelka po SKU (enak na vseh namestitvah); $fallback, ce SKU ne najde nicesar. */
+function noriks_pp_upsell_id_by_sku( $sku, $fallback = 0 ) {
+	static $cache = array();
+	if ( ! isset( $cache[ $sku ] ) ) {
+		$id            = function_exists( 'wc_get_product_id_by_sku' ) ? (int) wc_get_product_id_by_sku( $sku ) : 0;
+		$cache[ $sku ] = $id ? $id : (int) $fallback;
+	}
+	return $cache[ $sku ];
+}
+
 function noriks_pp_upsell_config() {
 	return apply_filters( 'noriks_pp_upsell_config', array(
-		'product_id' => 4749,                    // Crne Bokserice (varijabilni proizvod)
-		'qty'        => 4,                       // uvijek 4 komada, iste veličine
-		'total'      => 479,                   // ista cijena kao thank you upsell (4 komada)
-		'title'      => '4x Černé boxerky',
-		'desc'       => 'Prodyšné a měkké — přidejte je k objednávce se slevou %s%%.', // %s = izracunati popust
+		// 20.11.2026: bokserice umaknjene -> 2 para SlabProof carapa (jednostavan proizvod,
+		// velicina iz atributa proizvoda). Bokserice su bile: 4749, 4x, 479, NORIKS-BOX-BLACK-4-PACK-UPSELL.
+		// Po SKU, ne po ID (rezerva = ID na tem trgu: 25145).
+		'product_id' => noriks_pp_upsell_id_by_sku( 'NORIKS-SLABPROOF', 25145 ), // SlabProof carape (jednostavan proizvod)
+		'qty'        => 2,                       // uvijek 2 para, iste velicine
+		'total'      => 249,                     // cijena za oba para
+		'title'      => '2x Černé zimní ponožky',
+		'desc'       => 'Teplé a pohodlné — přidejte je k objednávce se slevou %s%%.', // %s = izracunati popust
 		'size_attr'  => 'Velikost',
+		'aria'       => 'Velikost ponožek',
 		// Interna oznaka paketa (SKU konvencija kao kod bundle proizvoda + UPSELL na kraju).
-		'sku'        => 'NORIKS-BOX-BLACK-4-PACK-UPSELL',
-		// Kompozitna slika 4 komada na svijetlo sivoj podlozi (kvadratna).
-		'image'      => get_template_directory_uri() . '/img/upsell/upsell-4x-crne.png',
+		'sku'        => 'NORIKS-SLABPROOF-2-PACK-UPSELL',
+		'image'      => get_template_directory_uri() . '/img/upsell/upsell-2x-slabproof-carape.webp', // 2 para (slika iz galerije izdelka)
+		'badge'      => true, // okrugla znacka s popustom na slici
 	) );
 }
 
@@ -104,7 +118,18 @@ function noriks_pp_upsell_sizes() {
 	$product = wc_get_product( $cfg['product_id'] );
 	$out     = array();
 
-	if ( ! $product || ! $product->is_type( 'variable' ) ) {
+	if ( ! $product ) {
+		return $out;
+	}
+	// Jednostavan proizvod (npr. carape): velicine iz atributa, bez varijacija (id 0).
+	if ( ! $product->is_type( 'variable' ) ) {
+		if ( ! $product->is_in_stock() || ! $product->is_purchasable() ) {
+			return $out;
+		}
+		// get_attribute() vrednosti locuje z " | " (ne z vejico).
+		foreach ( array_filter( array_map( 'trim', preg_split( '/[|,]/', (string) $product->get_attribute( $cfg['size_attr'] ) ) ) ) as $size ) {
+			$out[ $size ] = 0;
+		}
 		return $out;
 	}
 	foreach ( $product->get_children() as $vid ) {
@@ -145,8 +170,8 @@ function noriks_pp_upsell_render() {
 	}
 
 	// Redovna cijena = zbroj redovnih cijena pojedinačnih komada.
-	$unit_regular = 0.0;
-	foreach ( $sizes as $vid ) {
+	$unit_regular = $product->is_type( 'variable' ) ? 0.0 : (float) $product->get_regular_price();
+	foreach ( ( $unit_regular > 0 ? array() : $sizes ) as $vid ) {
 		$var = wc_get_product( $vid );
 		if ( $var ) {
 			$unit_regular = (float) $var->get_regular_price();
@@ -171,6 +196,9 @@ function noriks_pp_upsell_render() {
 			<div class="npu-grid">
 				<span class="npu-img-wrap">
 					<img class="npu-img" src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( $cfg['title'] ); ?>" loading="lazy">
+					<?php if ( ! empty( $cfg['badge'] ) && $discount > 0 ) : ?>
+						<span class="npu-badge">-<?php echo (int) $discount; ?>%</span>
+					<?php endif; ?>
 				</span>
 
 				<div class="npu-info">
@@ -191,7 +219,7 @@ function noriks_pp_upsell_render() {
 						<span class="npu-check-text">Přidat k nákupu</span>
 					</label>
 
-					<select class="npu-size" name="noriks_pp_upsell_size" aria-label="Velikost boxerek">
+					<select class="npu-size npu-size--wide" name="noriks_pp_upsell_size" aria-label="<?php echo esc_attr( $cfg['aria'] ?? 'Veličina' ); ?>">
 						<?php foreach ( array_keys( $sizes ) as $size ) : ?>
 							<option value="<?php echo esc_attr( $size ); ?>"><?php echo esc_html( $size ); ?></option>
 						<?php endforeach; ?>
@@ -301,8 +329,8 @@ function noriks_pp_upsell_maybe_add( $cart_item_key, $product_id, $quantity, $va
 	}
 
 	$variation_id_upsell = (int) $sizes[ $size ];
-	$var                 = wc_get_product( $variation_id_upsell );
-	if ( ! $var ) {
+	$var                 = $variation_id_upsell ? wc_get_product( $variation_id_upsell ) : null;
+	if ( $variation_id_upsell && ! $var ) {
 		return;
 	}
 
@@ -319,20 +347,28 @@ function noriks_pp_upsell_maybe_add( $cart_item_key, $product_id, $quantity, $va
 	// PAKET: u kosaricu ide JEDNA stavka (kolicina 1) s cijenom cijelog paketa.
 	// Tako kupac ne moze mijenjati kolicinu niti razbiti ponudu na komade.
 	$busy = true;
+	// Upsell izdelek je lahko orto paket (npr. SlabProof): gck_add_cart_item_data bi mu sicer pripel
+	// izbiro paketa GLAVNEGA izdelka iz $_POST (napacne vrstice in cena). Med dodajanjem jo umaknemo.
+	$npu_post_keep = array();
+	foreach ( array( 'bundle_option', 'pairs' ) as $npu_k ) {
+		if ( isset( $_POST[ $npu_k ] ) ) { $npu_post_keep[ $npu_k ] = $_POST[ $npu_k ]; unset( $_POST[ $npu_k ] ); }
+	}
 	WC()->cart->add_to_cart(
 		(int) $cfg['product_id'],
 		1,
 		$variation_id_upsell,
-		$var->get_variation_attributes(),
+		$var ? $var->get_variation_attributes() : array(),
 		array(
 			'_noriks_pp_upsell'       => 1,
 			'_noriks_pp_upsell_unit'  => (float) $cfg['total'], // cijena cijelog paketa (kolicina 1)
 			'_noriks_pp_upsell_qty'   => $qty,                  // koliko komada paket sadrzi
 			'_noriks_pp_upsell_title' => (string) $cfg['title'],
 			'_noriks_pp_upsell_lines' => $lines,                // sadrzaj paketa, red po red
-			'_noriks_pp_upsell_key'   => md5( 'npu' . $variation_id_upsell . microtime( true ) ),
+			'_noriks_pp_upsell_sku'   => (string) $cfg['sku'],
+			'_noriks_pp_upsell_key'   => md5( 'npu' . $variation_id_upsell . $size . microtime( true ) ),
 		)
 	);
+	foreach ( $npu_post_keep as $npu_k => $npu_v ) { $_POST[ $npu_k ] = $npu_v; }
 	$busy = false;
 }
 
@@ -376,6 +412,15 @@ function noriks_pp_upsell_cart_item_name( $name, $cart_item, $cart_item_key ) {
 		return esc_html( $cart_item['_noriks_pp_upsell_title'] );
 	}
 	return $name;
+}
+
+/* Cijena stavke u mini kosarici = cijena paketa (inace prikaze redovnu cijenu proizvoda). */
+add_filter( 'woocommerce_cart_item_price', 'noriks_pp_upsell_cart_item_price', 20, 3 );
+function noriks_pp_upsell_cart_item_price( $price, $cart_item, $cart_item_key ) {
+	if ( ! empty( $cart_item['_noriks_pp_upsell'] ) && isset( $cart_item['_noriks_pp_upsell_unit'] ) ) {
+		return wc_price( (float) $cart_item['_noriks_pp_upsell_unit'] );
+	}
+	return $price;
 }
 
 /* Kolicina se ne moze mijenjati — prikazuje se samo broj komada u paketu. */
@@ -812,6 +857,21 @@ function noriks_pp_upsell_styles() {
 		background-size: 6px 6px, 6px 6px; background-repeat: no-repeat;
 	}
 	.npu-wrap .npu-size:focus { outline: 2px solid var(--npu-accent); outline-offset: 1px; }
+	/* carape: velicine 39–42 itd. — siri izbornik */
+	.npu-wrap .npu-size.npu-size--wide { min-width: 130px; max-width: none; }
+	/* okrugla znacka s popustom na slici */
+	.npu-wrap .npu-img-wrap { position: relative; }
+	.npu-wrap .npu-badge {
+		position: absolute; top: 6px; left: 6px; z-index: 2;
+		width: 54px; height: 54px; border-radius: 50%;
+		display: flex; align-items: center; justify-content: center;
+		background: #e3191c; color: #fff !important;
+		font-size: 17px !important; font-weight: 800 !important; line-height: 1 !important; letter-spacing: -.5px;
+		box-shadow: 0 2px 6px rgba(0,0,0,.25);
+	}
+	@media (max-width: 560px) {
+		.npu-wrap .npu-badge { width: 46px; height: 46px; font-size: 15px !important; top: 4px; left: 4px; }
+	}
 
 	@media (max-width: 560px) {
 		/* mobitel: slika poravnata s vrhom naslova, kvacica u tekstualnom stupcu,
