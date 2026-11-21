@@ -758,6 +758,9 @@ body.woocommerce-order-received .woocommerce {
                                 <select class="variation-select" id="ty-variation-select" data-dd="size">
                                     <?php if ( $s1_cards ) : ?>
                                         <?php $s1_pick = function_exists( 'noriks_ty2_pick_size' ) ? noriks_ty2_pick_size( $s1_sizes, $customer_size ) : ''; ?>
+                                        <?php if ( ! empty( $s1_first['pick'] ) ) : /* starost / teza (KidsNest): kupec mora izbrati sam */ ?>
+                                        <option value="" selected>Vyberte</option>
+                                        <?php endif; ?>
                                         <?php foreach ( $s1_sizes as $s1_sz ) : ?>
                                         <option value="<?php echo esc_attr( $s1_sz ); ?>" <?php selected( $s1_sz, $s1_pick ); ?>><?php echo esc_html( $s1_colors ? $s1_sz : trim( $s1_color . ', ' . $s1_sz, ', ' ) ); ?></option>
                                         <?php endforeach; ?>

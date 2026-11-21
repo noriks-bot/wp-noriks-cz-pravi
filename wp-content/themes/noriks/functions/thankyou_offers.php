@@ -322,7 +322,39 @@ function noriks_ty2_step1_products() {
             'img'   => '',
             'izbira_barve' => true,
         ),
+        // KidsNest (21. 11. 2026): +1 po nakupu, kupec mora izbrati velikost (starost).
+        // IZKLOPLJENO, dokler v adminu (Ponude nakon kupnje -> Korak 1) ne vklopis stikala.
+        'NORIKS-KIDSNEST' => array(
+            'imena' => array( 1 => '1x KidsNest dětský polštář', 2 => '2x KidsNest dětské polštáře' ),
+            'img'   => '',
+            'vklop' => 'kidsnest',
+        ),
     );
+}
+
+/* ── Korak 1: nastavitve iz admina (21. 11. 2026) — vse privzeto IZKLOPLJENO ── */
+define( 'NORIKS_TY2_S1_OPTION', 'noriks_ty2_s1_nastavitve' );
+
+function noriks_ty2_s1_nastavitve() {
+    $s = get_option( NORIKS_TY2_S1_OPTION, array() );
+    return wp_parse_args( is_array( $s ) ? $s : array(), array( 'kidsnest' => 0, 'test_sku' => '', 'test_unit' => '', 'test_start' => 0 ) );
+}
+
+/** Testna cena koraka 1 velja 7 dni od vklopa, potem se sama izklopi. */
+function noriks_ty2_s1_test_aktiven( $s = null ) {
+    $s = $s ? $s : noriks_ty2_s1_nastavitve();
+    return $s['test_sku'] !== '' && (float) $s['test_unit'] > 0 && ! empty( $s['test_start'] )
+        && ( time() - (int) $s['test_start'] ) < 7 * DAY_IN_SECONDS;
+}
+
+/** Cena na kos v koraku 1 — lahko drugacna od koraka 2 (ta ostane po noriks_ty2_default_unit_prices()). */
+function noriks_ty2_s1_unit_price( $sku ) {
+    $s = noriks_ty2_s1_nastavitve();
+    if ( noriks_ty2_s1_test_aktiven( $s ) && strtoupper( (string) $s['test_sku'] ) === $sku ) { return (float) $s['test_unit']; }
+    $samo_korak1 = array( 'NORIKS-KIDSNEST' => 399 );
+    if ( isset( $samo_korak1[ $sku ] ) ) { return (float) $samo_korak1[ $sku ]; }
+    $cene = noriks_ty2_default_unit_prices();
+    return isset( $cene[ $sku ] ) ? (float) $cene[ $sku ] : 0;
 }
 
 /**
@@ -332,12 +364,13 @@ function noriks_ty2_step1_products() {
 function noriks_ty2_step1_cards( $order ) {
     if ( ! $order ) { return array(); }
     $seznam = noriks_ty2_step1_products();
-    $cene   = noriks_ty2_default_unit_prices();
+    $nastavitve = noriks_ty2_s1_nastavitve();
     foreach ( $order->get_items() as $it ) {
         if ( ! is_a( $it, 'WC_Order_Item_Product' ) || $it->get_meta( '_noriks_upsell' ) ) { continue; }
         $p = wc_get_product( $it->get_product_id() );
         $sku = $p ? strtoupper( (string) $p->get_sku() ) : '';
         if ( ! isset( $seznam[ $sku ] ) ) { continue; }
+        if ( ! empty( $seznam[ $sku ]['vklop'] ) && empty( $nastavitve[ $seznam[ $sku ]['vklop'] ] ) ) { continue; }
         list( $colors ) = noriks_ty2_attr_options( $p );
         $barva = '';
         $prvi  = (string) $it->get_meta( '1' );               // "Crna - L"
@@ -346,7 +379,7 @@ function noriks_ty2_step1_cards( $order ) {
         }
         if ( $barva === '' && $colors ) { $barva = in_array( 'Černá', $colors, true ) ? 'Černá' : (string) reset( $colors ); }
         $kljuc = 's1' . strtolower( preg_replace( '/[^A-Za-z0-9]/', '', str_replace( 'NORIKS-', '', $sku ) ) );
-        $unit  = isset( $cene[ $sku ] ) ? (float) $cene[ $sku ] : 0;
+        $unit  = noriks_ty2_s1_unit_price( $sku );
         $ven   = array();
         foreach ( $seznam[ $sku ]['imena'] as $q => $ime ) {
             $card = noriks_ty2_card( $kljuc . $q, $p, $q, '', $ime, $unit > 0 ? round( $unit * $q, 2 ) : '', $barva, $seznam[ $sku ]['img'] );
@@ -471,6 +504,30 @@ add_action( 'admin_post_noriks_ty2_save', function () {
     exit;
 } );
 
+add_action( 'admin_post_noriks_ty2_s1_save', function () {
+    if ( ! current_user_can( 'manage_woocommerce' ) ) { wp_die( 'Nemate dopuštenje.' ); }
+    check_admin_referer( 'noriks_ty2_s1_save' );
+    $staro = noriks_ty2_s1_nastavitve();
+    $sku   = strtoupper( trim( sanitize_text_field( wp_unslash( $_POST['s1_test_sku'] ?? '' ) ) ) );
+    $unit  = trim( str_replace( ',', '.', sanitize_text_field( wp_unslash( $_POST['s1_test_unit'] ?? '' ) ) ) );
+    $unit  = ( $unit !== '' && is_numeric( $unit ) && (float) $unit > 0 ) ? (string) round( (float) $unit, 2 ) : '';
+    $test  = ! empty( $_POST['s1_test_on'] ) && $sku !== '' && $unit !== '';
+    // 7 dni tece od prvega vklopa; ob spremembi izdelka ali cene zacne znova
+    $zacetek = 0;
+    if ( $test ) {
+        $isti    = noriks_ty2_s1_test_aktiven( $staro ) && $staro['test_sku'] === $sku && (string) $staro['test_unit'] === $unit;
+        $zacetek = $isti ? (int) $staro['test_start'] : time();
+    }
+    update_option( NORIKS_TY2_S1_OPTION, array(
+        'kidsnest'   => empty( $_POST['s1_kidsnest'] ) ? 0 : 1,
+        'test_sku'   => $test ? $sku : '',
+        'test_unit'  => $test ? $unit : '',
+        'test_start' => $zacetek,
+    ), false );
+    wp_safe_redirect( admin_url( 'admin.php?page=noriks-ty2-offers&shranjeno=1' ) );
+    exit;
+} );
+
 function noriks_ty2_admin_page() {
     if ( ! current_user_can( 'manage_woocommerce' ) ) { return; }
     $rows     = noriks_ty2_all_offers();
@@ -496,6 +553,20 @@ function noriks_ty2_admin_page() {
            (U polje ispod gumba možete upisati i <code>sku:SKU-PROIZVODA</code> = glavna slika tog proizvoda ili ime datoteke iz knjižnice.)<br>
            <strong>Cijena po komadu</strong> množi se s količinom (npr. 4,99 × 3 = 14,97). Prazno = zadana cijena iz koda (vidi se sivo u polju; majice 3x i 6x imaju cijenu paketa kao u koraku 1), za proizvode bez zadane cijene 50&nbsp;% akcijske cijene.
            <?php if ( ! $is_saved ) : ?><br><em>Trenutno vrijede zadane ponude iz koda — nakon prvog spremanja postaju uredive ovdje.</em><?php endif; ?></p>
+
+        <?php $s1 = noriks_ty2_s1_nastavitve(); $s1_test = noriks_ty2_s1_test_aktiven( $s1 ); ?>
+        <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="background:#fff;border:1px solid #c3c4c7;padding:12px 16px;margin:12px 0 20px;max-width:900px">
+            <input type="hidden" name="action" value="noriks_ty2_s1_save">
+            <?php wp_nonce_field( 'noriks_ty2_s1_save' ); ?>
+            <h2 style="margin-top:0">Korak 1 — »+1 isti proizvod« (KOMPSFIT, Slim …)</h2>
+            <p><label><input type="checkbox" name="s1_kidsnest" value="1" <?php checked( ! empty( $s1['kidsnest'] ) ); ?>>
+                <strong>KidsNest +1</strong> — kupac KidsNesta u koraku 1 dobije još jedan KidsNest (cijena po komadu <?php echo esc_html( wc_format_localized_price( noriks_ty2_s1_unit_price( 'NORIKS-KIDSNEST' ) ) ); ?>, kupac mora odabrati veličinu).</label></p>
+            <p><label><input type="checkbox" name="s1_test_on" value="1" <?php checked( $s1_test ); ?>> <strong>Test cijene u koraku 1</strong> (7 dana, zatim se sam isključi):</label>
+                SKU <input type="text" name="s1_test_sku" value="<?php echo esc_attr( $s1['test_sku'] !== '' ? $s1['test_sku'] : 'NORIKS-KOMPSFIT' ); ?>" style="width:170px">
+                cijena po komadu <input type="text" name="s1_test_unit" value="<?php echo esc_attr( $s1['test_unit'] ); ?>" placeholder="<?php echo esc_attr( wc_format_localized_price( noriks_ty2_default_unit_prices()['NORIKS-KOMPSFIT'] ?? '' ) ); ?>" style="width:90px"> <?php echo esc_html( $cur ); ?>
+                <?php if ( $s1_test ) : ?><br><em>Aktivno od <?php echo esc_html( wp_date( 'j. n. Y. H:i', (int) $s1['test_start'] ) ); ?> do <?php echo esc_html( wp_date( 'j. n. Y. H:i', (int) $s1['test_start'] + 7 * DAY_IN_SECONDS ) ); ?>. Korak 2 ostaje po svojoj cijeni.</em><?php endif; ?></p>
+            <?php submit_button( 'Spremi korak 1', 'secondary', 'submit', false ); ?>
+        </form>
 
         <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
             <input type="hidden" name="action" value="noriks_ty2_save">
