@@ -26,9 +26,9 @@ switch ( $tip ) {
         $sub = $l['sub_maj'];
         $razdelki[] = array( 'k' => 'BLACK FRIDAY · ' . $l['w_maj'], 'a' => $l['w_maj'], 'b' => $l['akcija'], 'izdelki' => noriks_bf_oblacila( array( 'majice', 'majica-darila' ) ) );
         break;
-    case 'bokserice':
-        $sub = $l['sub_box'];
-        $razdelki[] = array( 'k' => 'BLACK FRIDAY · ' . $l['w_box'], 'a' => $l['w_box'], 'b' => $l['akcija'], 'izdelki' => noriks_bf_oblacila( array( 'bokserice' ) ) );
+    case 'bokserice':   // 22. 11. 2026: bokseric na BF straneh ni — stran bokseric pokaze majice
+        $sub = $l['sub_maj'];
+        $razdelki[] = array( 'k' => 'BLACK FRIDAY · ' . $l['w_maj'], 'a' => $l['w_maj'], 'b' => $l['akcija'], 'izdelki' => noriks_bf_oblacila( array( 'majice', 'majica-darila' ) ) );
         break;
     case 'novi':
         $razdelki[] = array( 'k' => $l['sek_k'], 'a' => $l['sek_a'], 'b' => $l['sek_b'], 'izdelki' => noriks_bf_novi() );

@@ -481,8 +481,21 @@ function noriks_bf_brez_izbire( $id ) {
  *        ogled = prevec izbir za kartico -> samo povezava na izdelek
  * $fiksna > 0: ena cena za kos (stran enojnih majic) namesto odstotnega znizanja in kolicinskih stopenj.
  */
+/**
+ * 22. 11. 2026 (Dejan): na nobeni Black Friday strani ni bokseric — ne samih bokseric
+ * ne paketov, v katerih so bokserice (majice + bokserice, darila z boksericami, LeakBox).
+ */
+function noriks_bf_je_bokserica( $p ) {
+    if ( ! $p ) { return false; }
+    $id = $p->get_id();
+    if ( noriks_bf_je_tipa( $id, array( 'bokserice', 'majice-bokserice-paketi' ) ) ) { return true; }
+    if ( preg_match( '/BOX|SHGIFTS/i', (string) $p->get_sku() ) ) { return true; }
+    return (bool) preg_match( '/bokser|boxer|boxerk|bokserk|μπόξερ/iu', (string) $p->get_name() );
+}
+
 function noriks_bf_kartica( $p, $fiksna = 0 ) {
     if ( ! $p || $p->get_status() !== 'publish' || ! $p->is_in_stock() ) { return null; }
+    if ( noriks_bf_je_bokserica( $p ) ) { return null; }   // 22. 11. 2026: bokseric na BF straneh ni
     $id = $p->get_id();
     $k  = array( 'p' => $p, 'nacin' => 'ogled', 'attrs' => array(), 'offer' => '', 'kos' => 1, 'paket' => '', 'ponudbe' => array(), 'vsebina' => false );
     $red = 0; $akc = 0; $orto = false; $enota = 0;
@@ -718,7 +731,8 @@ function noriks_bf_top( $n = 9 ) {
     foreach ( $oblacila as $k ) {      // ze urejeno po prodaji padajoce
         $sku = (string) $k['p']->get_sku(); $id = $k['p']->get_id();
         if ( ! $majice && preg_match( '/-6-PACK/i', $sku ) && noriks_bf_je_tipa( $id, array( 'majice' ) ) ) { $majice = $k; }
-        if ( ! $bokserice && preg_match( '/PACK|BUNDLE/i', $sku ) && noriks_bf_je_tipa( $id, array( 'bokserice' ) ) && ! noriks_bf_je_tipa( $id, array( 'majice' ) ) ) { $bokserice = $k; }
+        // namesto paketa bokseric (22. 11. 2026): drugi najbolje prodajani paket majic
+        if ( $majice && ! $bokserice && $k !== $majice && preg_match( '/PACK|BUNDLE/i', $sku ) && noriks_bf_je_tipa( $id, array( 'majice' ) ) ) { $bokserice = $k; }
     }
     if ( $majice ) { $dodatni[] = $majice; }
     if ( $bokserice ) { $dodatni[] = $bokserice; }
