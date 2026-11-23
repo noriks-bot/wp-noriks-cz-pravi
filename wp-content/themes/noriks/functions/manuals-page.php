@@ -94,10 +94,10 @@ function noriks_manuals_list() {
             'sub'   => 'Druhá rukojeť pro vstávání, čtyři nožky, svítilna a alarm. Skládací a výškově nastavitelná.',
         ),
         array(
-            'file'  => 'noriks-polar-cloth.pdf',
+            'file'  => 'noriks-duodry.pdf',
             'sku'   => 'NORIKS-CLOATH',
-            'title' => 'Polar NORIKS Cloth XXL — utěrka na čištění pouze vodou',
-            'sub'   => 'Formát 60 × 40 cm, oboustranné provedení, nasaje až 600 ml vody. Bez sprejů a bez chemie.',
+            'title' => 'NORIKS DuoDry — oboustranný hadřík z mikrovlákna',
+            'sub'   => 'Formát 60 × 40 cm do koupelny a kuchyně. Jedna strana sbírá vodu a nečistoty, druhá leští.',
         ),
         array(
             'file'  => 'noriks-slabproof.pdf',

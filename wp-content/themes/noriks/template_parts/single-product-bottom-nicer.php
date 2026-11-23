@@ -490,7 +490,7 @@ if (  has_term( array( 'tricka', 'orto-majice', 'orto-majica-darila' ), 'product
   if ( function_exists('noriks_is_type') && noriks_is_type('controlpro') ) { $rv_fallback_title = 'NORIKS ControlPro trenažér pánevního dna'; }
   if ( function_exists('noriks_is_type') && noriks_is_type('hyd') ) { $rv_fallback_title = 'NORIKS HYD'; }
   if ( function_exists('noriks_is_type') && noriks_is_type('cloud') ) { $rv_fallback_title = 'NORIKS Cloud'; }
-  if ( function_exists('noriks_is_type') && noriks_is_type('cloath') ) { $rv_fallback_title = 'Polar NORIKS Cloth XXL'; }
+  if ( function_exists('noriks_is_type') && noriks_is_type('cloath') ) { $rv_fallback_title = 'NORIKS DuoDry'; }
   if ( function_exists('noriks_is_type') && noriks_is_type('snug') ) { $rv_fallback_title = 'NORIKS Snug polštář na celé tělo'; }
   if ( function_exists('noriks_is_type') && noriks_is_type('kompwom') ) { $rv_fallback_title = 'NORIKS FIT Woman tvarující tričko'; }
   if ( function_exists('noriks_is_type') && noriks_is_type('pal') ) { $rv_fallback_title = 'NORIKS Pal vycházková hůl'; }
@@ -1645,7 +1645,7 @@ $cloath_faq = array(
   ),
   array(
     'questioon' => 'Je vhodný jako dárek?',
-    'answer'    => 'Ano — balení 3+3 a 8+4 patří mezi nejčastější dárky k nastěhování a na svátky. Hadřík přichází pěkně složený a připravený k darování.',
+    'answer'    => 'Ano — balení 4 a 6 hadříků jsou častým dárkem k nastěhování a na svátky. Hadříky přicházejí pěkně složené a připravené k darování.',
   ),
 );
 

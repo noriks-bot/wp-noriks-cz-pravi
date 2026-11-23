@@ -1,5 +1,5 @@
 <?php
-// Bazen mnenj za Polar NORIKS Cloth XXL (orto-cloath).
+// Bazen mnenj za NORIKS DuoDry (orto-cloath).
 $auto_reviews_en = array(
     array("name" => "Jana N.", "text" => "Sprchový kout utírám každý druhý den a konečně žádné skvrny od vody. Bez jediného spreje, jen voda a hadřík."),
     array("name" => "Petr K.", "text" => "Koupil jsem balení šesti kusů. Jeden je stále v koupelně, jeden v kuchyni, jeden v autě. Na sklo nejlepší."),
@@ -15,6 +15,6 @@ $auto_reviews_en = array(
     array("name" => "David Č.", "text" => "Nezanechává skvrny ani na černých bateriích, a to byl dosud největší problém."),
     array("name" => "Hana T.", "text" => "Okna myju jen vodou a tímto hadříkem. Poprvé bez prostředku a bez šmouh."),
     array("name" => "Michal Z.", "text" => "Je silný a těžký, je cítit, že to není levná mikrovlákna. Po deseti praních stále stejný."),
-    array("name" => "Lenka F.", "text" => "Koupila jsem balení 3+3 a opravdu se vyplatí. Jeden je vždy v praní, druhý v používání."),
+    array("name" => "Lenka F.", "text" => "Koupila jsem balení 6 hadříků a opravdu se vyplatí. Jeden je vždy v praní, druhý v používání."),
     array("name" => "Pavel Š.", "text" => "Kuchyňskou desku utřu pár tahy a nejsou stopy po vodě. Prostě to funguje."),
 );
