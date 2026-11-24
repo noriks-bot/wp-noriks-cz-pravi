@@ -198,6 +198,7 @@ function noriks_bf_kos_cena() {
 }
 
 const NORIKS_BF_KOMBO_FIT = 'NORIKS-KOMPSFIT';
+const NORIKS_BF_KOMBO_NAJVEC = 10;   // FIT na strani kombo: 1-10 kosov
 
 /** Ali je izdelek enojna majica (vsaka barva svoj izdelek: NORIKS-ONE-BLACK, -WHITE ...). */
 function noriks_bf_je_enojna( $p ) {
@@ -242,6 +243,17 @@ function noriks_bf_cart_item_data( $data, $product_id, $variation_id ) {
             $opt = isset( $_POST['bundle_option'] ) ? sanitize_text_field( wp_unslash( $_POST['bundle_option'] ) ) : '';
             $pon = function_exists( 'gck_get_bundle_offers' ) ? gck_get_bundle_offers( $product_id ) : array();
             $kos = isset( $pon[ $opt ]['qty'] ) ? max( 1, (int) $pon[ $opt ]['qty'] ) : 0;
+            if ( $kos === 1 && isset( $_POST['pairs'][ $opt ] ) && is_array( $_POST['pairs'][ $opt ] ) ) {
+                // 1-10 kosov iste barve in velikosti: stevilo = poslani kosi, cena = cena za kos x kosi
+                $kos = min( NORIKS_BF_KOMBO_NAJVEC, max( 1, count( $_POST['pairs'][ $opt ] ) ) );
+                if ( $kos > 1 && ! empty( $data['_orto_lines'] ) && is_array( $data['_orto_lines'] ) ) {
+                    $prva = (string) reset( $data['_orto_lines'] );
+                    $data['_orto_lines']       = array_fill( 0, $kos, $prva );
+                    $data['_orto_bundle_pairs'] = $kos;
+                    $data['_orto_offer_title'] = $kos . 'x';
+                    $data['_orto_pairs_json']  = wp_json_encode( array_slice( array_values( (array) $_POST['pairs'][ $opt ] ), 0, $kos ) );
+                }
+            }
             if ( $kos > 0 ) { $nova = round( $fiksna * $kos, wc_get_price_decimals() ); }
         }
         $data['_orto_bundle_unit_price'] = $nova;
@@ -592,6 +604,18 @@ function noriks_bf_kartica( $p, $fiksna = 0, $barva = '' ) {
 
     if ( $red <= 0 || $akc <= 0 || $akc >= $red ) { return null; }
     if ( $orto && $fiksna > 0 ) { $k['paket'] = ''; }   // brez "2+1 GRATIS": cena je po kosih
+    // stran kombo (24. 11. 2026, Dejan): FIT kot majice 1-10 kosov — vse na paketu "1 kos", stevilo kosov doloci kosarica
+    if ( $orto && $fiksna > 0 && $barva !== '' ) {
+        $ena = null;
+        foreach ( gck_get_bundle_offers( $id ) as $po ) { if ( (int) $po['qty'] === 1 ) { $ena = $po; break; } }
+        if ( ! $ena ) { return null; }
+        $k['ponudbe'] = array();
+        for ( $n = 1; $n <= NORIKS_BF_KOMBO_NAJVEC; $n++ ) {
+            $k['ponudbe'][] = array( 'id' => (string) $ena['id'], 'kos' => $n, 'paket' => '', 'red' => (float) $ena['regular'] * $n, 'akc' => round( $fiksna * $n, wc_get_price_decimals() ) );
+        }
+        $k['offer'] = (string) $ena['id']; $k['kos'] = 1;
+        $red = (float) $ena['regular']; $akc = round( $fiksna, wc_get_price_decimals() );
+    }
     // ena sama barva (stran kombo): barvni atribut zozimo na to barvo — izbirnik se skrije, barva se poslje sama
     if ( $barva !== '' ) {
         $najdeno = false;
