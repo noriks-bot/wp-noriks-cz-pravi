@@ -42,7 +42,7 @@ if ( $s1_cards ) {
     $s1_sizes = (array) $s1_first['sizes'];
     // izdelki z izbiro barve (npr. Slim): kupec izbere barvo in velikost
     $s1_colors = ! empty( $s1_first['pick_color'] ) ? (array) $s1_first['colors'] : array();
-    $upsell_title_text = 'Přidejte ještě jeden kus – speciální cena';
+    $upsell_title_text = ! empty( $s1_first['bf_test'] ) ? 'Přidejte FIT kompresní tričko – speciální cena' : 'Přidejte ještě jeden kus – speciální cena';
 } else {
     $upsell_product_id = 250; // Crna majica (variable)
     $upsell_name       = 'Černá trička';

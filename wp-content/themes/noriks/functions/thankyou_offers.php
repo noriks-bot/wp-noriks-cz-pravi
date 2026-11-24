@@ -276,7 +276,7 @@ function noriks_ty2_card( $key, $p, $qty, $cat, $label, $price, $color = 'mix', 
  */
 function noriks_ty2_build_cards( $order = false, $exclude_id = 0 ) {
     $cards = array();
-    foreach ( noriks_ty2_active_offers() as $row ) {
+    foreach ( noriks_ty2_bf_kompsfit_vrstice( noriks_ty2_active_offers(), $order ) as $row ) {
         $pid = wc_get_product_id_by_sku( $row['sku'] );
         if ( ! $pid ) { continue; }
         $card = noriks_ty2_card( 'o' . $row['uid'], wc_get_product( $pid ), $row['qty'], $row['cat'] ?? '', $row['label'] ?? '', noriks_ty2_row_price( $row ), $row['color'] ?? 'mix', $row['img'] ?? '' );
@@ -391,7 +391,74 @@ function noriks_ty2_step1_cards( $order ) {
         }
         if ( $ven ) { return $ven; }
     }
-    return array();
+    return noriks_ty2_bf_kompsfit_cards( $order );
+}
+
+/* ── Preizkus 24. 11. 2026: kupci majic s strani /black-friday-tees/ ──────────────
+ * Korak 1 = KOMPSFIT (1x / 3x po 229 Kč na kos) namesto crne majice; crna majica gre v korak 2
+ * (1x NORIKS-ONE-BLACK po ceni koraka 1 naprej, za njo 3x/6x crne), KOMPSFIT iz koraka 2 izpade. Velja na HR HU PL SK CZ RO GR.
+ * Traja 3 dni od prvega prikaza (opcija noriks_ty_bf_kompsfit_start), potem se sam izklopi
+ * in vse je kot prej. Narocilo, ki je ponudbo videlo, dobi meta _noriks_ty_test = bf_kompsfit_s1.
+ */
+define( 'NORIKS_TY_BFK_TRAJANJE', 3 * DAY_IN_SECONDS );
+
+/** Ali narocilo spada v preizkus: vsebuje enojno majico (NORIKS-ONE-*) s strani BF majic. */
+function noriks_ty2_bf_kompsfit_narocilo( $order ) {
+    if ( ! $order || ! is_a( $order, 'WC_Order' ) ) { return false; }
+    if ( false === strpos( (string) $order->get_meta( '_noriks_bf_stran' ), 'black-friday-tees' ) ) { return false; }
+    foreach ( $order->get_items() as $it ) {
+        if ( ! is_a( $it, 'WC_Order_Item_Product' ) || ! $it->get_meta( '_noriks_bf' ) ) { continue; }
+        $p = wc_get_product( $it->get_variation_id() ?: $it->get_product_id() );
+        $sku = $p ? strtoupper( (string) $p->get_sku() ) : '';
+        if ( $sku === '' && $p && $p->get_parent_id() ) { $par = wc_get_product( $p->get_parent_id() ); $sku = $par ? strtoupper( (string) $par->get_sku() ) : ''; }
+        if ( 0 === strpos( $sku, 'NORIKS-ONE-' ) ) { return true; }
+    }
+    return false;
+}
+
+/** Preizkus tece? Prvi prikaz zapise zacetek; po 3 dneh vrne false. */
+function noriks_ty2_bf_kompsfit_aktiven( $order ) {
+    static $cache = array();
+    $id = $order && is_a( $order, 'WC_Order' ) ? $order->get_id() : 0;
+    if ( isset( $cache[ $id ] ) ) { return $cache[ $id ]; }
+    if ( ! noriks_ty2_bf_kompsfit_narocilo( $order ) ) { return $cache[ $id ] = false; }
+    $start = (int) get_option( 'noriks_ty_bf_kompsfit_start', 0 );
+    if ( ! $start ) { $start = time(); add_option( 'noriks_ty_bf_kompsfit_start', $start, '', 'no' ); }
+    return $cache[ $id ] = ( time() - $start ) < NORIKS_TY_BFK_TRAJANJE;
+}
+
+/** Kartice koraka 1 za preizkus (kolicina => kartica) ali prazno. */
+function noriks_ty2_bf_kompsfit_cards( $order ) {
+    if ( ! noriks_ty2_bf_kompsfit_aktiven( $order ) ) { return array(); }
+    $pid = wc_get_product_id_by_sku( 'NORIKS-KOMPSFIT' );
+    $p   = $pid ? wc_get_product( $pid ) : null;
+    if ( ! $p ) { return array(); }
+    $unit  = noriks_ty2_s1_unit_price( 'NORIKS-KOMPSFIT' );
+    $imena = array( 1 => '1x Černé FIT kompresní tričko', 3 => '3x Černá FIT kompresní trička' );
+    $ven   = array();
+    foreach ( $imena as $q => $ime ) {
+        $card = noriks_ty2_card( 's1kompsfit' . $q, $p, $q, '', $ime, $unit > 0 ? round( $unit * $q, 2 ) : '', 'Černá', '' );
+        if ( $card ) { $card['pick_color'] = false; $card['bf_test'] = true; $ven[ $q ] = $card; }
+    }
+    if ( $ven && ! $order->get_meta( '_noriks_ty_test' ) ) {
+        $order->update_meta_data( '_noriks_ty_test', 'bf_kompsfit_s1' );
+        $order->save_meta_data();
+    }
+    return $ven;
+}
+
+/** Vrstice koraka 2 za preizkus: 1x crna majica + crne majice naprej, brez KOMPSFIT. */
+function noriks_ty2_bf_kompsfit_vrstice( $rows, $order ) {
+    if ( ! noriks_ty2_bf_kompsfit_aktiven( $order ) ) { return $rows; }
+    $crne = array( array( 'uid' => 'bfmajica1', 'active' => 1, 'sku' => 'NORIKS-ONE-BLACK', 'qty' => 1, 'color' => '', 'cat' => '', 'label' => '1x Černé tričko', 'img' => 'https://noriks.com/hr/wp-content/uploads/2025/09/black-1.jpg', 'unit' => '', 'price' => 199 ) );   // ista enojna crna majica in cena kot v koraku 1
+    $ostale = array();
+    foreach ( $rows as $r ) {
+        $sku = strtoupper( (string) ( $r['sku'] ?? '' ) );
+        if ( 'NORIKS-KOMPSFIT' === $sku ) { continue; }
+        if ( 'NORIKS-SHIRTS-ORTO' === $sku && trim( (string) ( $r['color'] ?? '' ) ) === 'Černá' ) { $crne[] = $r; continue; }
+        $ostale[] = $r;
+    }
+    return array_merge( $crne, $ostale );
 }
 
 /** Kartica po kljucu — cena in izdelek za dodajanje pridejo od tu, ne iz brskalnika. */
