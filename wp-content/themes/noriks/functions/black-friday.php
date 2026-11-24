@@ -10,6 +10,8 @@
  *   /black-friday-tees/    enojne majice, vsaka barva svoj izdelek, ena cena za kos + SlabProof (limeta)
  *   /cyber-monday/         Cyber Monday: ostali (novi) izdelki            (cian)
  *   /cyber-monday-basics/  Cyber Monday: majice in bokserice              (vijola)
+ *   /black-friday-combo/   3x KOMPSFIT (po barvah) + 3 enojne majice, ena cena za kos (limeta)
+ *   /cyber-monday-combo/   isto za Cyber Monday                          (cian)
  *
  * Po vzoru fitocanin.com/pages/black-friday-2026: temen hero, tekoci trak, kartice
  * z redno ceno, BF popustom in koncno ceno. Cen NE spreminjamo — stran prikaze
@@ -37,6 +39,9 @@ function noriks_bf_strani() {
         'black-friday-tees'   => array( 'naslov' => 'Black Friday Tees',   'tip' => 'enojne',    'slog' => 'limeta',  'dogodek' => 'bf' ),
         'cyber-monday'        => array( 'naslov' => 'Cyber Monday',        'tip' => 'novi',      'slog' => 'cian',    'dogodek' => 'cm' ),
         'cyber-monday-basics' => array( 'naslov' => 'Cyber Monday Basics', 'tip' => 'oblacila',  'slog' => 'vijola',  'dogodek' => 'cm' ),
+        // 24. 11. 2026: 3x KOMPSFIT (bela, siva, crna) + 3 enojne majice (bela, siva, modra), vse po ceni za kos strani tees
+        'black-friday-combo'  => array( 'naslov' => 'Black Friday Combo',  'tip' => 'kombo',     'slog' => 'limeta',  'dogodek' => 'bf' ),
+        'cyber-monday-combo'  => array( 'naslov' => 'Cyber Monday Combo',  'tip' => 'kombo',     'slog' => 'cian',    'dogodek' => 'cm' ),
     );
 }
 
@@ -192,6 +197,8 @@ function noriks_bf_kos_cena() {
     return (float) apply_filters( 'noriks_bf_kos_cena', 169 );
 }
 
+const NORIKS_BF_KOMBO_FIT = 'NORIKS-KOMPSFIT';
+
 /** Ali je izdelek enojna majica (vsaka barva svoj izdelek: NORIKS-ONE-BLACK, -WHITE ...). */
 function noriks_bf_je_enojna( $p ) {
     return $p && preg_match( '/^NORIKS-ONE-[A-Z]+$/', strtoupper( (string) $p->get_sku() ) ) === 1;
@@ -203,8 +210,12 @@ function noriks_bf_je_enojna( $p ) {
  */
 function noriks_bf_fiksna_cena( $slug, $product_id ) {
     $strani = noriks_bf_strani();
-    if ( ! isset( $strani[ $slug ] ) || $strani[ $slug ]['tip'] !== 'enojne' ) { return 0.0; }
-    return noriks_bf_je_enojna( wc_get_product( $product_id ) ) ? noriks_bf_kos_cena() : 0.0;
+    if ( ! isset( $strani[ $slug ] ) || ! in_array( $strani[ $slug ]['tip'], array( 'enojne', 'kombo' ), true ) ) { return 0.0; }
+    $p = wc_get_product( $product_id );
+    if ( noriks_bf_je_enojna( $p ) ) { return noriks_bf_kos_cena(); }
+    // stran kombo: tudi KOMPSFIT po isti ceni za kos (paket 3 kosov = 3 x cena za kos)
+    if ( $strani[ $slug ]['tip'] === 'kombo' && $p && strtoupper( (string) $p->get_sku() ) === NORIKS_BF_KOMBO_FIT ) { return noriks_bf_kos_cena(); }
+    return 0.0;
 }
 
 /** Slug pristajalne strani, s katere tece trenutno dodajanje v kosarico ('' = ni s teh strani). */
@@ -224,7 +235,15 @@ function noriks_bf_cart_item_data( $data, $product_id, $variation_id ) {
     $data['_noriks_bf_stran'] = $slug;
     if ( isset( $data['_orto_bundle_unit_price'] ) ) {
         // izbirnik paketov: vticnik orto-product ceno vrstice bere iz teh dveh polj
-        $nova = noriks_bf_cena( (float) $data['_orto_bundle_unit_price'] );
+        $nova   = noriks_bf_cena( (float) $data['_orto_bundle_unit_price'] );
+        $fiksna = noriks_bf_fiksna_cena( $slug, $product_id );
+        if ( $fiksna > 0 ) {
+            // stran kombo: cena = cena za kos x stevilo kosov izbranega paketa (iz ponudbe izdelka, ne iz brskalnika)
+            $opt = isset( $_POST['bundle_option'] ) ? sanitize_text_field( wp_unslash( $_POST['bundle_option'] ) ) : '';
+            $pon = function_exists( 'gck_get_bundle_offers' ) ? gck_get_bundle_offers( $product_id ) : array();
+            $kos = isset( $pon[ $opt ]['qty'] ) ? max( 1, (int) $pon[ $opt ]['qty'] ) : 0;
+            if ( $kos > 0 ) { $nova = round( $fiksna * $kos, wc_get_price_decimals() ); }
+        }
         $data['_orto_bundle_unit_price'] = $nova;
         $data['_orto_bundle_total']      = $nova;
     } else {
@@ -493,7 +512,7 @@ function noriks_bf_je_bokserica( $p ) {
     return (bool) preg_match( '/bokser|boxer|boxerk|bokserk|μπόξερ/iu', (string) $p->get_name() );
 }
 
-function noriks_bf_kartica( $p, $fiksna = 0 ) {
+function noriks_bf_kartica( $p, $fiksna = 0, $barva = '' ) {
     if ( ! $p || $p->get_status() !== 'publish' || ! $p->is_in_stock() ) { return null; }
     if ( noriks_bf_je_bokserica( $p ) ) { return null; }   // 22. 11. 2026: bokseric na BF straneh ni
     $id = $p->get_id();
@@ -506,14 +525,15 @@ function noriks_bf_kartica( $p, $fiksna = 0 ) {
             $o    = reset( $ponudbe );
             $orto = true;
             $red  = (float) $o['regular'];
-            $akc  = noriks_bf_cena( (float) $o['total'] );
+            $akc  = $fiksna > 0 ? round( $fiksna * max( 1, (int) $o['qty'] ), wc_get_price_decimals() ) : noriks_bf_cena( (float) $o['total'] );
             $k['offer'] = (string) $o['id'];
             $k['kos']   = max( 1, (int) $o['qty'] );
             $k['paket'] = trim( (string) $o['title'] );
             foreach ( $ponudbe as $po ) {
                 $pr = (float) $po['regular']; $pa = (float) $po['total'];
                 if ( $pr <= 0 || $pa <= 0 || $pa >= $pr ) { continue; }
-                $k['ponudbe'][] = array( 'id' => (string) $po['id'], 'kos' => max( 1, (int) $po['qty'] ), 'paket' => trim( (string) $po['title'] ), 'red' => $pr, 'akc' => noriks_bf_cena( $pa ) );
+                $pk = max( 1, (int) $po['qty'] );
+                $k['ponudbe'][] = array( 'id' => (string) $po['id'], 'kos' => $pk, 'paket' => $fiksna > 0 ? '' : trim( (string) $po['title'] ), 'red' => $pr, 'akc' => $fiksna > 0 ? round( $fiksna * $pk, wc_get_price_decimals() ) : noriks_bf_cena( $pa ) );
             }
             $lastni = function_exists( 'gck_get_custom_attributes_in_order' ) ? gck_get_custom_attributes_in_order( $p ) : array();
             if ( noriks_bf_brez_izbire( $id ) ) { $lastni = array(); } // 20.11.: kot stran izdelka - npr. NeckRelax/ErgoSit brez izbire velikosti
@@ -571,6 +591,18 @@ function noriks_bf_kartica( $p, $fiksna = 0 ) {
     }
 
     if ( $red <= 0 || $akc <= 0 || $akc >= $red ) { return null; }
+    if ( $orto && $fiksna > 0 ) { $k['paket'] = ''; }   // brez "2+1 GRATIS": cena je po kosih
+    // ena sama barva (stran kombo): barvni atribut zozimo na to barvo — izbirnik se skrije, barva se poslje sama
+    if ( $barva !== '' ) {
+        $najdeno = false;
+        foreach ( $k['attrs'] as $ai => $a ) {
+            foreach ( $a['v'] as $v ) {
+                if ( $v[0] === $barva ) { $k['attrs'][ $ai ]['v'] = array( $v ); $najdeno = true; break 2; }
+            }
+        }
+        if ( ! $najdeno ) { return null; }
+        $k['naslov'] = $p->get_name() . ' – ' . $barva;
+    }
     $k['red'] = $red; $k['akc'] = $akc;
     $k['pop'] = (int) round( ( 1 - $akc / $red ) * 100 );
     // Kolicine: pri izbirniku paketov prave ponudbe izdelka, sicer 1x-4x iste cene.
@@ -709,6 +741,46 @@ function noriks_bf_enojne() {
     $sid = wc_get_product_id_by_sku( 'NORIKS-SLABPROOF' );
     $sk  = $sid ? noriks_bf_kartica( wc_get_product( $sid ) ) : null;
     if ( $sk ) { $sk['vrsta'] = -1; $ven[] = $sk; }
+    return $ven;
+}
+
+/**
+ * Stran kombo (24. 11. 2026, Dejan): 3x KOMPSFIT (bela, siva, crna — modre KOMPSFIT ni) in
+ * 3 enojne majice (bela, siva, modra), vse po isti ceni za kos kot /black-friday-tees/.
+ * Barvo KOMPSFIT prepoznamo po vzorcu barve (noriks_bf_barva), sicer po vrstnem redu izdelka (crna, bela, siva).
+ */
+function noriks_bf_kombo() {
+    $ven = array();
+    if ( ! function_exists( 'wc_get_product_id_by_sku' ) ) { return $ven; }
+    $cena = noriks_bf_kos_cena();
+    $fid  = wc_get_product_id_by_sku( NORIKS_BF_KOMBO_FIT );
+    $fp   = $fid ? wc_get_product( $fid ) : null;
+    if ( $fp ) {
+        $vrednosti = array();
+        $k0 = noriks_bf_kartica( $fp, $cena );
+        if ( $k0 ) {
+            // barvni atribut = tisti z vec vrednostmi, ki niso velikosti (S, M, 2XL ...)
+            foreach ( $k0['attrs'] as $a ) {
+                $vv = array_map( function ( $v ) { return (string) $v[0]; }, $a['v'] );
+                $velikosti = array_filter( $vv, function ( $v ) { return preg_match( '/^(X{0,6}S|M|X{0,6}L|[2-6]XL)$/i', trim( $v ) ); } );
+                if ( count( $vv ) > 1 && ! $velikosti ) { $vrednosti = $vv; break; }
+            }
+        }
+        $po_hex = array();
+        foreach ( $vrednosti as $v ) { $h = strtolower( noriks_bf_barva( $v ) ); if ( $h !== '' && ! isset( $po_hex[ $h ] ) ) { $po_hex[ $h ] = $v; } }
+        foreach ( array( array( '#fff', 1 ), array( '#706d78', 2 ), array( '#000', 0 ) ) as $par ) {
+            $barva = isset( $po_hex[ $par[0] ] ) ? $po_hex[ $par[0] ] : ( isset( $vrednosti[ $par[1] ] ) ? $vrednosti[ $par[1] ] : '' );
+            $k = $barva !== '' ? noriks_bf_kartica( $fp, $cena, $barva ) : null;
+            if ( $k ) { $ven[] = $k; }
+        }
+    }
+    foreach ( array( 'WHITE', 'GRAY', 'DARKBLUE' ) as $b ) {
+        $id = wc_get_product_id_by_sku( 'NORIKS-ONE-' . $b );
+        $p  = $id ? wc_get_product( $id ) : null;
+        if ( ! $p || ! $p->is_type( 'variable' ) ) { continue; }
+        $k = noriks_bf_kartica( $p, $cena );
+        if ( $k && $k['nacin'] === 'var' ) { $ven[] = $k; }
+    }
     return $ven;
 }
 

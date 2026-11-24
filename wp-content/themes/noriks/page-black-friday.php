@@ -42,6 +42,11 @@ switch ( $tip ) {
         $sub = str_replace( '{C}', $C, $l['sub_kos'] );
         $razdelki[] = array( 'k' => 'BLACK FRIDAY · ' . $l['w_maj'], 'a' => $l['w_maj'], 'b' => str_replace( '{C}', $C, $l['kos_b'] ), 'izdelki' => noriks_bf_enojne() );
         break;
+    case 'kombo':     // 24. 11. 2026: KOMPSFIT po barvah + enojne majice, ena cena za kos
+        $C   = trim( html_entity_decode( wp_strip_all_tags( wc_price( noriks_bf_kos_cena() ) ), ENT_QUOTES, 'UTF-8' ) );
+        $sub = str_replace( '{C}', $C, $l['sub_kos'] );
+        $razdelki[] = array( 'k' => 'BLACK FRIDAY · ' . $l['w_maj'], 'a' => $l['w_maj'], 'b' => str_replace( '{C}', $C, $l['kos_b'] ), 'izdelki' => noriks_bf_kombo() );
+        break;
     case 'top9':
         $sub  = $l['sub_top'];
         $rang = true;
@@ -73,8 +78,8 @@ $trak[] = $l['trak_30'];
 $js = array( 'dodajam' => $l['dodajam'], 'dodano' => $l['dodano'], 'dodaj' => $l['dodaj'], 'izberi' => $l['izberi'], 'napaka' => $l['napaka'], 'zapri' => $l['zapri'], 'nalagam' => $l['nalagam'], 'poglej' => $l['poglej'], 'placilo' => $l['placilo'] );
 $st = 0;
 ?>
-<!-- nbf 2026-11-18-x -->
-<div class="nbf nbf--<?php echo esc_attr( $stran['slog'] ); ?> nbf--<?php echo esc_attr( $tip ); ?> nbf--<?php echo $cm ? 'cm' : 'bf'; ?>" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" data-stran="<?php echo esc_attr( $stran['slug'] ); ?>" data-t="<?php echo esc_attr( wp_json_encode( $js ) ); ?>">
+<!-- nbf 2026-11-24-y -->
+<div class="nbf nbf--<?php echo esc_attr( $stran['slog'] ); ?> nbf--<?php echo esc_attr( $tip === 'kombo' ? 'enojne nbf--kombo' : $tip ); ?> nbf--<?php echo $cm ? 'cm' : 'bf'; ?>" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" data-stran="<?php echo esc_attr( $stran['slug'] ); ?>" data-t="<?php echo esc_attr( wp_json_encode( $js ) ); ?>">
 
   <section class="nbf-hero">
     <div class="nbf-okvir"><b><?php echo $cm ? 'CYBER' : 'BLACK'; ?></b><i><?php echo $cm ? 'MONDAY' : 'FRIDAY'; ?></i></div>
@@ -99,7 +104,7 @@ $st = 0;
           $p     = $x['p'];
           $url   = get_permalink( $p->get_id() );
           $pc    = sprintf( $l['pct'], $x['pop'] );
-          $ime   = $p->get_name();
+          $ime   = ! empty( $x['naslov'] ) ? $x['naslov'] : $p->get_name();
           $slika = $p->get_image( 'woocommerce_single', array( 'loading' => $st < 4 ? 'eager' : 'lazy', 'alt' => $ime ) );
 
           $st++;
@@ -331,6 +336,7 @@ $st = 0;
 .nbf--top9 .nbf-grid{grid-template-columns:repeat(3,minmax(0,1fr));max-width:1060px;margin-left:auto;margin-right:auto}
 .nbf--enojne .nbf-grid{display:flex;flex-wrap:wrap;justify-content:center}.nbf--enojne .nbf-grid>.nbf-k{flex:0 0 calc((100% - 66px)/4);max-width:calc((100% - 66px)/4)}
 .nbf--limeta .nbf-okvir i{color:var(--a);-webkit-text-stroke:0}.nbf--limeta .nbf-k{border-radius:7px}
+.nbf--kombo .nbf-grid>.nbf-k{flex-basis:calc((100% - 44px)/3);max-width:calc((100% - 44px)/3)}
 @media (max-width:1180px){.nbf--enojne .nbf-grid>.nbf-k{flex-basis:calc((100% - 44px)/3);max-width:calc((100% - 44px)/3)}}
 @media (max-width:860px){.nbf--enojne .nbf-grid>.nbf-k{flex-basis:calc((100% - 14px)/2);max-width:calc((100% - 14px)/2)}}
 @media (max-width:359px){.nbf--enojne .nbf-grid>.nbf-k{flex-basis:100%;max-width:100%}}
