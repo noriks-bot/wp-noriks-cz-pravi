@@ -768,10 +768,15 @@ function noriks_bf_kombo() {
         }
         $po_hex = array();
         foreach ( $vrednosti as $v ) { $h = strtolower( noriks_bf_barva( $v ) ); if ( $h !== '' && ! isset( $po_hex[ $h ] ) ) { $po_hex[ $h ] = $v; } }
-        foreach ( array( array( '#fff', 1 ), array( '#706d78', 2 ), array( '#000', 0 ) ) as $par ) {
+        foreach ( array( array( '#fff', 1, 'bela' ), array( '#706d78', 2, 'siva' ), array( '#000', 0, 'crna' ) ) as $par ) {
             $barva = isset( $po_hex[ $par[0] ] ) ? $po_hex[ $par[0] ] : ( isset( $vrednosti[ $par[1] ] ) ? $vrednosti[ $par[1] ] : '' );
             $k = $barva !== '' ? noriks_bf_kartica( $fp, $cena, $barva ) : null;
-            if ( $k ) { $ven[] = $k; }
+            if ( $k ) {
+                // slika majice v tej barvi (24. 11. 2026, Marko/Higgsfield), iz teme: img/bf/kombo-fit-<barva>.jpg
+                $dat = '/img/bf/kombo-fit-' . $par[2] . '.jpg';
+                if ( file_exists( get_template_directory() . $dat ) ) { $k['slika'] = get_template_directory_uri() . $dat . '?v=' . filemtime( get_template_directory() . $dat ); }
+                $ven[] = $k;
+            }
         }
     }
     foreach ( array( 'WHITE', 'GRAY', 'DARKBLUE' ) as $b ) {

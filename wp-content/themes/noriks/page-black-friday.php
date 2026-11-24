@@ -78,7 +78,7 @@ $trak[] = $l['trak_30'];
 $js = array( 'dodajam' => $l['dodajam'], 'dodano' => $l['dodano'], 'dodaj' => $l['dodaj'], 'izberi' => $l['izberi'], 'napaka' => $l['napaka'], 'zapri' => $l['zapri'], 'nalagam' => $l['nalagam'], 'poglej' => $l['poglej'], 'placilo' => $l['placilo'] );
 $st = 0;
 ?>
-<!-- nbf 2026-11-24-y -->
+<!-- nbf 2026-11-24-z -->
 <div class="nbf nbf--<?php echo esc_attr( $stran['slog'] ); ?> nbf--<?php echo esc_attr( $tip === 'kombo' ? 'enojne nbf--kombo' : $tip ); ?> nbf--<?php echo $cm ? 'cm' : 'bf'; ?>" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" data-stran="<?php echo esc_attr( $stran['slug'] ); ?>" data-t="<?php echo esc_attr( wp_json_encode( $js ) ); ?>">
 
   <section class="nbf-hero">
@@ -105,7 +105,9 @@ $st = 0;
           $url   = get_permalink( $p->get_id() );
           $pc    = sprintf( $l['pct'], $x['pop'] );
           $ime   = ! empty( $x['naslov'] ) ? $x['naslov'] : $p->get_name();
-          $slika = $p->get_image( 'woocommerce_single', array( 'loading' => $st < 4 ? 'eager' : 'lazy', 'alt' => $ime ) );
+          $slika = ! empty( $x['slika'] )
+              ? '<img src="' . esc_url( $x['slika'] ) . '" width="1000" height="1000" alt="' . esc_attr( $ime ) . '" loading="' . ( $st < 4 ? 'eager' : 'lazy' ) . '" decoding="async">'
+              : $p->get_image( 'woocommerce_single', array( 'loading' => $st < 4 ? 'eager' : 'lazy', 'alt' => $ime ) );
 
           $st++;
           // podatki za modal gredo v stran (brez cakanja na streznik ob kliku)
