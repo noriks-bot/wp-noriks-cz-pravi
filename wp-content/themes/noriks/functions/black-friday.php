@@ -1003,3 +1003,28 @@ function noriks_bf_ensure_page() {
     }
 }
 add_action( 'init', 'noriks_bf_ensure_page' );
+
+/**
+ * Kode za popust, ki NE veljajo za vrstice, dodane z BF/CM strani (25. 11. 2026).
+ * Cena teh vrstic je ze znizana (set_price zgoraj), odstotna koda bi se obracunala se enkrat
+ * (majica 6,99 -> 3,50). Koda zato velja samo za izdelke, dodane s strani izdelka / iz trgovine.
+ * Seznam kod: noriks_bf_kode_brez_sestevanja(). Oznaka: nbf-koda 2026-11-25-a
+ */
+function noriks_bf_kode_brez_sestevanja() {
+    return array( 'bf50' );
+}
+function noriks_bf_je_koda_brez_sestevanja( $coupon ) {
+    return $coupon instanceof WC_Coupon && in_array( strtolower( (string) $coupon->get_code() ), noriks_bf_kode_brez_sestevanja(), true );
+}
+/** Vrstica z BF/CM strani za te kode ni veljaven izdelek (WooCommerce jo izpusti iz popusta). */
+add_filter( 'woocommerce_coupon_is_valid_for_product', 'noriks_bf_koda_ne_velja_za_vrstico', 10000, 4 );
+function noriks_bf_koda_ne_velja_za_vrstico( $valid, $product, $coupon, $values ) {
+    if ( $valid && is_array( $values ) && ! empty( $values['_noriks_bf'] ) && noriks_bf_je_koda_brez_sestevanja( $coupon ) ) { return false; }
+    return $valid;
+}
+/** Varovalka: tudi ce bi vrstica prisla do izracuna, je popust te kode zanjo 0. */
+add_filter( 'woocommerce_coupon_get_discount_amount', 'noriks_bf_koda_brez_popusta', 10000, 5 );
+function noriks_bf_koda_brez_popusta( $discount, $discounting_amount, $cart_item, $single, $coupon ) {
+    if ( is_array( $cart_item ) && ! empty( $cart_item['_noriks_bf'] ) && noriks_bf_je_koda_brez_sestevanja( $coupon ) ) { return 0; }
+    return $discount;
+}
