@@ -198,7 +198,8 @@ function noriks_bf_kos_cena() {
 }
 
 const NORIKS_BF_KOMBO_FIT = 'NORIKS-KOMPSFIT';
-const NORIKS_BF_KOMBO_NAJVEC = 10;   // FIT na strani kombo: 1-10 kosov
+const NORIKS_BF_KOMBO_NAJVEC = 10;
+const NORIKS_BF_KOMBO_MAJIC = 6;   // enojnih majic na strani kombo   // FIT na strani kombo: 1-10 kosov
 
 /** Ali je izdelek enojna majica (vsaka barva svoj izdelek: NORIKS-ONE-BLACK, -WHITE ...). */
 function noriks_bf_je_enojna( $p ) {
@@ -803,13 +804,19 @@ function noriks_bf_kombo() {
             }
         }
     }
-    foreach ( array( 'WHITE', 'GRAY', 'DARKBLUE' ) as $b ) {
+    // majice: najprej bela, siva, modra (kot FIT), nato 3 najbolj prodajane med ostalimi barvami — 6 majic, 2 vrsti po 3 (Dejan 25. 11. 2026)
+    $majice = array();
+    foreach ( array( 'WHITE', 'GRAY', 'DARKBLUE', 'BLACK', 'GREEN', 'BEIGE', 'BROWN' ) as $b ) {
         $id = wc_get_product_id_by_sku( 'NORIKS-ONE-' . $b );
         $p  = $id ? wc_get_product( $id ) : null;
         if ( ! $p || ! $p->is_type( 'variable' ) ) { continue; }
         $k = noriks_bf_kartica( $p, $cena );
-        if ( $k && $k['nacin'] === 'var' ) { $ven[] = $k; }
+        if ( $k && $k['nacin'] === 'var' ) { $majice[ $b ] = $k; }
     }
+    $prve = array_intersect_key( $majice, array_flip( array( 'WHITE', 'GRAY', 'DARKBLUE' ) ) );
+    $ostale = array_diff_key( $majice, $prve );
+    uasort( $ostale, function ( $a, $b ) { return $b['prodaja'] <=> $a['prodaja']; } );
+    foreach ( array_merge( array_values( $prve ), array_slice( array_values( $ostale ), 0, NORIKS_BF_KOMBO_MAJIC - count( $prve ) ) ) as $k ) { $ven[] = $k; }
     return $ven;
 }
 
