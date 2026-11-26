@@ -341,6 +341,7 @@ function noriks_ty2_step1_products() {
             'ponudi'       => 'NORIKS-SNUG-PREVLEKA',
             'izbira_barve' => true,
             'druga_barva'  => true,
+            'cela_slika'   => true,   // slika z napisom: pokazi celo (brez obrezovanja v kvadrat)
         ),
     );
 }
@@ -434,6 +435,7 @@ function noriks_ty2_step1_cards( $order ) {
             $card = noriks_ty2_card( $kljuc . $q, $ponudi, $q, '', $ime, $unit > 0 ? round( $unit * $q, 2 ) : '', $barva, $seznam[ $sku ]['img'] );
             if ( $card ) {
                 if ( null !== $proste ) { $card['colors'] = $proste; }   // izbira (in strezniska preverba) brez kupljenih barv
+                $card['cela_slika'] = ! empty( $seznam[ $sku ]['cela_slika'] );
                 // barvo izbere kupec (strezni del jo preveri proti barvam izdelka)
                 $card['pick_color'] = ! empty( $seznam[ $sku ]['izbira_barve'] ) && count( (array) $card['colors'] ) > 1;
                 $ven[ (int) $q ] = $card;

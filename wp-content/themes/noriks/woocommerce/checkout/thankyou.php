@@ -390,6 +390,9 @@ body.woocommerce-order-received .woocommerce {
 .tyu1-card { display:flex; gap:14px; align-items:flex-start; }
 .tyu1-card__img { flex:0 0 132px; width:132px; height:132px; border-radius:8px; overflow:hidden; background:#f4f4f4; }
 .tyu1-card__img img { width:100%; height:100%; object-fit:cover; display:block; }
+/* slika z napisom (prevleka Snug): cela slika v razmerju, brez obrezovanja */
+.tyu1-card__img.tyu1-card__img--cela { height:auto; }
+.tyu1-card__img.tyu1-card__img--cela img { height:auto; object-fit:contain; }
 .tyu1-card__info { flex:1; min-width:0; }
 .tyu1-card__name { font-size:15px; font-weight:700; color:#111; line-height:1.35; margin-bottom:8px; }
 .tyu1-card__prices { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
@@ -737,7 +740,7 @@ body.woocommerce-order-received .woocommerce {
                     </div>
 
                     <div class="tyu1-card">
-                        <div class="tyu1-card__img">
+                        <div class="tyu1-card__img<?php echo ( $s1_cards && ! empty( $s1_first['cela_slika'] ) ) ? ' tyu1-card__img--cela' : ''; ?>">
                             <img id="ty-upsell-img" alt="<?php echo esc_attr($upsell_name); ?>" src="<?php echo esc_url($upsell_qty_images[$default_qty]); ?>">
                         </div>
                         <div class="tyu1-card__info">
