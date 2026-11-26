@@ -26,6 +26,8 @@ function noriks_ty2_default_unit_prices() {
         // priblizno 50 % akcijske cene, zaokrozeno navzdol
         'NORIKS-KIDSNEST'    => 529,
         'NORIKS-KNEEFIX'     => 499,
+        // 26. 11. 2026: dodatna prevleka za Snug (korak 1 kupcem blazine Snug)
+        'NORIKS-SNUG-PREVLEKA' => 229,
     );
 }
 
@@ -329,7 +331,36 @@ function noriks_ty2_step1_products() {
             'img'   => '',
             'vklop' => 'kidsnest',
         ),
+        // Snug (26. 11. 2026): kupcu blazine NE ponudimo se ene blazine, ampak samo dodatno prevleko
+        // v DRUGI barvi, kot jo je kupil. 'ponudi' = SKU skritega izdelka, ki gre v narocilo
+        // (variacije NORIKS-SNUG-PREVLEKA-<BARVA>, da skladisce in zaloga locita prevleko od kompleta);
+        // 'druga_barva' = kupljene barve izpadejo iz izbire (preveri tudi streznik).
+        'NORIKS-SNUG' => array(
+            'imena'        => array( 1 => '1x Náhradní povlak na polštář Snug' ),
+            'img'          => '',
+            'ponudi'       => 'NORIKS-SNUG-PREVLEKA',
+            'izbira_barve' => true,
+            'druga_barva'  => true,
+        ),
     );
+}
+
+/** Barve (izmed $colors), ki jih je kupec v tem narocilu ze kupil pri izdelku $product_id. */
+function noriks_ty2_kupljene_barve( $order, $product_id, $colors ) {
+    $ven = array();
+    foreach ( $order->get_items() as $it ) {
+        if ( ! is_a( $it, 'WC_Order_Item_Product' ) || $it->get_meta( '_noriks_upsell' ) ) { continue; }
+        if ( (int) $it->get_product_id() !== (int) $product_id ) { continue; }
+        foreach ( $it->get_meta_data() as $m ) {
+            if ( ! ctype_digit( (string) $m->key ) || ! is_scalar( $m->value ) ) { continue; }   // "1" => "Plava", "2" => "Roza"
+            $v = mb_strtolower( trim( (string) $m->value ) );
+            foreach ( (array) $colors as $c ) {
+                $cl = mb_strtolower( trim( (string) $c ) );
+                if ( $cl !== '' && ( $v === $cl || 0 === mb_strpos( $v, $cl . ' - ' ) ) ) { $ven[ $cl ] = (string) $c; }
+            }
+        }
+    }
+    return array_values( $ven );
 }
 
 /* ── Korak 1: nastavitve iz admina (21. 11. 2026) — vse privzeto IZKLOPLJENO ── */
@@ -371,19 +402,38 @@ function noriks_ty2_step1_cards( $order ) {
         $sku = $p ? strtoupper( (string) $p->get_sku() ) : '';
         if ( ! isset( $seznam[ $sku ] ) ) { continue; }
         if ( ! empty( $seznam[ $sku ]['vklop'] ) && empty( $nastavitve[ $seznam[ $sku ]['vklop'] ] ) ) { continue; }
-        list( $colors ) = noriks_ty2_attr_options( $p );
-        $barva = '';
-        $prvi  = (string) $it->get_meta( '1' );               // "Crna - L"
-        foreach ( (array) $colors as $c ) {
-            if ( $prvi !== '' && mb_stripos( $prvi, (string) $c ) === 0 ) { $barva = (string) $c; break; }
+        // izdelek, ki gre v narocilo: isti kot kupljeni ali drug (Snug -> samo prevleka)
+        $ponudi = $p; $cena_sku = $sku;
+        if ( ! empty( $seznam[ $sku ]['ponudi'] ) ) {
+            $cena_sku = strtoupper( (string) $seznam[ $sku ]['ponudi'] );
+            $pid2     = wc_get_product_id_by_sku( $cena_sku );
+            $ponudi   = $pid2 ? wc_get_product( $pid2 ) : null;
+            if ( ! $ponudi ) { continue; }                     // izdelka na tem trgu (se) ni -> obicajna ponudba
         }
-        if ( $barva === '' && $colors ) { $barva = in_array( 'Černá', $colors, true ) ? 'Černá' : (string) reset( $colors ); }
+        list( $colors ) = noriks_ty2_attr_options( $ponudi );
+        $proste = null;
+        if ( ! empty( $seznam[ $sku ]['druga_barva'] ) ) {
+            // samo barve, ki jih kupec se nima
+            $kupljene = array_map( 'mb_strtolower', noriks_ty2_kupljene_barve( $order, $p->get_id(), $colors ) );
+            $proste   = array();
+            foreach ( (array) $colors as $c ) { if ( ! in_array( mb_strtolower( (string) $c ), $kupljene, true ) ) { $proste[] = (string) $c; } }
+            if ( ! $proste ) { continue; }
+            $barva = (string) reset( $proste );
+        } else {
+            $barva = '';
+            $prvi  = (string) $it->get_meta( '1' );               // "Crna - L"
+            foreach ( (array) $colors as $c ) {
+                if ( $prvi !== '' && mb_stripos( $prvi, (string) $c ) === 0 ) { $barva = (string) $c; break; }
+            }
+            if ( $barva === '' && $colors ) { $barva = in_array( 'Černá', $colors, true ) ? 'Černá' : (string) reset( $colors ); }
+        }
         $kljuc = 's1' . strtolower( preg_replace( '/[^A-Za-z0-9]/', '', str_replace( 'NORIKS-', '', $sku ) ) );
-        $unit  = noriks_ty2_s1_unit_price( $sku );
+        $unit  = noriks_ty2_s1_unit_price( $cena_sku );
         $ven   = array();
         foreach ( $seznam[ $sku ]['imena'] as $q => $ime ) {
-            $card = noriks_ty2_card( $kljuc . $q, $p, $q, '', $ime, $unit > 0 ? round( $unit * $q, 2 ) : '', $barva, $seznam[ $sku ]['img'] );
+            $card = noriks_ty2_card( $kljuc . $q, $ponudi, $q, '', $ime, $unit > 0 ? round( $unit * $q, 2 ) : '', $barva, $seznam[ $sku ]['img'] );
             if ( $card ) {
+                if ( null !== $proste ) { $card['colors'] = $proste; }   // izbira (in strezniska preverba) brez kupljenih barv
                 // barvo izbere kupec (strezni del jo preveri proti barvam izdelka)
                 $card['pick_color'] = ! empty( $seznam[ $sku ]['izbira_barve'] ) && count( (array) $card['colors'] ) > 1;
                 $ven[ (int) $q ] = $card;
